@@ -33,5 +33,5 @@ class RowIndex:
 		radix_map: [2, 3, 2] (or [x_j_rho, x_rho, y_j])
 		"""
 		self.radix_map = functools.reduce(lambda a, b: a + b,
-			list(map(lambda variable: list(map(lambda index: self.indices[index], self.variables[variable])),
-			self.variables.keys())), [])
+			map(lambda variable: list(map(lambda index: self.indices[index], self.variables[variable])),
+			self.variables.keys()), [])
