@@ -5,6 +5,7 @@ The following prepares data strcutured to be passed into `scipy.optimize.linprog
 from dataclasses import dataclass
 import functools
 import ut
+import json
 
 
 @dataclass
@@ -85,3 +86,55 @@ class RowIndex:
 			if npos > 1:
 				for i in reversed(range(npos - 1)):
 					self.radix_mult_vectors[v][i] = self.radix_maps[v][i + 1] * self.radix_mult_vectors[v][i + 1]
+
+
+@dataclass
+class Schema:
+	"""
+	Wrapper over a dictionary containing schema information: indices, variables, boundaries
+	Format example:
+	{
+		"indexbound": {
+			"j": 3,
+			"i": 2,
+			"m": 4
+		},
+		"variableindices": {
+			"x": ["j", "i"],
+			"y": ["i", "j", "m"],
+			"z": ["i", "m"]
+		}
+	}
+
+	Bounds are counted from 0 to N: [0; N)
+	"""
+	data = None
+
+	def read(self, filename="schema.json"):
+		with open(filename, 'r') as f:
+			try:
+				self.data = json.loads(f.read())
+			except FileNotFoundError as e:
+				self.data = {
+					"indexbound": dict(),
+					"variableindices": dict(),
+				}
+
+	def write(self, filename="schema.json"):
+		assert self.data is not None
+		with open(filename, 'w') as f:
+			f.write(self.data)
+
+	def set_index_bound(self, index, bound):
+		assert self.data is not None
+		self.data["indexbound"][index] = bound
+
+	def set_var_indices(self, var, *indices):
+		assert self.data is not None
+		assert len(indices) > 0
+		self.data["variableindices"][var] = list(indices)
+
+	def get_var_radix(self, var):
+		assert var in self.data["variableindices"]
+
+		return list(map(lambda i: self.data["indexbound"][i], self.data["variableindices"][var]))
