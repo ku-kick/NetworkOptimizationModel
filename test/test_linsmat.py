@@ -16,12 +16,18 @@ class TestIndex(unittest.TestCase):
 		ind = linsmat.RowIndex(indices=dict(a=3, b=5), variables=dict(x=['a'], y=['a', 'b']))
 
 	def test_get_pos(self):
-		ind = linsmat.RowIndex(indices=dict(a=3, b=5), variables=dict(x=['a'], y=['a', 'b'], z=['a', 'b']))
+		ind = linsmat.RowIndex(indices=dict(a=3, b=5), variables=dict(x=['a'], y=['a', 'b'], z=['a', 'b'], k=[], m=[]))
 		print(ind.get_pos('y', a=2, b=4))
 		print(ind.get_pos('x', a=2))
 		print(ind.radix_maps)
 		print(ind.radix_mult_vectors)
 		print(linsmat.RowIndex(indices=dict(a=3), variables=dict(x=['a'])).get_pos('x', a=2))
+
+	def test_no_indices(self):
+		ind = linsmat.RowIndex(indices=dict(), variables=dict(m=[], k=[]))
+		self.assertTrue(ind.get_pos('m') in [0, 1])
+		self.assertTrue(ind.get_pos('k') in [0, 1])
+		self.assertTrue(ind.get_pos('m') != ind.get_pos('k'))
 
 
 class TestSchema(unittest.TestCase):
