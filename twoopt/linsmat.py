@@ -6,6 +6,11 @@ from dataclasses import dataclass
 import functools
 import ut
 import json
+import re
+import io
+import os
+import csv
+from generic import Log
 
 
 @dataclass
@@ -108,13 +113,19 @@ class Schema:
 
 	Bounds are counted from 0 to N: [0; N)
 	"""
-	data = None
+	data: str = None
+	filename: str = None
+
+	def __post_init__(self):
+		if self.filename is not None:
+			self.read(self.filename)
 
 	def read(self, filename="schema.json"):
 		with open(filename, 'r') as f:
 			try:
 				self.data = json.loads(f.read())
 			except FileNotFoundError as e:
+				Log.error(Schema, "got exception", e)
 				self.data = {
 					"indexbound": dict(),
 					"variableindices": dict(),
@@ -138,3 +149,98 @@ class Schema:
 		assert var in self.data["variableindices"]
 
 		return list(map(lambda i: self.data["indexbound"][i], self.data["variableindices"][var]))
+
+	def indices_dict_to_plain(self, variable, **indices):
+		"""
+		[VARAIBLE, {"index1": INDEX1, "index2": INDEX2}] -> [VARIABLE, INDEX1, INDEX2]
+		"""
+		assert type(variable) is str
+		assert set(self.data["variableindices"][variable]) == set(indices.keys())
+		indices_plain = tuple(map(lambda i: indices[i], self.data["variableindices"][variable]))
+
+		return (variable,) + indices_plain
+
+	def indices_plain_to_dict(self, variable, *indices):
+		"""
+		[VARIABLE, INDEX1, INDEX2] -> [VARAIBLE, {"index1": INDEX1, "index2": INDEX2}]
+		"""
+		assert type(variable) is str
+		check_type_int = lambda i: type(i) is int
+		assert all(map(check_type_int, indices))
+		assert len(indices) == len(self.data["variableindices"][variable])
+		indices_dict = dict(zip(self.data["variableindices"][variable], indices))
+
+		return (variable, indices_dict)
+
+
+@dataclass
+class PermissiveCsvBufferedDataProvider(dict):
+	"""
+	Represents data in the following format
+	{
+		(VARAIBLE1, INDEX1, INDEX2) : VALUE,
+		(VARIABLE2, INDEX1) : VALUE,
+	}
+
+	Guarantees and ensures that VARIABLE has type `str`, indices have type `int`, and VALUE has type `float`
+	"""
+	csv_file_name: str
+
+	def get_plain(self, *key):
+		assert key in self.keys()
+		return self[key]
+
+	def set_plain(self, *args):
+		"""
+		Adds a sequence of format (VAR, INDEX1, INDEX2, ..., VALUE) into the dictionary
+		"""
+		assert len(args) >= 2
+		assert type(args[0]) is str
+		assert type(args[-1]) is float
+		assert all(map(lambda i: type(i) is int, args[1:-1]))
+
+		self[tuple(args[:-1])] = args[-1]
+
+	def _into_iter_plain(self):
+		stitch = lambda k, v: k + (v,)
+
+		return map(stitch, self.items())
+
+	def __post_init__(self):
+		"""
+		Parses data from a CSV file containing sequences of the following format:
+		VARIABLE   SPACE_OR_TAB   INDEX1   SPACE_OR_TAB   INDEX2   ...   SPACE_OR_TAB   VALUE
+
+		Expects the values to be stored according to Repr. w/ use of " " space symbol as the separator
+		"""
+		assert os.path.exists(self.csv_file_name)
+
+		with open(self.csv_file_name, 'r') as f:
+			data = ''.join(map(lambda l: re.sub(r'( |\t)+', ' ', l), f.readlines()))  # Sanitize, replace spaces or tabs w/ single spaces
+			reader = csv.reader(io.StringIO(data), delimiter=' ')
+			map_cast = map(lambda l: [l[0]] + list(map(int, l[1:-1])) + [float(l[-1])], reader)
+
+			for plain in map_cast:
+				Log.debug(PermissiveCsvBufferedDataProvider, plain)
+				self.set_plain(*plain)
+
+			Log.debug(PermissiveCsvBufferedDataProvider, self.items())
+
+	def sync(self):
+		with open(self.filename, 'w') as f:
+			f.writelines(list(self._into_iter_plain))
+
+
+@dataclass
+class DataInterface:
+	provider: object  # Abstraction over storage medium
+	schema: Schema
+
+	def get(self, variable, **indices) -> float:
+		plain = self.schema.indices_dict_to_plain(variable, **indices)
+
+		return self.provider.get_plain(*plain)
+
+	def set(self, variable, **indices) -> float:
+		plain = self.schema.indices_dict_to_plain(variable, **indices)
+		self.provider.set_plain(*plain)
