@@ -5,6 +5,8 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / 'twoopt'))
 from twoopt import linsmat
 import os
+import pathlib
+import math
 
 
 class TestIndex(unittest.TestCase):
@@ -60,5 +62,18 @@ class TestSchema(unittest.TestCase):
 		self.assertEqual([2, 3], schema.get_var_radix("x"))
 		self.assertEqual([4], schema.get_var_radix("y"))
 
+
+
+class TestData(unittest.TestCase):
+	__HERE = pathlib.Path(os.path.realpath(__file__)).parent
+
+	def test_load(self):
+		schema=linsmat.Schema("her")
+		data_interface = linsmat.DataInterface(
+			provider=linsmat.PermissiveCsvBufferedDataProvider(str(TestData.__HERE / "test_data.csv")),
+			schema=linsmat.Schema(filename=str(TestData.__HERE / "test_schema.json")))
+		self.assertTrue(math.isclose(1.1, data_interface.get("x", **{"a": 1, "b": 2, "c": 3})))
+		self.assertTrue(math.isclose(3.2, data_interface.get("x", **{"a": 1, "b": 2, "c": 2})))
+		self.assertTrue(math.isclose(3.0, data_interface.get("y", **{"c": 3, "a": 2})))
 
 unittest.main()
