@@ -1,5 +1,6 @@
 """
-The following prepares data strcutured to be passed into `scipy.optimize.linprog` routine
+This module is primarily dedicated to preparing input data for the scipy's `linprog`, while doing so in a generalized
+fashion for the case of changes.
 """
 
 from dataclasses import dataclass
