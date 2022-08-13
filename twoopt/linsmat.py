@@ -141,10 +141,20 @@ class Schema:
 		assert self.data is not None
 		self.data["indexbound"][index] = bound
 
+	def get_index_bound(self, index):
+		assert self.data is not None
+		assert index in self.data["indexbound"]
+		return self.data["indexbound"][index]
+
 	def set_var_indices(self, var, *indices):
 		assert self.data is not None
 		assert len(indices) > 0
 		self.data["variableindices"][var] = list(indices)
+
+	def get_var_indices(self, var):
+		assert self.data is not None
+		assert var in self.data["variableindices"]
+		return self.data["variableindices"][var]
 
 	def get_var_radix(self, var):
 		assert var in self.data["variableindices"]
@@ -186,6 +196,7 @@ class PermissiveCsvBufferedDataProvider(dict):
 	Guarantees and ensures that VARIABLE has type `str`, indices have type `int`, and VALUE has type `float`
 	"""
 	csv_file_name: str
+	line_to_kv: object = lambda l: (tuple([l[0]] + list(map(int, l[1:-1]))), float(l[-1]))
 
 	def get_plain(self, *key):
 		assert key in self.keys()
@@ -196,11 +207,8 @@ class PermissiveCsvBufferedDataProvider(dict):
 		Adds a sequence of format (VAR, INDEX1, INDEX2, ..., VALUE) into the dictionary
 		"""
 		assert len(args) >= 2
-		assert type(args[0]) is str
-		assert type(args[-1]) is float
-		assert all(map(lambda i: type(i) is int, args[1:-1]))
-
-		self[tuple(args[:-1])] = args[-1]
+		k, v = self.line_to_kv(args)
+		self[k] = v
 
 	def _into_iter_plain(self):
 		stitch = lambda k, v: k + (v,)
@@ -219,9 +227,9 @@ class PermissiveCsvBufferedDataProvider(dict):
 		with open(self.csv_file_name, 'r') as f:
 			data = ''.join(map(lambda l: re.sub(r'( |\t)+', ' ', l), f.readlines()))  # Sanitize, replace spaces or tabs w/ single spaces
 			reader = csv.reader(io.StringIO(data), delimiter=' ')
-			map_cast = map(lambda l: [l[0]] + list(map(int, l[1:-1])) + [float(l[-1])], reader)
+			# map_cast = map(lambda l: [l[0]] + list(map(int, l[1:-1])) + [float(l[-1])], reader)
 
-			for plain in map_cast:
+			for plain in reader:
 				Log.debug(PermissiveCsvBufferedDataProvider, plain)
 				self.set_plain(*plain)
 
