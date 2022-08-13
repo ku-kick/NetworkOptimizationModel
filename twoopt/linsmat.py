@@ -211,7 +211,7 @@ class PermissiveCsvBufferedDataProvider(dict):
 		self[k] = v
 
 	def _into_iter_plain(self):
-		stitch = lambda k, v: k + (v,)
+		stitch = lambda kv: kv[0] + (kv[1],)
 
 		return map(stitch, self.items())
 
@@ -224,20 +224,26 @@ class PermissiveCsvBufferedDataProvider(dict):
 		"""
 		assert os.path.exists(self.csv_file_name)
 
-		with open(self.csv_file_name, 'r') as f:
-			data = ''.join(map(lambda l: re.sub(r'( |\t)+', ' ', l), f.readlines()))  # Sanitize, replace spaces or tabs w/ single spaces
-			reader = csv.reader(io.StringIO(data), delimiter=' ')
-			# map_cast = map(lambda l: [l[0]] + list(map(int, l[1:-1])) + [float(l[-1])], reader)
+		try:
+			with open(self.csv_file_name, 'r') as f:
+				data = ''.join(map(lambda l: re.sub(r'( |\t)+', ' ', l), f.readlines()))  # Sanitize, replace spaces or tabs w/ single spaces
+				reader = csv.reader(io.StringIO(data), delimiter=' ')
 
-			for plain in reader:
-				Log.debug(PermissiveCsvBufferedDataProvider, plain)
-				self.set_plain(*plain)
+				for plain in reader:
+					Log.debug(PermissiveCsvBufferedDataProvider, plain)
+					self.set_plain(*plain)
 
-			Log.debug(PermissiveCsvBufferedDataProvider, self.items())
+				Log.debug(PermissiveCsvBufferedDataProvider, self.items())
+		except FileNotFoundError:
+			Log.warning("file not found")
+			pass
 
 	def sync(self):
-		with open(self.filename, 'w') as f:
-			f.writelines(list(self._into_iter_plain))
+		with open(self.csv_file_name, 'w') as f:
+			writer = csv.writer(f, delimiter=' ')
+
+			for l in self._into_iter_plain():
+				writer.writerow(l)
 
 
 @dataclass
