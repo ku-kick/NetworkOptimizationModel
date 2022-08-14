@@ -13,6 +13,9 @@ def iter_plain(root):
 
 
 def radix_cartesian_product(radix_boundaries):
+	if len(radix_boundaries) == 0:
+		return (())
+
 	mapped = map(range, radix_boundaries)
 	return itertools.product(*mapped)
 
