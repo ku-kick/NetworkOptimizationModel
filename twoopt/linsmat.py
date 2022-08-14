@@ -230,10 +230,8 @@ class PermissiveCsvBufferedDataProvider(dict):
 				reader = csv.reader(io.StringIO(data), delimiter=' ')
 
 				for plain in reader:
-					Log.debug(PermissiveCsvBufferedDataProvider, plain)
 					self.set_plain(*plain)
 
-				Log.debug(PermissiveCsvBufferedDataProvider, self.items())
 		except FileNotFoundError:
 			Log.warning("file not found")
 			pass
