@@ -8,6 +8,8 @@
 	"variableindices": {
 		"psi": ["j", "i", "rho", "l"],
 		"phi": ["j", "rho", "l"],
-		"v": ["j", "rho", "l"]
+		"v": ["j", "rho", "l"],
+		"x_eq": ["j", "rho", "l"],
+		"alpha_1": []
 	}
 }
