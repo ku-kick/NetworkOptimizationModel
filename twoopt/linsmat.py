@@ -157,6 +157,9 @@ class Schema:
 		return self.data["variableindices"][var]
 
 	def get_var_radix(self, var):
+		"""
+		A tuple of variable indices can be represented as a mixed-radix number. Returns base of that number
+		"""
 		assert var in self.data["variableindices"]
 
 		return list(map(lambda i: self.data["indexbound"][i], self.data["variableindices"][var]))
@@ -246,6 +249,9 @@ class PermissiveCsvBufferedDataProvider(dict):
 
 @dataclass
 class DataInterface:
+	"""
+	Abstraction layer over data storage
+	"""
 	provider: object  # Abstraction over storage medium
 	schema: Schema
 
@@ -257,3 +263,6 @@ class DataInterface:
 	def set(self, variable, **indices) -> float:
 		plain = self.schema.indices_dict_to_plain(variable, **indices)
 		self.provider.set_plain(*plain)
+
+	def __del__(self):
+		self.provider.sync()
