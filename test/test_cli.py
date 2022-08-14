@@ -14,8 +14,9 @@ class TestRandomGenerator(unittest.TestCase):
 		psi_upper = 10
 		phi_upper = 10
 		v_upper = 10
+		x_eq_upper = 10
 		output="output_data.csv"
-		cli.generate_random(schema_file, psi_upper, phi_upper, v_upper, output)
+		cli.generate_random(schema_file, psi_upper, phi_upper, v_upper, x_eq_upper, output)
 		data_provider = linsmat.PermissiveCsvBufferedDataProvider(output)
 		schema = linsmat.Schema(None, schema_file)
 		data_interface = linsmat.DataInterface(data_provider, schema)
