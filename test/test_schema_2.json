@@ -1,0 +1,13 @@
+{
+	"indexbound": {
+		"i": 4,
+		"j": 4,
+		"rho": 10,
+		"l": 4
+	},
+	"variableindices": {
+		"psi": ["j", "i", "rho", "l"],
+		"phi": ["j", "rho", "l"],
+		"v": ["j", "rho", "l"]
+	}
+}
