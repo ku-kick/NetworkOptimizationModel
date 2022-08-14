@@ -255,6 +255,12 @@ class DataInterface:
 	provider: object  # Abstraction over storage medium
 	schema: Schema
 
+	def get_plain(self, *args, **kwargs):
+		return self.provider.get_plain(*args, **kwargs)
+
+	def set_plain(self, *args, **kwargs):
+		return self.provider.set_plain(*args, **kwargs)
+
 	def get(self, variable, **indices) -> float:
 		plain = self.schema.indices_dict_to_plain(variable, **indices)
 
