@@ -15,10 +15,11 @@ class RandomGenerator:
 	Generated sequences have the "k/v" format: (k, v)
 	"""
 	schema_filename: str
+	variables: list
 	var_bounds: dict
 
 	def _functor_iter_wrapper(self):
-		for var in ["psi", "v", "phi"]:
+		for var in self.variables:
 			for prod in ut.radix_cartesian_product(self.schema.get_var_radix(var)):
 				yield (var, *prod,), random.uniform(0, self.var_bounds[var])
 
@@ -43,7 +44,7 @@ class RandomGenerator:
 
 
 def generate_random(schema, psi_upper, phi_upper, v_upper, output):
-	generator = RandomGenerator(schema, {"psi": psi_upper, "phi": phi_upper, "v": v_upper})
+	generator = RandomGenerator(schema, ["psi", "v", "phi"], {"psi": psi_upper, "phi": phi_upper, "v": v_upper})
 	ut.file_create_if_not_exists(output)
 	csv_data_provider = linsmat.PermissiveCsvBufferedDataProvider(output)
 
