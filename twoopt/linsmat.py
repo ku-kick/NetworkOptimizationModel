@@ -46,6 +46,17 @@ class RowIndex:
 	def _get_radix_map_length(self, variable):
 		return len(self.radix_maps[variable])
 
+	def get_row_len(self):
+		"""
+		Returns the length of the entire row
+		"""
+		mult = lambda a, b: a * b
+		map_radix_maps = map(lambda v: self.radix_maps[v], self.variables.keys())
+		map_radix_map_to_decimal = map(lambda m: functools.reduce(mult, m, 1), map_radix_maps)
+		res = sum(map_radix_map_to_decimal)
+
+		return res
+
 	def get_pos(self, variable, **indices):
 		"""
 		Transform a mixed radix number representing the variable's position to decimal one
