@@ -85,8 +85,7 @@ class RowIndex:
 		Example:
 		indices: {j: 2, rho: 3}
 		variables {x: [j, rho], y: [j]}
-		radix_map: [2, 3, 2] (or [x_j_rho, x_rho, y_j])
-		radix_mult_vector: [3*2*1, 2*1, 1]
+		radix map for x: [2, 3]
 
 		With this radix map, a mixed radix number [1, 2, 1] could be converted into a non-mixed through multiplication:
 
