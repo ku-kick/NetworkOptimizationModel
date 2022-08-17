@@ -24,6 +24,7 @@ class TestIndex(unittest.TestCase):
 		print(ind.radix_maps)
 		print(ind.radix_mult_vectors)
 		print(linsmat.RowIndex(indices=dict(a=3), variables=dict(x=['a'])).get_pos('x', a=2))
+		self.assertTrue(ind.get_row_len() == 3 + 3 * 5 + 3 * 5 + 1 + 1)  # Pardon my french, but this form of writing it makes direct intuitive mapping to the structure of the variable set
 
 	def test_no_indices(self):
 		ind = linsmat.RowIndex(indices=dict(), variables=dict(m=[], k=[]))
