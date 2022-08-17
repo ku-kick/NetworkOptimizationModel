@@ -1,6 +1,9 @@
 """
+ETL.
+
 This module is primarily dedicated to preparing input data for the scipy's `linprog`, while doing so in a generalized
-fashion for the case of changes.
+fashion for the case of changes. It takes care of indices and structure descriptions, and its primary purpose is to
+decouple data formatting from domain specificities as much as possible.
 """
 
 from dataclasses import dataclass
