@@ -167,6 +167,15 @@ class Schema:
 		"""
 		return (self.get_index_bound(i) for i in indices)
 
+	def get_max_dec_from_indices(self, *indices):
+		"""
+		Returns a maxiumum possible decimal number encoded by a radix map produces from the provided indices' upper
+		bounds
+		"""
+		mult = lambda a, b: a * b
+
+		return functools.reduce(mult, self.make_radix_map(*indices), 1)
+
 	def set_var_indices(self, var, *indices):
 		assert self.data is not None
 		assert len(indices) > 0
