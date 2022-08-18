@@ -80,6 +80,8 @@ class RowIndex:
 
 		return sum(map(map_var, self.variables.keys()))
 
+	__call__ = get_pos
+
 	def __post_init__(self):
 		"""
 		Forms radix map and radix scalar multiplication vector for numerical transofmations into a non-mixed radix
@@ -158,6 +160,12 @@ class Schema:
 		assert self.data is not None
 		assert index in self.data["indexbound"]
 		return self.data["indexbound"][index]
+
+	def make_radix_map(self, *indices):
+		"""
+		Makes an array of upper bounds using the indices provided
+		"""
+		return (self.get_index_bound(i) for i in indices)
 
 	def set_var_indices(self, var, *indices):
 		assert self.data is not None
