@@ -120,5 +120,4 @@ class LinsolvPlanner:
 		return stub
 
 	def solve(self):
-		return scipy.optimize.linprog(c=self.obj, bounds=self.bnd, A_eq=self.eq_lhs, b_eq=self.eq_rhs,
-			method="revised simplex")
+		return scipy.optimize.linprog(c=self.obj, bounds=self.bnd, A_eq=self.eq_lhs, b_eq=self.eq_rhs)
