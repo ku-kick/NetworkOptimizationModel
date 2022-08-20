@@ -8,6 +8,7 @@ from dataclasses import dataclass
 import numpy as np
 import ut
 from generic import Log
+import scipy
 
 
 @dataclass
@@ -36,6 +37,7 @@ class LinsolvPlanner:
 		self.eq_lhs = self.__init_eq_lhs_matrix()
 		self.eq_rhs = self.__init_eq_rhs_matrix()
 		self.bnd = self.__init_bnd_matrix()
+		self.obj = self.__init_obj()
 
 	def validate(self):
 		"""
@@ -103,3 +105,20 @@ class LinsolvPlanner:
 				bnd[pos][1] = upper_bound
 
 		return bnd
+
+	def __init_obj(self):
+		alpha_g = -self.data_interface.get_plain("alpha_0")  # alpha_1 in the paper, inverted, because numpy can only solve minimization problems
+		alpha_z = self.data_interface.get_plain("alpha_1")  # alpha_2 in the paper, inverted, because numpy can only solve minimization problems
+		stub = np.ones(self.row_index.get_row_len())
+
+		for j, rho, l in ut.radix_cartesian_product(self.schema.make_radix_map("j", "rho", "l")):
+			pos_g = self.row_index.get_pos("g", j=j, rho=rho, l=l)
+			pos_z = self.row_index.get_pos("z", j=j, rho=rho, l=l)
+			stub[pos_g] = alpha_g
+			stub[pos_z] = alpha_z
+
+		return stub
+
+	def solve(self):
+		return scipy.optimize.linprog(c=self.obj, bounds=self.bnd, A_eq=self.eq_lhs, b_eq=self.eq_rhs,
+			method="revised simplex")
