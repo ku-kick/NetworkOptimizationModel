@@ -33,5 +33,10 @@ class TestLinsolvPlanner(unittest.TestCase):
 		self.assertTrue(len(ls_planner.eq_lhs) == len(ls_planner.eq_rhs))
 		self.assertTrue(len(ls_planner.bnd) == ls_planner.row_index.get_row_len())
 
+	def test_solve(self):
+		ls_planner = linsolv_planner.LinsolvPlanner(self.data_interface, self.schema)
+		res = ls_planner.solve()
+		print(cli.Format.numpy_result(res, self.schema))
+
 
 unittest.main()
