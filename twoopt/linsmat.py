@@ -165,7 +165,7 @@ class Schema:
 		"""
 		Makes an array of upper bounds using the indices provided
 		"""
-		return (self.get_index_bound(i) for i in indices)
+		return list(self.get_index_bound(i) for i in indices)
 
 	def get_max_dec_from_indices(self, *indices):
 		"""
