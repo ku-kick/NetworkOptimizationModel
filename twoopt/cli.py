@@ -1,4 +1,3 @@
-from tkinter import W
 import linsmat
 import argparse
 from dataclasses import dataclass
@@ -59,6 +58,28 @@ def _parse_arguments():
 	parser.add_argument("--output", type=str, default=ut.Datetime.format_time(ut.Datetime.today()) + ".csv")
 
 	return parser.parse_args()
+
+
+class Format:
+
+	@staticmethod
+	def iter_numpy_result(res, schema):
+
+		if res.success:
+			row_index = linsmat.RowIndex.make_from_schema(schema, ["x", "y", "z", "g"])
+
+			for var in ['x', 'y', 'g', 'z']:
+				for indices in ut.radix_cartesian_product(schema.get_var_radix(var)):
+					_, indices_map = schema.indices_plain_to_dict(var, *indices)
+					pos = row_index.get_pos(var, **indices_map)
+
+					yield ' '.join([var, str(indices_map), " = ", str(res.x[pos])])
+		else:
+			yield "Optimization failure"
+
+	@staticmethod
+	def numpy_result(res, schema):
+		return '\n'.join(Format.iter_numpy_result(res, schema))
 
 
 def _main():
