@@ -44,6 +44,7 @@ def generate_random(schema, psi_upper, phi_upper, v_upper, x_eq_upper, output):
 	for k, v in generator:
 		csv_data_provider.set_plain(*k, v)
 
+	csv_data_provider.set_plain("alpha_0", 1 - csv_data_provider.get_plain("alpha_1"))
 	csv_data_provider.sync()
 
 
