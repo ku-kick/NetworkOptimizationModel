@@ -1,0 +1,19 @@
+{
+	"indexbound": {
+		"i": 3,
+		"j": 3,
+		"rho": 2,
+		"l": 2
+	},
+	"variableindices": {
+		"x": ["j", "i", "rho", "l"],
+		"y": ["j", "rho", "l"],
+		"g": ["j", "rho", "l"],
+		"z": ["j", "rho", "l"],
+		"psi": ["j", "i", "rho", "l"],
+		"phi": ["j", "rho", "l"],
+		"v": ["j", "rho", "l"],
+		"x_eq": ["j", "rho", "l"],
+		"alpha_1": []
+	}
+}
