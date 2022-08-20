@@ -34,7 +34,16 @@ class RowIndex:
 	"""
 	indices: dict  # Format {"index1": RANGE, "index2": RANGE, ...}.
 	variables: dict  # Format {"variable1": [indices], "variable 2": indices, ...}
-	from_zero = True
+	from_zero: bool = True
+
+	@staticmethod
+	def make_from_schema(schema, variables, from_zero=True):
+		index_set = functools.reduce(lambda s, var: s.union(set(schema.get_var_indices(var))), variables, set())
+		indices_map = {i: schema.get_index_bound(i) for i in index_set}
+		variables_map = {var: schema.get_var_indices(var) for var in variables}
+		row_index = RowIndex(indices=indices_map, variables=variables_map, from_zero=from_zero)
+
+		return row_index
 
 	def _check_precedence(self, var_a, var_b):
 		"""
