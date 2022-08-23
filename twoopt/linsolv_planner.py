@@ -64,7 +64,8 @@ class LinsolvPlanner:
 
 		for i in range(self.schema.get_index_bound("i")):
 			if i != j:
-				stub[self.row_index.get_pos('x', i=i, j=j, rho=rho, l=l)] = 1
+				stub[self.row_index.get_pos('x', i=i, j=j, rho=rho, l=l)] = -1
+				stub[self.row_index.get_pos('x', i=j, j=i, rho=rho, l=l)] = 1
 
 		return stub
 
