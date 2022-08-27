@@ -29,10 +29,7 @@ class LinsolvPlanner:
 	_NEQ_VAR_ORDER_RHS = ["psi", "v", "phi"]
 
 	def __post_init__(self):
-		self.row_index = linsmat.RowIndex(
-			indices={i: self.schema.get_index_bound(i) for i in ["i", "j", "rho", "l"]},
-			variables={i: self.schema.get_var_indices(i) for i in ["x", "y", "g", "z"]}
-		)
+		self.row_index = linsmat.RowIndex.make_from_schema(self.schema, ["x", "y", "z", "g"])
 		self.validate()
 		self.eq_lhs = self.__init_eq_lhs_matrix()
 		self.eq_rhs = self.__init_eq_rhs_matrix()
