@@ -94,7 +94,7 @@ class LinsolvPlanner:
 				self.data_interface.get_plain("x_eq", *indices)
 
 				yield indices
-			except KeyError:
+			except AssertionError:
 				continue
 
 	def __init_eq_rhs_matrix(self):
