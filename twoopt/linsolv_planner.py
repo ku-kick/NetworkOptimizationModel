@@ -54,18 +54,29 @@ class LinsolvPlanner:
 		"""
 		Left side equality constraint, one row.
 		"""
+		log_context = (LinsolvPlanner, LinsolvPlanner.__make_eq_lhs_vector)
 		stub = np.zeros(self.row_index.get_row_len())
-		stub[self.row_index.get_pos('y', j=j, l=l, rho=rho)] = 1
-		stub[self.row_index.get_pos('z', j=j, l=l, rho=rho)] = 1
-		stub[self.row_index.get_pos('g', j=j, l=l, rho=rho)] = 1
+		y_pos = self.row_index.get_pos('y', j=j, l=l, rho=rho)
+		Log.debug(*log_context, "j l rho", j, l, rho, "y_pos", y_pos)
+		stub[y_pos] = 1
+		z_pos = self.row_index.get_pos('z', j=j, l=l, rho=rho)
+		stub[z_pos] = 1
+		Log.debug(*log_context, "j l rho", j, l, rho, "z_pos", z_pos)
+		g_pos = self.row_index.get_pos('g', j=j, l=l, rho=rho)
+		stub[g_pos] = 1
+		Log.debug(*log_context, "j l rho", j, l, rho, "g_pos", g_pos)
 
 		if l != 0:
 			stub[self.row_index.get_pos('y', j=j, l=l-1, rho=rho)] = 1
 
 		for i in range(self.schema.get_index_bound("i")):
 			if i != j:
+				x_pos = self.row_index.get_pos('x', i=i, j=j, rho=rho, l=l)
 				stub[self.row_index.get_pos('x', i=i, j=j, rho=rho, l=l)] = -1
-				stub[self.row_index.get_pos('x', i=j, j=i, rho=rho, l=l)] = 1
+				Log.debug(*log_context, "j i rho l", j, i, rho, l, "x_pos", x_pos)
+				x_pos = self.row_index.get_pos('x', i=j, j=i, rho=rho, l=l)
+				stub[x_pos] = 1
+				Log.debug(*log_context, "i j rho l", j, i, rho, l, "x_pos", x_pos)
 
 		return stub
 
@@ -87,6 +98,7 @@ class LinsolvPlanner:
 		radix_map = self.schema.get_var_radix("x_eq")
 		map_get_x_eq_from_data = map(lambda indices: self.data_interface.get_plain("x_eq", *indices),
 			ut.radix_cartesian_product(radix_map))
+		Log.debug(self.schema.get_var_indices("x_eq"), list(ut.radix_cartesian_product(radix_map)))
 		arr = np.array(list(map_get_x_eq_from_data))
 
 		return arr
@@ -104,6 +116,8 @@ class LinsolvPlanner:
 				pos = self.row_index.get_pos(var, **indices_dict)
 				upper_bound = self.data_interface.get_plain(bnd_var, *indices)
 				bnd[pos][1] = upper_bound
+				Log.debug(LinsolvPlanner, LinsolvPlanner.__init_bnd_matrix, "variable", var, "indices",
+					self.schema.get_var_indices(var), *indices, "bounds", bnd[pos], "pos", pos)
 
 		return bnd
 
