@@ -34,7 +34,6 @@ class TestLinsolvPlanner(unittest.TestCase):
 	def test_init(self):
 
 		ls_planner = linsolv_planner.LinsolvPlanner(self.data_interface, self.schema)
-		self.assertTrue(self.schema.get_max_dec_from_indices("j", "rho", "l") == len(ls_planner.eq_lhs))
 		self.assertTrue(any(map(lambda i: len(i) == ls_planner.row_index.get_row_len(), ls_planner.eq_lhs)))
 		self.assertTrue(len(ls_planner.eq_lhs) == len(ls_planner.eq_rhs))
 		self.assertTrue(len(ls_planner.bnd) == ls_planner.row_index.get_row_len())
@@ -48,6 +47,11 @@ class TestLinsolvPlanner(unittest.TestCase):
 		assert ["j", "rho", "l"] == ls_planner.schema.get_var_indices("x_eq")
 
 		for count, indices in enumerate(ut.radix_cartesian_product(ls_planner.schema.get_var_radix("x_eq"))):
+			try:
+				ls_planner.data_interface.get_plain("x_eq", *indices)
+			except AssertionError:
+				continue
+
 			j, rho, l = indices
 			sm = functools.reduce(lambda acc, i: acc + res_x[row_index.get_pos("x", j=i, i=j, l=l, rho=rho)]
 				- res_x[row_index.get_pos("x", j=j, i=i, l=l, rho=rho)], range(ls_planner.schema.get_index_bound("i")),
