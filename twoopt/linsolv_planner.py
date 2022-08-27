@@ -80,12 +80,16 @@ class LinsolvPlanner:
 		"""
 		Left side equality constraint, entire matrix.
 		"""
-		radix_map = self.schema.make_radix_map("j", "rho", "l")
 		make_vector = lambda j, rho, l: self.__make_eq_lhs_vector(j=j, l=l, rho=rho)
-		map_vectors = map(lambda i: make_vector(*i), ut.radix_cartesian_product(radix_map))
+		map_vectors = map(lambda i: make_vector(*i), self.__x_eq_constraint_indices_iter())
 		arr = np.array(list(map_vectors))
 
 		return arr
+
+	def __x_eq_constraint_indices_iter(self):
+		radix_map = self.schema.get_var_radix("x_eq")
+
+		return ut.radix_cartesian_product(radix_map)
 
 	def __init_eq_rhs_matrix(self):
 		"""
@@ -93,8 +97,8 @@ class LinsolvPlanner:
 		"""
 		radix_map = self.schema.get_var_radix("x_eq")
 		map_get_x_eq_from_data = map(lambda indices: self.data_interface.get_plain("x_eq", *indices),
-			ut.radix_cartesian_product(radix_map))
-		Log.debug(self.schema.get_var_indices("x_eq"), list(ut.radix_cartesian_product(radix_map)))
+			self.__x_eq_constraint_indices_iter())
+		Log.debug(self.schema.get_var_indices("x_eq"), list(self.__x_eq_constraint_indices_iter()))
 		arr = np.array(list(map_get_x_eq_from_data))
 
 		return arr
