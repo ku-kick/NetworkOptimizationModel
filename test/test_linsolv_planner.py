@@ -4,7 +4,10 @@ import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / 'twoopt'))
 from twoopt import cli, linsmat, ut, linsolv_planner
+import functools
 import os
+import math
+from generic import Log
 
 
 class TestLinsolvPlanner(unittest.TestCase):
@@ -37,6 +40,26 @@ class TestLinsolvPlanner(unittest.TestCase):
 		ls_planner = linsolv_planner.LinsolvPlanner(self.data_interface, self.schema)
 		res = ls_planner.solve()
 		print(cli.Format.numpy_result(res, self.schema))
+		res_x = res.x
+		row_index = ls_planner.row_index
+		assert ["j", "rho", "l"] == ls_planner.schema.get_var_indices("x_eq")
+
+		for count, indices in enumerate(ut.radix_cartesian_product(ls_planner.schema.get_var_radix("x_eq"))):
+			j, rho, l = indices
+			sm = functools.reduce(lambda acc, i: acc + res_x[row_index.get_pos("x", j=i, i=j, l=l, rho=rho)]
+				- res_x[row_index.get_pos("x", j=j, i=i, l=l, rho=rho)], range(ls_planner.schema.get_index_bound("i")),
+				0)
+			sm += res_x[row_index.get_pos("y", j=j, rho=rho, l=l)]
+
+			if l > 0:
+				sm -= res_x[row_index.get_pos("y", j=j, rho=rho, l=l-1)]
+
+			sm += res_x[row_index.get_pos("z", j=j, rho=rho, l=l)]
+			sm += res_x[row_index.get_pos("g", j=j, rho=rho, l=l)]
+			x_eq = ls_planner.eq_rhs[count]
+			Log.debug("x_eq", x_eq)
+			Log.debug("sm", sm)
+			self.assertTrue(math.isclose(sm, x_eq, abs_tol=.001))
 
 
 unittest.main()
