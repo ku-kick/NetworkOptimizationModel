@@ -50,21 +50,19 @@ class LinsolvPlanner:
 			Log.debug(LinsolvPlanner, LinsolvPlanner.validate, "var", var, self.schema.get_var_indices(var))
 			assert list(self.schema.get_var_indices(var)) == ["j", "rho", "l"]
 
-	def __make_eq_lhs_vector(self, j, l, rho):
+	def __make_eq_lhs_vector(self, j, rho, l):
 		"""
 		Left side equality constraint, one row.
 		"""
-		log_context = (LinsolvPlanner, LinsolvPlanner.__make_eq_lhs_vector)
+		log_context = (LinsolvPlanner.__make_eq_lhs_vector,)
+		Log.debug(*log_context, "j", "rho", "l", j, rho, l)
 		stub = np.zeros(self.row_index.get_row_len())
 		y_pos = self.row_index.get_pos('y', j=j, l=l, rho=rho)
-		Log.debug(*log_context, "j l rho", j, l, rho, "y_pos", y_pos)
 		stub[y_pos] = 1
 		z_pos = self.row_index.get_pos('z', j=j, l=l, rho=rho)
 		stub[z_pos] = 1
-		Log.debug(*log_context, "j l rho", j, l, rho, "z_pos", z_pos)
 		g_pos = self.row_index.get_pos('g', j=j, l=l, rho=rho)
 		stub[g_pos] = 1
-		Log.debug(*log_context, "j l rho", j, l, rho, "g_pos", g_pos)
 
 		if l != 0:
 			stub[self.row_index.get_pos('y', j=j, l=l-1, rho=rho)] = -1
@@ -73,10 +71,8 @@ class LinsolvPlanner:
 			if i != j:
 				x_pos = self.row_index.get_pos('x', i=i, j=j, rho=rho, l=l)
 				stub[self.row_index.get_pos('x', i=i, j=j, rho=rho, l=l)] = -1
-				Log.debug(*log_context, "j i rho l", j, i, rho, l, "x_pos", x_pos)
 				x_pos = self.row_index.get_pos('x', i=j, j=i, rho=rho, l=l)
 				stub[x_pos] = 1
-				Log.debug(*log_context, "i j rho l", j, i, rho, l, "x_pos", x_pos)
 
 		return stub
 
@@ -85,7 +81,7 @@ class LinsolvPlanner:
 		Left side equality constraint, entire matrix.
 		"""
 		radix_map = self.schema.make_radix_map("j", "rho", "l")
-		make_vector = lambda j, l, rho: self.__make_eq_lhs_vector(j=j, l=l, rho=rho)
+		make_vector = lambda j, rho, l: self.__make_eq_lhs_vector(j=j, l=l, rho=rho)
 		map_vectors = map(lambda i: make_vector(*i), ut.radix_cartesian_product(radix_map))
 		arr = np.array(list(map_vectors))
 
