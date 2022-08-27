@@ -61,7 +61,7 @@ class Log:
 			return arg.__name__
 
 		def format_callable(arg):
-			return arg.__name__ + "()"
+			return str(a).split()[1] + "()"
 
 		for a in args:
 			if is_path(a):
