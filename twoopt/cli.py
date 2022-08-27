@@ -3,6 +3,7 @@ import argparse
 from dataclasses import dataclass
 import ut
 import random
+from generic import Log
 
 
 @dataclass
