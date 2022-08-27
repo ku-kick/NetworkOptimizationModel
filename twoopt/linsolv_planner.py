@@ -67,7 +67,7 @@ class LinsolvPlanner:
 		Log.debug(*log_context, "j l rho", j, l, rho, "g_pos", g_pos)
 
 		if l != 0:
-			stub[self.row_index.get_pos('y', j=j, l=l-1, rho=rho)] = 1
+			stub[self.row_index.get_pos('y', j=j, l=l-1, rho=rho)] = -1
 
 		for i in range(self.schema.get_index_bound("i")):
 			if i != j:
