@@ -89,7 +89,13 @@ class LinsolvPlanner:
 	def __x_eq_constraint_indices_iter(self):
 		radix_map = self.schema.get_var_radix("x_eq")
 
-		return ut.radix_cartesian_product(radix_map)
+		for indices in ut.radix_cartesian_product(radix_map):
+			try:
+				self.data_interface.get_plain("x_eq", *indices)
+
+				yield indices
+			except KeyError:
+				continue
 
 	def __init_eq_rhs_matrix(self):
 		"""
