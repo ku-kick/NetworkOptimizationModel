@@ -41,9 +41,11 @@ class TestLinsolvPlanner(unittest.TestCase):
 	def test_solve(self):
 		ls_planner = linsolv_planner.LinsolvPlanner(self.data_interface, self.schema)
 		res = ls_planner.solve()
-		print(cli.Format.numpy_result(res, self.schema))
+		Log.debug(cli.Format.numpy_result(res, ls_planner.schema))
 		res_x = res.x
+		Log.debug(TestLinsolvPlanner.test_solve, "res_x\n", res_x)
 		row_index = ls_planner.row_index
+		Log.debug(row_index.get_pos('z', j=0, rho=0, l=0))
 		assert ["j", "rho", "l"] == ls_planner.schema.get_var_indices("x_eq")
 
 		for count, indices in enumerate(ut.radix_cartesian_product(ls_planner.schema.get_var_radix("x_eq"))):
