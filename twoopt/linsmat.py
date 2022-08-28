@@ -118,6 +118,13 @@ class RowIndex:
 					self.radix_mult_vectors[v][i] = self.radix_maps[v][i + 1] * self.radix_mult_vectors[v][i + 1]
 
 
+def arr_set(arr, rowindex, val, var, **indices):
+	pos = rowindex.get_pos(var, **indices)
+	arr[pos] = val
+
+	return arr
+
+
 @dataclass
 class Schema:
 	"""

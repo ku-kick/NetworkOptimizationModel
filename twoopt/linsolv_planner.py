@@ -57,7 +57,7 @@ class LinsolvPlanner:
 		y_pos = self.row_index.get_pos('y', j=j, l=l, rho=rho)
 		stub[y_pos] = 1
 		z_pos = self.row_index.get_pos('z', j=j, l=l, rho=rho)
-		stub[z_pos] = 1
+		stub[z_pos] = -1
 		g_pos = self.row_index.get_pos('g', j=j, l=l, rho=rho)
 		stub[g_pos] = 1
 
@@ -139,3 +139,47 @@ class LinsolvPlanner:
 
 	def solve(self):
 		return scipy.optimize.linprog(c=self.obj, bounds=self.bnd, A_eq=self.eq_lhs, b_eq=self.eq_rhs)
+
+
+class InfluxConstraintLp(LinsolvPlanner):
+	"""
+	Differs from `LinsolvPlanner` in that it explicitly states the fact that information influx precedes any other
+	operation
+
+	Equation:
+
+	\sum_{o=0}^{l}{g_{j \rho o}}
+		+ y_{j \rho l} - y_{j rho 0}
+		+ \sum_{o=0}^{l}{z_{j \rho o}}
+		- \sum_{o=0}^{l}{\sum_{i}{x_{i j \rho o}}}
+		<= 0
+	"""
+	def __post_init__(self):
+		LinsolvPlanner.__post_init__(self)
+		self.ge_lhs, self.ge_rhs = self.__init_ge()
+
+	def __init_ge_iter(self):
+		for j, rho, l_bound in range(self.schema.get_radix_map('g')):  # j, rho, l
+			arr = [0 for _ in range(self.row_index.get_row_len())]
+			arr = linsmat.arr_set(arr, self.row_index, 1, 'y', j=j, rho=rho, l=l_bound)
+			arr = linsmat.arr_set(arr, self.row_index, -1, 'y', j=j, rho=rho, l=0)
+
+			for l in range(l_bound):
+				arr = linsmat.arr_set(arr, self.row_index, 1, 'g', j=j, rho=rho, l=l)
+				arr = linsmat.arr_set(arr, self.row_index, 1, 'z', j=j, rho=rho, l=l)
+
+				for i in range(self.row_index.get_index_bound('j')):
+					arr = linsmat.arr_set(arr, self.row_index, -1, 'x', j=i, i=j, rho=rho, l=l)
+
+			yield (arr, 0)
+
+	def __init_ge(self):
+		lhs = []
+		rhs = []
+
+		for l, r in self.__init_ge_iter():
+			lhs.append(l)
+			rhs.append(r)
+
+	def solve(self):
+		pass
