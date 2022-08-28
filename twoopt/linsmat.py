@@ -210,6 +210,20 @@ class Schema:
 
 		return list(map(lambda i: self.data["indexbound"][i], self.data["variableindices"][var]))
 
+	get_radix_map = get_var_radix
+
+	def radix_map_iter(self, *indices):
+		Log.debug(Schema.radix_map_iter, indices)
+		radix_map = self.make_radix_map(*indices)
+
+		for ind in ut.radix_cartesian_product(radix_map):
+			yield ind
+
+	def radix_map_iter_var(self, var):
+		indices = self.get_var_indices(var)
+		Log.debug(Schema.radix_map_iter_var, "indices", indices)
+		yield from self.radix_map_iter(*indices)
+
 	def indices_dict_to_plain(self, variable, **indices):
 		"""
 		[VARAIBLE, {"index1": INDEX1, "index2": INDEX2}] -> [VARIABLE, INDEX1, INDEX2]
