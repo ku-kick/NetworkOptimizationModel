@@ -8,6 +8,7 @@ import functools
 import os
 import math
 from generic import Log
+import logging
 
 
 class TestLinsolvPlanner(unittest.TestCase):
@@ -19,6 +20,8 @@ class TestLinsolvPlanner(unittest.TestCase):
 		phi_upper = 10
 		v_upper = 10
 		x_eq_upper = 10
+
+		Log.set_level(logging.INFO)
 
 		if not os.path.exists(TestLinsolvPlanner.DATA_FILE_CSV):
 			cli.generate_random(TestLinsolvPlanner.SCHEMA_FILE_JSON, psi_upper, phi_upper, v_upper, x_eq_upper,
@@ -76,6 +79,8 @@ class TestInfluxConstraintLp(unittest.TestCase):
 		phi_upper = 10
 		v_upper = 10
 		x_eq_upper = 10
+
+		Log.set_level(logging.DEBUG)
 
 		if not os.path.exists(TestLinsolvPlanner.DATA_FILE_CSV):
 			cli.generate_random(TestLinsolvPlanner.SCHEMA_FILE_JSON, psi_upper, phi_upper, v_upper, x_eq_upper,
