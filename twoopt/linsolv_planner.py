@@ -156,7 +156,7 @@ class InfluxConstraintLp(LinsolvPlanner):
 	"""
 	def __post_init__(self):
 		LinsolvPlanner.__post_init__(self)
-		self.ge_lhs, self.ge_rhs = self.__init_ge()
+		self.le_lhs, self.le_rhs = self.__init_ge()
 
 	def __init_ge_iter(self):
 		for j, rho, l_bound in range(self.schema.get_radix_map('g')):  # j, rho, l
@@ -183,4 +183,4 @@ class InfluxConstraintLp(LinsolvPlanner):
 
 	def solve(self):
 		return scipy.optimize.linprog(c=self.obj, bounds=self.bnd, A_eq=self.eq_lhs,
-			b_eq=self.eq_rhs, A_ub=self.ge_lhs, b_ub=self.ge_rhs)
+			b_eq=self.eq_rhs, A_ub=self.le_lhs, b_ub=self.le_rhs)
