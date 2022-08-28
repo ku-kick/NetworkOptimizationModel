@@ -12,6 +12,10 @@ logging.basicConfig(level=logging.DEBUG, format="%(levelname)s - %(message)s")
 class Log:
 
 	@staticmethod
+	def set_level(level):
+		logging.getLogger().setLevel(level)
+
+	@staticmethod
 	def info(*args, **kwargs):
 		return logging.info(Log.format(*args, **kwargs))
 
