@@ -70,4 +70,25 @@ class TestLinsolvPlanner(unittest.TestCase):
 			self.assertTrue(math.isclose(sm, x_eq, abs_tol=.001))
 
 
+class TestInfluxConstraintLp(unittest.TestCase):
+	def setUp(self) -> None:
+		psi_upper = 10
+		phi_upper = 10
+		v_upper = 10
+		x_eq_upper = 10
+
+		if not os.path.exists(TestLinsolvPlanner.DATA_FILE_CSV):
+			cli.generate_random(TestLinsolvPlanner.SCHEMA_FILE_JSON, psi_upper, phi_upper, v_upper, x_eq_upper,
+				TestLinsolvPlanner.DATA_FILE_CSV)
+
+		self.data_provider = linsmat.PermissiveCsvBufferedDataProvider(csv_file_name=TestLinsolvPlanner.DATA_FILE_CSV)
+		self.schema = linsmat.Schema(filename=TestLinsolvPlanner.SCHEMA_FILE_JSON)
+		self.data_interface = linsmat.DataInterface(self.data_provider, self.schema)
+
+	def test_solve(self):
+		planner = linsolv_planner.InfluxConstraintLp(data_interface=self.data_interface, schema=self.schema)
+		res = planner.solve()
+		Log.debug(cli.Format.numpy_result(res, planner.schema))
+
+
 unittest.main()
