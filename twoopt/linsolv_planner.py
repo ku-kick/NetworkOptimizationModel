@@ -119,8 +119,6 @@ class LinsolvPlanner:
 				pos = self.row_index.get_pos(var, **indices_dict)
 				upper_bound = self.data_interface.get_plain(bnd_var, *indices)
 				bnd[pos][1] = upper_bound
-				Log.debug(LinsolvPlanner, LinsolvPlanner.__init_bnd_matrix, "variable", var, "indices",
-					self.schema.get_var_indices(var), *indices, "bounds", bnd[pos], "pos", pos)
 
 		return bnd
 
@@ -159,19 +157,21 @@ class InfluxConstraintLp(LinsolvPlanner):
 		self.le_lhs, self.le_rhs = self.__init_ge()
 
 	def __init_ge_iter(self):
-		for j, rho, l_bound in range(self.schema.get_radix_map('g')):  # j, rho, l
+		for j, rho, l_bound in self.schema.radix_map_iter_var('g'):  # j, rho, l
+			Log.debug(InfluxConstraintLp.__init_ge_iter, "j rho l_bound", j, rho, l_bound)
 			arr = [0 for _ in range(self.row_index.get_row_len())]
 			arr = linsmat.arr_set(arr, self.row_index, 1, 'y', j=j, rho=rho, l=l_bound)
 			arr = linsmat.arr_set(arr, self.row_index, -1, 'y', j=j, rho=rho, l=0)
 
-			for l in range(l_bound):
+			for l in range(l_bound + 1):
 				arr = linsmat.arr_set(arr, self.row_index, 1, 'g', j=j, rho=rho, l=l)
 				arr = linsmat.arr_set(arr, self.row_index, 1, 'z', j=j, rho=rho, l=l)
 
-				for i in range(self.row_index.get_index_bound('j')):
+				for i in range(self.schema.get_index_bound('j')):
 					arr = linsmat.arr_set(arr, self.row_index, -1, 'x', j=i, i=j, rho=rho, l=l)
 
-			yield (arr, 0)
+			Log.debug(InfluxConstraintLp.__init_ge_iter, "arr", arr)
+			yield arr, 0
 
 	def __init_ge(self):
 		lhs = []
