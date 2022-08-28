@@ -181,6 +181,8 @@ class InfluxConstraintLp(LinsolvPlanner):
 			lhs.append(l)
 			rhs.append(r)
 
+		return lhs, rhs
+
 	def solve(self):
 		return scipy.optimize.linprog(c=self.obj, bounds=self.bnd, A_eq=self.eq_lhs,
 			b_eq=self.eq_rhs, A_ub=self.le_lhs, b_ub=self.le_rhs)
