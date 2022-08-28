@@ -154,11 +154,11 @@ class InfluxConstraintLp(LinsolvPlanner):
 	"""
 	def __post_init__(self):
 		LinsolvPlanner.__post_init__(self)
-		self.le_lhs, self.le_rhs = self.__init_ge()
+		self.le_lhs, self.le_rhs = self.__init_le()
 
-	def __init_ge_iter(self):
+	def __init_le_iter(self):
 		for j, rho, l_bound in self.schema.radix_map_iter_var('g'):  # j, rho, l
-			Log.debug(InfluxConstraintLp.__init_ge_iter, "j rho l_bound", j, rho, l_bound)
+			Log.debug(InfluxConstraintLp.__init_le_iter, "j rho l_bound", j, rho, l_bound)
 			arr = [0 for _ in range(self.row_index.get_row_len())]
 			arr = linsmat.arr_set(arr, self.row_index, 1, 'y', j=j, rho=rho, l=l_bound)
 			arr = linsmat.arr_set(arr, self.row_index, -1, 'y', j=j, rho=rho, l=0)
@@ -170,14 +170,14 @@ class InfluxConstraintLp(LinsolvPlanner):
 				for i in range(self.schema.get_index_bound('j')):
 					arr = linsmat.arr_set(arr, self.row_index, -1, 'x', j=i, i=j, rho=rho, l=l)
 
-			Log.debug(InfluxConstraintLp.__init_ge_iter, "arr", arr)
+			Log.debug(InfluxConstraintLp.__init_le_iter, "arr", arr)
 			yield arr, 0
 
-	def __init_ge(self):
+	def __init_le(self):
 		lhs = []
 		rhs = []
 
-		for l, r in self.__init_ge_iter():
+		for l, r in self.__init_le_iter():
 			lhs.append(l)
 			rhs.append(r)
 
