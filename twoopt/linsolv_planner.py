@@ -57,7 +57,7 @@ class LinsolvPlanner:
 		y_pos = self.row_index.get_pos('y', j=j, l=l, rho=rho)
 		stub[y_pos] = 1
 		z_pos = self.row_index.get_pos('z', j=j, l=l, rho=rho)
-		stub[z_pos] = -1
+		stub[z_pos] = 1
 		g_pos = self.row_index.get_pos('g', j=j, l=l, rho=rho)
 		stub[g_pos] = 1
 
