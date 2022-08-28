@@ -96,7 +96,8 @@ class TestInfluxConstraintLp(unittest.TestCase):
 	def test_solve(self):
 		planner = linsolv_planner.InfluxConstraintLp(data_interface=self.data_interface, schema=self.schema)
 		res = planner.solve()
-		Log.debug(cli.Format.numpy_result(res, planner.schema))
+		Log.info(TestInfluxConstraintLp.test_solve, res.x)
+		Log.info(TestInfluxConstraintLp.test_solve, cli.Format.numpy_result(res, planner.schema))
 
 
 unittest.main()
