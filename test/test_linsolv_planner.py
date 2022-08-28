@@ -21,7 +21,7 @@ class TestLinsolvPlanner(unittest.TestCase):
 		v_upper = 10
 		x_eq_upper = 10
 
-		Log.set_level(logging.INFO)
+		Log.set_level(logging.DEBUG)
 
 		if not os.path.exists(TestLinsolvPlanner.DATA_FILE_CSV):
 			cli.generate_random(TestLinsolvPlanner.SCHEMA_FILE_JSON, psi_upper, phi_upper, v_upper, x_eq_upper,
@@ -46,6 +46,9 @@ class TestLinsolvPlanner(unittest.TestCase):
 		res = ls_planner.solve()
 		Log.debug(cli.Format.numpy_result(res, ls_planner.schema))
 		res_x = res.x
+
+		self.assertTrue(res_x is not None)
+
 		Log.debug(TestLinsolvPlanner.test_solve, "res_x\n", res_x)
 		row_index = ls_planner.row_index
 		Log.debug(row_index.get_pos('z', j=0, rho=0, l=0))
