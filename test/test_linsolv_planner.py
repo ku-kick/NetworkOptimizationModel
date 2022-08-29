@@ -62,8 +62,8 @@ class TestLinsolvPlanner(unittest.TestCase):
 				continue
 
 			j, rho, l = indices
-			sm = functools.reduce(lambda acc, i: acc + res_x[row_index.get_pos("x", j=i, i=j, l=l, rho=rho)]
-				- res_x[row_index.get_pos("x", j=j, i=i, l=l, rho=rho)], range(ls_planner.schema.get_index_bound("i")),
+			sm = functools.reduce(lambda acc, i: acc - res_x[row_index.get_pos("x", j=i, i=j, l=l, rho=rho)]
+				+ res_x[row_index.get_pos("x", j=j, i=i, l=l, rho=rho)], range(ls_planner.schema.get_index_bound("i")),
 				0)
 			sm += res_x[row_index.get_pos("y", j=j, rho=rho, l=l)]
 
@@ -112,8 +112,8 @@ class TestInfluxConstraintLp(unittest.TestCase):
 				continue
 
 			j, rho, l = indices
-			sm = functools.reduce(lambda acc, i: acc + res_x[row_index.get_pos("x", j=i, i=j, l=l, rho=rho)]
-				- res_x[row_index.get_pos("x", j=j, i=i, l=l, rho=rho)], range(planner.schema.get_index_bound("i")),
+			sm = functools.reduce(lambda acc, i: acc - res_x[row_index.get_pos("x", j=i, i=j, l=l, rho=rho)]
+				+ res_x[row_index.get_pos("x", j=j, i=i, l=l, rho=rho)], range(planner.schema.get_index_bound("i")),
 				0)
 			sm += res_x[row_index.get_pos("y", j=j, rho=rho, l=l)]
 
