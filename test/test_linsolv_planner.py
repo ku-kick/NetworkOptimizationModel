@@ -54,7 +54,8 @@ class TestLinsolvPlanner(unittest.TestCase):
 		Log.debug(row_index.get_pos('z', j=0, rho=0, l=0))
 		assert ["j", "rho", "l"] == ls_planner.schema.get_var_indices("x_eq")
 
-		for count, indices in enumerate(ut.radix_cartesian_product(ls_planner.schema.get_var_radix("x_eq"))):
+		count = 0
+		for indices in ut.radix_cartesian_product(ls_planner.schema.get_var_radix("x_eq")):
 			try:
 				ls_planner.data_interface.get_plain("x_eq", *indices)
 			except AssertionError:
@@ -74,6 +75,7 @@ class TestLinsolvPlanner(unittest.TestCase):
 			x_eq = ls_planner.eq_rhs[count]
 			Log.debug("indices", j, rho, l, "x_eq", x_eq, "sm", sm)
 			self.assertTrue(math.isclose(sm, x_eq, abs_tol=.001))
+			count += 1
 
 
 class TestInfluxConstraintLp(unittest.TestCase):
@@ -98,6 +100,32 @@ class TestInfluxConstraintLp(unittest.TestCase):
 		res = planner.solve()
 		Log.info(TestInfluxConstraintLp.test_solve, res.x)
 		Log.info(TestInfluxConstraintLp.test_solve, cli.Format.numpy_result(res, planner.schema))
+		res_x = res.x
+		row_index = planner.row_index
+		count = 0
+
+		for indices in ut.radix_cartesian_product(planner.schema.get_var_radix("x_eq")):
+			Log.debug(TestInfluxConstraintLp.test_solve, "indices", indices)
+			try:
+				planner.data_interface.get_plain("x_eq", *indices)
+			except AssertionError:
+				continue
+
+			j, rho, l = indices
+			sm = functools.reduce(lambda acc, i: acc + res_x[row_index.get_pos("x", j=i, i=j, l=l, rho=rho)]
+				- res_x[row_index.get_pos("x", j=j, i=i, l=l, rho=rho)], range(planner.schema.get_index_bound("i")),
+				0)
+			sm += res_x[row_index.get_pos("y", j=j, rho=rho, l=l)]
+
+			if l > 0:
+				sm -= res_x[row_index.get_pos("y", j=j, rho=rho, l=l-1)]
+
+			sm += res_x[row_index.get_pos("z", j=j, rho=rho, l=l)]
+			sm += res_x[row_index.get_pos("g", j=j, rho=rho, l=l)]
+			x_eq = planner.eq_rhs[count]
+			Log.debug("indices", j, rho, l, "x_eq", x_eq, "sm", sm)
+			self.assertTrue(math.isclose(sm, x_eq, abs_tol=.001))
+			count += 1
 
 
 unittest.main()
