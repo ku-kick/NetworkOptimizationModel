@@ -78,7 +78,7 @@ class TestLinsolvPlanner(unittest.TestCase):
 			count += 1
 
 
-class TestInfluxConstraintLp(unittest.TestCase):
+class TestInfluxConstraintLp:
 	def setUp(self) -> None:
 		psi_upper = 10
 		phi_upper = 10
