@@ -26,6 +26,10 @@ def file_create_if_not_exists(filename):
 			pass
 
 
+def clamp(val, vmin, vmax):
+	return max(min(val, vmax), vmin)
+
+
 class Datetime:
 	DATE_FORMAT = "%Y-%m-%d"
 	TIME_FORMAT = "%Y%m%d%H%M"
