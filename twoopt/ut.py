@@ -26,7 +26,7 @@ def file_create_if_not_exists(filename):
 			pass
 
 
-def clamp(val, vmin, vmax):
+def clamp(val, vmin=-float("inf"), vmax=float("inf")):
 	return max(min(val, vmax), vmin)
 
 
