@@ -3,12 +3,10 @@
 
 import pathlib
 import sys
-import simpy
 from dataclasses import dataclass
 import random
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))  # We need files from "src/", that's how we access them
 import ut
-import math
 
 
 @dataclass
@@ -16,7 +14,6 @@ class SimEnv:
 	row_index: object
 	schema: object
 	data_interface: object
-	env: simpy.Environment
 
 	def l(self):
 		"""
