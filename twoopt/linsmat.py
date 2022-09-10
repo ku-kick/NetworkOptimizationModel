@@ -224,6 +224,10 @@ class Schema:
 		Log.debug(Schema.radix_map_iter_var, "indices", indices)
 		yield from self.radix_map_iter(*indices)
 
+	def radix_map_iter_var_dict(self, var):
+		for ind in self.radix_map_iter_var(var):
+			yield self.indices_plain_to_dict(var, *ind)
+
 	def indices_dict_to_plain(self, variable, **indices):
 		"""
 		[VARAIBLE, {"index1": INDEX1, "index2": INDEX2}] -> [VARIABLE, INDEX1, INDEX2]
