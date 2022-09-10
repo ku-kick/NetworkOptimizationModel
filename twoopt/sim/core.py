@@ -190,7 +190,7 @@ class ProcessOp(Op):
 
 
 class DropOp(Op):
-	def on_tick_after(self):
+	def on_tick(self):
 		amount = self.op_state.input_container.amount
 		self.op_state.process(amount)
 
@@ -203,8 +203,3 @@ class GeneratorOp(Op):
 	def on_tick_before(self):
 		amount = self.amount_max_available()
 		self.op_state.process(amount)
-
-
-class Simulation(SimEnv):
-
-	def setup(self):
