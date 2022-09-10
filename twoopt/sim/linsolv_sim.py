@@ -27,10 +27,18 @@ class SimEnv:
 
 @dataclass
 class OpIdentity:
+	"""
+	Stores info or how the op. is addressed.
+	"""
 	indices: dict
 	var_amount_planned: str  # The amount to be processed as per the plan
 	var_intensity: str  # Physical limitations
 	var_intensity_fraction: str  # The fraction of performance dedicated to the virtualized environment
+	var_amount_processed: str
+	indices_amount_planned: object
+	indices_intensity: object
+	indices_intensity_fraction: object
+	indices_amount_processed: object
 
 
 @dataclass
@@ -42,6 +50,7 @@ class Container:
 class OpState:
 	input_container: Container  # "o(t)" in the paper, the amount that a node should process during that tick
 	processed_container: Container  # x^, y^, z^, g^ in the paper
+	output_container: Container = None
 
 	# TODO: register statistic on structural stability interval change
 
@@ -50,15 +59,8 @@ class OpState:
 		self.input_container.amount -= diff
 		self.processed_container += diff
 
-
-class TransferOpState(OpState):
-	def __init__(self, output_container: Container, *args, **kwargs):
-		OpState.__init__(*args, **kwargs)
-		self.output_container = output_container
-
-	def process(self, diff):
-		OpState.process(self, diff)
-		self.output_container += diff
+		if self.output_container is not None:
+			self.output_container += diff
 
 
 @dataclass
@@ -67,13 +69,17 @@ class Op:
 	op_identity: OpIdentity
 	op_state: OpState
 
+	def var_value_get(self, var_name, index_names):
+		return self.sim_env.data_interface.get(var_name, {i: self.op_identity.indices[i] for i in index_names})
+
 	# TODO: update l
 
 	def set_l(self, val):
 		"""
 		Some external manager will update the structural stability interval
 		"""
-		self.op_identity.indices["l"] = val
+		pass
+		#TODO
 
 	def on_tick_before(self):
 		"""
@@ -91,12 +97,15 @@ class Op:
 		pass
 
 	def intensity(self):
-		self.sim_env.data_interface.get(self.op_identity.var_intensity)
+		"""
+		Wrapper over data interface
+		"""
+		return self.var_value_get(self.op_identity.var_intensity, self.op_identity.indices_intensity)
 
 	intensity_neg = intensity  # Disk read / write speed. Expected to return an absolute value
 
 	def intensity_fraction(self):
-		self.sim_env.data_interface.get(self.op_identity.var_intensity_fraction)
+		return self.var_value_get(self.op_identity.var_intensity_fraction, self.op_identity.indices_intensity_fraction)
 
 	intensity_fraction_neg = intensity_fraction
 
@@ -111,8 +120,7 @@ class Op:
 	noise_neg = noise
 
 	def amount_planned(self):
-		#TODO: impl
-		pass
+		return self.var_value_get(self.op_identity.var_amount_planned, self.op_identity.indices_amount_planned)
 
 	def amount_max_available(self):
 		"""
@@ -185,3 +193,18 @@ class DropOp(Op):
 	def on_tick_after(self):
 		amount = self.op_state.input_container.amount
 		self.op_state.process(amount)
+
+
+class GeneratorOp(Op):
+	"""
+	Some nodes receive input information from outside. GeneratorOp models this process.
+	"""
+
+	def on_tick_before(self):
+		amount = self.amount_max_available()
+		self.op_state.process(amount)
+
+
+class Simulation(SimEnv):
+
+	def setup(self):
