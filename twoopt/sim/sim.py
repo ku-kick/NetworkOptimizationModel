@@ -1,3 +1,5 @@
+#TODO dt()
+
 """A particular implementation of a simulation variant. It is expected to be aware of the set of variables being
 used, so the structures of Schema, Simulation, and the linear programming solver must be in agreement.
 
@@ -6,10 +8,12 @@ hard-coded variable names), it should be implemented here.
 """
 
 import pathlib
+import random
 import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 import sim
 import linsmat
+import functools
 
 
 class GeneratorOp(sim.core.Op):
@@ -65,6 +69,69 @@ class Simulation(sim.core.SimEnv):
 		m = self.data_interface.get("m_psi", j=j, i=i, rho=rho, l=l)
 
 		return psi > 0 and mm > 0 and x > 0 and m > 0
+
+	def l(self, now):
+		sum = 0
+
+		for l in range(self.schema.get_index_bound("l")):
+			sum += self.data_interface.get("tl", l)
+
+			if now < sum:
+				return l
+
+	def duration(self):
+		return sum(map(lambda l: self.data_interface.get("tl", l=l), range(self.schema.get_index_bound("l"))))
+
+	def run(self):
+		prev_l = 0
+
+		for t in range(self.duration()):
+			l = self.l(t)
+
+			for op in self.generator_ops.values():
+				if op.op_identity.indices["l"] == l:
+					op.tick_before()
+
+			for op in random.shuffle(self.ops.values()):
+				if op.op_identity.var_amount_planned == "y":
+					if prev_l != l:
+						ind = op.op_identity.indices.copy()
+						ind["l"] = l - 1
+						# Keep the amount of processed info
+						op.op_state.processed_container.amount = self.ops[("y", self.schema.indices_dict_to_plain("y", **ind))].op_state.processed_container.amount
+
+				if op.op_identity.indices["l"] == l:
+					op.tick_before()
+
+			for op in self.drop_ops.values():
+				if op.op_identity.indices["l"] == l:
+					op.tick_before()
+
+			for op in self.generator_ops.values():
+				if op.op_identity.indices["l"] == l:
+					op.tick()
+
+			for op in random.shuffle(self.ops.values()):
+				if op.op_identity.indices["l"] == l:
+					op.tick()
+
+			for op in self.drop_ops.values():
+				if op.op_identity.indices["l"] == l:
+					op.tick()
+
+			for op in self.generator_ops.values():
+				if op.op_identity.indices["l"] == l:
+					op.tick_after()
+
+			for op in random.shuffle(self.ops.values()):
+				if op.op_identity.indices["l"] == l:
+					op.tick_after()
+
+			for drop in self.drop_ops.values():
+				if op.op_identity.indices["l"] == l:
+					op.tick_after()
+
+			prev_l = l
 
 	def __make_ops(self):
 		"""
