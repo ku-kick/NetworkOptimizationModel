@@ -145,7 +145,7 @@ class Schema:
 
 	Bounds are counted from 0 to N: [0; N)
 	"""
-	data: str = None
+	data: dict = None
 	filename: str = None
 
 	def __post_init__(self):
