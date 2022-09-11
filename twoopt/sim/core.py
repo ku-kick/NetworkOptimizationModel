@@ -7,12 +7,13 @@ from dataclasses import dataclass
 import random
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))  # We need files from "src/", that's how we access them
 import ut
+import linsmat
 
 
 @dataclass
 class SimEnv:
-	row_index: object
-	schema: object
+	row_index: linsmat.RowIndex
+	schema: linsmat.Schema
 	data_interface: object
 
 	def l(self):
@@ -141,14 +142,6 @@ class Op:
 
 class TransferOp(Op):
 
-	def __init__(self, i, output_container: Container, *args, **kwargs):
-		"""
-		:param i: "i" index
-		:param output_container: Connected node
-		:param args: See `Op`
-		:param kwargs: See `Op`
-		"""
-
 	def on_tick(self):
 		amount = self.amount_max_available()
 		self.op_state.processed_container -= amount
@@ -190,16 +183,15 @@ class ProcessOp(Op):
 
 
 class DropOp(Op):
+	def intensity(self):
+		return float("inf")
+
+	def intensity_fraction(self):
+		return 1
+
+	def noise(self):
+		return 0
+
 	def on_tick(self):
 		amount = self.op_state.input_container.amount
-		self.op_state.process(amount)
-
-
-class GeneratorOp(Op):
-	"""
-	Some nodes receive input information from outside. GeneratorOp models this process.
-	"""
-
-	def on_tick_before(self):
-		amount = self.amount_max_available()
 		self.op_state.process(amount)
