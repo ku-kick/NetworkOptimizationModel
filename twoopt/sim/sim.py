@@ -1,4 +1,3 @@
-#TODO dt()
 
 """A particular implementation of a simulation variant. It is expected to be aware of the set of variables being
 used, so the structures of Schema, Simulation, and the linear programming solver must be in agreement.
@@ -92,6 +91,9 @@ class Simulation(sim.core.SimEnv):
 				if op.op_identity.indices["l"] == l:
 					op.tick_before()
 
+				if prev_l != l:
+					op.register_processed()
+
 			for op in random.shuffle(self.ops.values()):
 				if op.op_identity.var_amount_planned == "y":
 					if prev_l != l:
@@ -100,12 +102,18 @@ class Simulation(sim.core.SimEnv):
 						# Keep the amount of processed info
 						op.op_state.processed_container.amount = self.ops[("y", self.schema.indices_dict_to_plain("y", **ind))].op_state.processed_container.amount
 
+				if prev_l != l:
+					op.register_processed()
+
 				if op.op_identity.indices["l"] == l:
 					op.tick_before()
 
 			for op in self.drop_ops.values():
 				if op.op_identity.indices["l"] == l:
 					op.tick_before()
+
+				if prev_l != l:
+					op.register_processed()
 
 			for op in self.generator_ops.values():
 				if op.op_identity.indices["l"] == l:
