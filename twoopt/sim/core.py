@@ -1,6 +1,3 @@
-# TODO: Input info, gradual
-# - Random generator??
-
 import pathlib
 import sys
 from dataclasses import dataclass
@@ -53,8 +50,6 @@ class OpState:
 	processed_container: Container  # x^, y^, z^, g^ in the paper
 	output_container: Container = None
 
-	# TODO: register statistic on structural stability interval change
-
 	def process(self, diff):
 		assert(diff <= self.input_container.amount)
 		self.input_container.amount -= diff
@@ -70,17 +65,12 @@ class Op:
 	op_identity: OpIdentity
 	op_state: OpState
 
+	def register_processed(self):
+		self.sim_env.data_interface.set(self.op_identity.var_amount_processed, self.op_state.processed_container,
+			**self.op_identity.indices)
+
 	def var_value_get(self, var_name, index_names):
 		return self.sim_env.data_interface.get(var_name, {i: self.op_identity.indices[i] for i in index_names})
-
-	# TODO: update l
-
-	def set_l(self, val):
-		"""
-		Some external manager will update the structural stability interval
-		"""
-		pass
-		#TODO
 
 	def on_tick_before(self):
 		"""
@@ -143,13 +133,12 @@ class Op:
 class TransferOp(Op):
 
 	def on_tick(self):
-		amount = self.amount_max_available()
-		self.op_state.processed_container -= amount
-		# TODO: Put into pending
+		self.amount = self.amount_max_available()
+		self.op_state.processed_container -= self.amount
 		# TODO: register processed
 
 	def on_tick_after(self):
-		# TODO: Put the info in the output node
+		self.op_state.output_container += self.amount
 
 
 class MemorizeOp(Op):
@@ -168,7 +157,7 @@ class MemorizeOp(Op):
 			self.op_state.process(self.amount)
 
 	def on_tick_after(self):
-		# TODO: What if it does not manage to process the excess during the structural stability span?
+		# XXX: What if it does not manage to process the excess during the structural stability span? (The heck with it then)
 		# Put the unprocessed info back into memory
 		if self.amount < 0:
 			self.amount = ut.clamp(self.amount, -self.op_state.input_container.amount, 0)
