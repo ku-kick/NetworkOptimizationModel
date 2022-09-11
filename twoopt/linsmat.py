@@ -330,9 +330,9 @@ class DataInterface:
 
 		return self.provider.get_plain(*plain)
 
-	def set(self, variable, **indices) -> float:
+	def set(self, variable, value, **indices) -> float:
 		plain = self.schema.indices_dict_to_plain(variable, **indices)
-		self.provider.set_plain(*plain)
+		self.provider.set_plain(*plain, value)
 
 	def __del__(self):
 		self.provider.sync()
