@@ -219,6 +219,10 @@ class Schema:
 		for ind in ut.radix_cartesian_product(radix_map):
 			yield ind
 
+	def radix_map_iter_dict(self, *indices):
+		for ind in self.radix_map_iter(*indices):
+			yield {k: v for k, v in zip(indices, ind)}
+
 	def radix_map_iter_var(self, var):
 		indices = self.get_var_indices(var)
 		Log.debug(Schema.radix_map_iter_var, "indices", indices)
