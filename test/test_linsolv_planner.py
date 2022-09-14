@@ -20,12 +20,26 @@ class TestLinsolvPlanner(unittest.TestCase):
 		phi_upper = 10
 		v_upper = 10
 		x_eq_upper = 10
+		tl_upper = 3000
+		mm_psi_upper = psi_upper / tl_upper
+		mm_phi_upper = phi_upper / tl_upper
+		mm_v_upper = v_upper / tl_upper
 
 		Log.set_level(logging.DEBUG)
 
 		if not os.path.exists(TestLinsolvPlanner.DATA_FILE_CSV):
-			cli.generate_random(TestLinsolvPlanner.SCHEMA_FILE_JSON, psi_upper, phi_upper, v_upper, x_eq_upper,
-				TestLinsolvPlanner.DATA_FILE_CSV)
+			cli.generate_random(
+				schema=TestLinsolvPlanner.SCHEMA_FILE_JSON,
+				psi_upper=psi_upper,
+				phi_upper=phi_upper,
+				v_upper=v_upper,
+				x_eq_upper=x_eq_upper,
+				mm_psi_upper=mm_psi_upper,
+				mm_phi_upper=mm_phi_upper,
+				mm_v_upper=mm_v_upper,
+				tl_upper=tl_upper,
+				output=self.DATA_FILE_CSV
+			)
 
 		self.data_provider = linsmat.PermissiveCsvBufferedDataProvider(csv_file_name=TestLinsolvPlanner.DATA_FILE_CSV)
 		self.schema = linsmat.Schema(filename=TestLinsolvPlanner.SCHEMA_FILE_JSON)
@@ -84,12 +98,26 @@ class TestInfluxConstraintLp:
 		phi_upper = 10
 		v_upper = 10
 		x_eq_upper = 10
+		tl_upper = 3000
+		mm_psi_upper = psi_upper / tl_upper
+		mm_phi_upper = phi_upper / tl_upper
+		mm_v_upper = v_upper / tl_upper
 
 		Log.set_level(logging.DEBUG)
 
 		if not os.path.exists(TestLinsolvPlanner.DATA_FILE_CSV):
-			cli.generate_random(TestLinsolvPlanner.SCHEMA_FILE_JSON, psi_upper, phi_upper, v_upper, x_eq_upper,
-				TestLinsolvPlanner.DATA_FILE_CSV)
+			cli.generate_random(
+				schema=TestLinsolvPlanner.SCHEMA_FILE_JSON,
+				psi_upper=psi_upper,
+				phi_upper=phi_upper,
+				v_upper=v_upper,
+				x_eq_upper=x_eq_upper,
+				mm_psi_upper=mm_psi_upper,
+				mm_phi_upper=mm_phi_upper,
+				mm_v_upper=mm_v_upper,
+				tl_upper=tl_upper,
+				output=self.DATA_FILE_CSV
+			)
 
 		self.data_provider = linsmat.PermissiveCsvBufferedDataProvider(csv_file_name=TestLinsolvPlanner.DATA_FILE_CSV)
 		self.schema = linsmat.Schema(filename=TestLinsolvPlanner.SCHEMA_FILE_JSON)
