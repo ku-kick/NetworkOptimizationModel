@@ -35,9 +35,11 @@ class RandomGenerator:
 		return next(self.iter_state)
 
 
-def generate_random(schema, psi_upper, phi_upper, v_upper, x_eq_upper, output):
-	generator = RandomGenerator(schema, ["psi", "v", "phi", "alpha_1", "x_eq"],
-		{"psi": psi_upper, "phi": phi_upper, "v": v_upper, "alpha_1": 1.0, "x_eq": x_eq_upper})
+def generate_random(schema, psi_upper, phi_upper, v_upper, x_eq_upper, mm_phi_upper, mm_v_upper, mm_psi_upper,
+		tl_upper, output):
+	generator = RandomGenerator(schema, ["psi", "v", "phi", "alpha_1", "x_eq", "mm_phi", "mm_v", "mm_psi", "tl"],
+		dict(psi=psi_upper, phi=phi_upper, v=v_upper, alpha_1=1.0, x_eq=x_eq_upper, mm_phi=mm_phi_upper,
+		mm_v=mm_v_upper, mm_psi=mm_psi_upper, tl=tl_upper))
 	ut.file_create_if_not_exists(output)
 	csv_data_provider = linsmat.PermissiveCsvBufferedDataProvider(output)
 
@@ -56,6 +58,10 @@ def _parse_arguments():
 	parser.add_argument("--phi-upper", type=float, help="Upper bound for phi (upper bound in a le-constraint)")
 	parser.add_argument("--v-upper", type=float, help="Upper bound for v (upper bound in a le-constraint)")
 	parser.add_argument("--x-eq-upper", type=float, help="Upper bound for x_jlrho (right side in an eq-constraint)")
+	parser.add_argument("--mm-psi-upper", type=float, help="Upper bound for max throughput"),
+	parser.add_argument("--mm_phi_upper", type=float, help="Upper bound for max performance"),
+	parser.add_argument("--mm-v-upper", type=float, help="Upper bound for memory read/write speed")
+	parser.add_argument("--tl-upper", type=float, help="Max duration of structural stability interval")
 	parser.add_argument("--output", type=str, default=ut.Datetime.format_time(ut.Datetime.today()) + ".csv")
 
 	return parser.parse_args()
@@ -88,6 +94,16 @@ def _main():
 
 	if args.generate_random:
 		generate_random(args.schema, args.psi_upper, args.phi_upper, args.v_upper, args.output)
+		generate_random(
+			schema=args.schema,
+			psi_upper=args.psi_upper,
+			phi_upper=args.phi_upper,
+			v_upper=args.v_upper,
+			mm_psi_upper=args.mm_v_upper,
+			mm_phi_upper=args.mm_phi_upper,
+			mm_v_upper=args.mm_v_upper,
+			output=args.output
+		)
 
 
 if __name__ == "__main__":
