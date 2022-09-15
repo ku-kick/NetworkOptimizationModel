@@ -1,3 +1,4 @@
+#TODO Simulation.Trace to keep the history of the last run
 
 """A particular implementation of a simulation variant. It is expected to be aware of the set of variables being
 used, so the structures of Schema, Simulation, and the linear programming solver must be in agreement.
