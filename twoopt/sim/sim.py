@@ -13,6 +13,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 import sim
 import linsmat
 import functools
+from dataclasses import dataclass, field
 
 
 class GeneratorOp(sim.core.Op):
@@ -36,11 +37,23 @@ class GeneratorOp(sim.core.Op):
 
 class Simulation(sim.core.SimEnv):
 
+	@dataclass
+	class Trace:
+		"""
+		Accumulated history of ticks
+		"""
+
+		state: dict = field(default_factory=dict)
+
+		def update(self, op):
+			pass
+
 	def __post_init__(self):
 		sim.core.SimEnv.__post_init__(self)
 		self.__make_input_containers()
 		self.__make_process_ops()
 		self.__make_transfer_ops()
+		self._trace = self.Trace()  # Accumulated time series for each node
 
 		assert self.schema.get_var_indices("tl") == ["l"]
 
@@ -87,10 +100,13 @@ class Simulation(sim.core.SimEnv):
 		"""
 		return op.op_identity.indices["l"] == l
 
+	def trace(self):
+		return self._trace
+
 	def run(self):
 
 		prev_l = 0
-		self.trace = dict()
+		self._trace = dict()
 
 		for t in range(self.duration()):
 			l = self.l(t)
@@ -98,6 +114,8 @@ class Simulation(sim.core.SimEnv):
 
 			# Trigger "tick_before"
 			for op in ops:
+				self._trace.update(op)  # Place a new tick in the history
+
 				if not self.op_check_l(op, l):
 					continue
 
