@@ -81,62 +81,45 @@ class Simulation(sim.core.SimEnv):
 	def duration(self):
 		return sum(map(lambda l: self.data_interface.get("tl", l=l), range(self.schema.get_index_bound("l"))))
 
+	def op_check_l(self, op, l):
+		"""
+		Checks whether op belongs to the current stability timespan
+		"""
+		return op.op_identity.indices["l"] == l
+
 	def run(self):
+
 		prev_l = 0
+		self.trace = dict()
 
 		for t in range(self.duration()):
 			l = self.l(t)
+			ops = self.generator_ops.values() + random.shuffle(self.ops.values()) + self.drop_ops.values()
 
-			for op in self.generator_ops.values():
-				if op.op_identity.indices["l"] == l:
-					op.tick_before()
+			# Trigger "tick_before"
+			for op in ops:
+				if not self.op_check_l(op, l):
+					continue
 
 				if prev_l != l:
-					op.register_processed()
-
-			for op in random.shuffle(self.ops.values()):
-				if op.op_identity.var_amount_planned == "y":
-					if prev_l != l:
+					if op.op_identity.var_amount_planned == "y":
 						ind = op.op_identity.indices.copy()
 						ind["l"] = l - 1
 						# Keep the amount of processed info
 						op.op_state.processed_container.amount = self.ops[("y", self.schema.indices_dict_to_plain("y", **ind))].op_state.processed_container.amount
 
-				if prev_l != l:
 					op.register_processed()
 
-				if op.op_identity.indices["l"] == l:
-					op.tick_before()
+				op.tick_before()
 
-			for op in self.drop_ops.values():
-				if op.op_identity.indices["l"] == l:
-					op.tick_before()
-
-				if prev_l != l:
-					op.register_processed()
-
-			for op in self.generator_ops.values():
-				if op.op_identity.indices["l"] == l:
+			# Trigger "tick"
+			for op in ops:
+				if self.op_check_l(op, l):
 					op.tick()
 
-			for op in random.shuffle(self.ops.values()):
-				if op.op_identity.indices["l"] == l:
-					op.tick()
-
-			for op in self.drop_ops.values():
-				if op.op_identity.indices["l"] == l:
-					op.tick()
-
-			for op in self.generator_ops.values():
-				if op.op_identity.indices["l"] == l:
-					op.tick_after()
-
-			for op in random.shuffle(self.ops.values()):
-				if op.op_identity.indices["l"] == l:
-					op.tick_after()
-
-			for drop in self.drop_ops.values():
-				if op.op_identity.indices["l"] == l:
+			# Trigger "tick_after"
+			for op in ops:
+				if self.op_check_l(op, l):
 					op.tick_after()
 
 			prev_l = l
