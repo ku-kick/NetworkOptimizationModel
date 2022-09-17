@@ -11,11 +11,35 @@ import math
 import pygal
 
 
-class TestData(unittest.TestCase):
+class TestSim(unittest.TestCase):
 	__HERE = pathlib.Path(os.path.realpath(__file__)).parent
 	__SCHEMA_FILE = str((__HERE / "test_schema_3.json").resolve())
 	__CSV_OUTPUT_FILE = str((__HERE / "test_sim_output.csv").resolve())
 	#TODO implement test run and produce a trace output (see Simulation.Trace)
+
+	def setUp(self) -> None:
+		psi_upper = 10
+		phi_upper = 10
+		v_upper = 10
+		x_eq_upper = 10
+		tl_upper = 3000
+		mm_psi_upper = psi_upper / tl_upper
+		mm_phi_upper = phi_upper / tl_upper
+		mm_v_upper = v_upper / tl_upper
+
+		if not os.path.exists(self.__CSV_OUTPUT_FILE):
+			cli.generate_random(
+				schema=self.__SCHEMA_FILE,
+				psi_upper=psi_upper,
+				phi_upper=phi_upper,
+				v_upper=v_upper,
+				x_eq_upper=x_eq_upper,
+				mm_psi_upper=mm_psi_upper,
+				mm_phi_upper=mm_phi_upper,
+				mm_v_upper=mm_v_upper,
+				tl_upper=tl_upper,
+				output=self.__CSV_OUTPUT_FILE
+			)
 
 	def test_pygal(self):
 		"""
@@ -31,7 +55,8 @@ class TestData(unittest.TestCase):
 		chart.render_to_png("out.svg")
 
 	def test_run_sim(self):
-		simulation = sim.Simulation.make_from_file(schema_file=self.__SCHEMA_FILE, storage_file=self.__CSV_OUTPUT_FILE)
+		simulation = sim.Simulation.make_from_file(schema_file=self.__SCHEMA_FILE, storage_file=self.__CSV_OUTPUT_FILE,
+			row_index_variables=[])
 		simulation.run()
 		graph_renderer = cli.Format.simulation_trace_graph_scatter(simulation=simulation,
 			variables=["x^", "y^", "z^", "g^"])
