@@ -37,6 +37,12 @@ class GeneratorOp(core.Op):
 
 class Simulation(core.SimEnv):
 
+	@staticmethod
+	def make_from_file(*args, **kwargs):
+		env = core.SimEnv.make_from_file(*args, **kwargs)
+
+		return Simulation(row_index=env.row_index, schema=env.schema, data_interface=env.data_interface)
+
 	@dataclass
 	class Trace:
 		"""
