@@ -18,12 +18,14 @@ class TestData(unittest.TestCase):
 		"""
 		Just a test plot to get started rapidly w/ plotting routines when debugging / tracking the simulation
 		"""
-		chart = pygal.XY(stroke=False)
+		chart = pygal.XY(stroke=False, style=pygal.style.RedBlueStyle)
 		chart.title = ''
 		signal_len = 100
 		signal = list(zip(list(range(1, signal_len)), list(map(lambda i: i * math.log2(i), range(1, signal_len)))))
+		signal2 = list(zip(list(range(1, signal_len)), list(map(lambda i: -i * math.log2(i), range(1, signal_len)))))
 		chart.add('set1', signal)
-		chart.render_to_file('out.svg')
+		chart.add('set2', signal2)
+		chart.render_to_png("out.svg")
 
 
 unittest.main()
