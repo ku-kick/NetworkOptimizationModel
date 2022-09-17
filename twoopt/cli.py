@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import ut
 import random
 from generic import Log
+import pygal
 
 
 @dataclass
@@ -68,6 +69,9 @@ def _parse_arguments():
 
 
 class Format:
+	"""
+	Boilerplate reducers for representing output from various components in human-readable form
+	"""
 
 	@staticmethod
 	def iter_numpy_result(res, schema):
@@ -87,6 +91,37 @@ class Format:
 	@staticmethod
 	def numpy_result(res, schema):
 		return '\n'.join(Format.iter_numpy_result(res, schema))
+
+	@staticmethod
+	def simulation_trace_graph_scatter(simulation: sim.sim.Simulation, variables):
+		"""
+		:return: Graph object with "output()" method
+		"""
+
+		def flt(key, val):
+			res = True
+
+			if variables is not None:
+				res = res and k[0] in variables
+
+			return res
+
+		@dataclass
+		class GraphObject:
+			renderable: object
+
+			def output(self):
+				self.renderable.render_to_png("out.svg")
+
+		chart = pygal.XY(stroke=False, style=pygal.style.RedBlueStyle)
+
+		for k, y in simulation.trace():
+			if flt(k, y):
+				title = str(k)
+				x = list(range(0, simulation.dt(), simulation.dt() * len(v) + simulation.dt()))
+				chart.add(title=title, values=[x, y])
+
+		return GraphObject(chart)
 
 
 def _main():
