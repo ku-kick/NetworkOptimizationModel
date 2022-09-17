@@ -1,3 +1,6 @@
+import sys
+import pathlib
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 import linsmat
 import argparse
 from dataclasses import dataclass
@@ -5,6 +8,8 @@ import ut
 import random
 from generic import Log
 import pygal
+import sim
+from sim import sim
 
 
 @dataclass
@@ -93,7 +98,7 @@ class Format:
 		return '\n'.join(Format.iter_numpy_result(res, schema))
 
 	@staticmethod
-	def simulation_trace_graph_scatter(simulation: sim.sim.Simulation, variables):
+	def simulation_trace_graph_scatter(simulation: sim.Simulation, variables):
 		"""
 		:return: Graph object with "output()" method
 		"""
