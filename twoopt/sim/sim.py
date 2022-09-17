@@ -44,17 +44,27 @@ class Simulation(sim.core.SimEnv):
 		Accumulated history of ticks
 		"""
 
+		schema: object
 		state: dict = field(default_factory=dict)
 
 		def update(self, op):
-			pass
+			index = self.schema.indices_dict_to_plain(op.op_identity.var_amount_processed,
+				op.op_identity.indices_amount_processed)
+			index = tuple(index)
+
+			if index not in self.state:
+				self.state[index] = list()
+
+			self.state[index].append(op.op_state.processed_container.amount)
+
+
+	def _ops_all(self):
+		return self.generator_ops.values() + random.shuffle(self.ops.values()) + self.drop_ops.values()
 
 	def __post_init__(self):
 		sim.core.SimEnv.__post_init__(self)
 		self.__make_input_containers()
-		self.__make_process_ops()
-		self.__make_transfer_ops()
-		self._trace = self.Trace()  # Accumulated time series for each node
+		self._trace = self.Trace(self.schema)  # Accumulated time series for each node
 
 		assert self.schema.get_var_indices("tl") == ["l"]
 
@@ -111,7 +121,7 @@ class Simulation(sim.core.SimEnv):
 
 		for t in range(self.duration()):
 			l = self.l(t)
-			ops = self.generator_ops.values() + random.shuffle(self.ops.values()) + self.drop_ops.values()
+			ops = self._ops_all()
 
 			# Trigger "tick_before"
 			for op in ops:
