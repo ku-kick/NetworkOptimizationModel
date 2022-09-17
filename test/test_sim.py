@@ -3,7 +3,7 @@ import pathlib
 import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / 'twoopt'))
-from twoopt import sim, cli
+from twoopt import sim, cli, linsolv_planner
 from sim import sim
 import os
 import pathlib
@@ -57,6 +57,9 @@ class TestSim(unittest.TestCase):
 	def test_run_sim(self):
 		simulation = sim.Simulation.make_from_file(schema_file=self.__SCHEMA_FILE, storage_file=self.__CSV_OUTPUT_FILE,
 			row_index_variables=[])
+		ls_planner = linsolv_planner.LinsolvPlanner(simulation.data_interface, simulation.schema)
+		ls_planner.solve()  # Populate the output CSV
+		# simulation.data_interface.sync()
 		simulation.reset()
 		simulation.run()
 		graph_renderer = cli.Format.simulation_trace_graph_scatter(simulation=simulation,
