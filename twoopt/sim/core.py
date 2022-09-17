@@ -50,10 +50,10 @@ class OpState:
 	def process(self, diff):
 		assert(diff <= self.input_container.amount)
 		self.input_container.amount -= diff
-		self.processed_container += diff
+		self.processed_container.amount += diff
 
 		if self.output_container is not None:
-			self.output_container += diff
+			self.output_container.amount += diff
 
 
 @dataclass
@@ -67,7 +67,8 @@ class Op:
 			**self.op_identity.indices)
 
 	def var_value_get(self, var_name, index_names):
-		return self.sim_env.data_interface.get(var_name, **{i: self.op_identity.indices[i] for i in index_names})
+		Log.debug(Op.var_value_get, "var_name", var_name, "index_names", index_names)
+		return self.sim_env.data_interface.get(var_name, **index_names)
 
 	def on_tick_before(self):
 		"""
@@ -88,7 +89,7 @@ class Op:
 		"""
 		Wrapper over data interface
 		"""
-		Log.debug(Op.intensity, self.op_identity.indices_intensity)
+		Log.debug(Op.intensity, self.op_identity.indices_intensity, type(self))
 		return self.var_value_get(self.op_identity.var_intensity, self.op_identity.indices_intensity)
 
 	intensity_neg = intensity  # Disk read / write speed. Expected to return an absolute value
@@ -122,7 +123,7 @@ class Op:
 		)
 		intensity_adjusted = (self.intensity() * self.intensity_fraction() + self.noise()) * self.sim_env.dt()
 		intensity_adjusted_neg = (self.intensity_neg() * self.intensity_fraction_neg() + self.noise_neg()) \
-			* self.sim_info.dt()
+			* self.sim_env.dt()
 		res = ut.clamp(res, -intensity_adjusted_neg, intensity_adjusted)
 
 		return res
@@ -136,7 +137,7 @@ class TransferOp(Op):
 		# TODO: register processed
 
 	def on_tick_after(self):
-		self.op_state.output_container += self.amount
+		self.op_state.output_container.amount += self.amount
 
 
 class MemorizeOp(Op):

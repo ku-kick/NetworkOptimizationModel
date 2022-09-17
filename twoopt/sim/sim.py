@@ -15,12 +15,14 @@ import functools
 from dataclasses import dataclass, field
 from sim import core
 from generic import Log
+import ut
 
 
-class GeneratorOp(core.Op):
-	"""
-	Some nodes receive input information from outside. GeneratorOp models this process.
-	"""
+@dataclass
+class GeneratorOp:
+	sim_env: core.SimEnv
+	op_identity: core.OpIdentity
+	op_state: core.OpState
 
 	def amount_planned(self):
 		return self.sim_env.data_interface.get("x_eq", **self.op_identity.indices)
@@ -31,12 +33,37 @@ class GeneratorOp(core.Op):
 
 		return amount / tl
 
+	intensity_neg = intensity
+
 	def intensity_fraction(self):
 		return 1
+
+	intensity_fraction_neg = intensity_fraction
 
 	def on_tick_before(self):
 		amount = self.amount_max_available()
 		self.op_state.process(amount)
+
+	def noise(self):
+		return 0.0
+
+	noise_neg = noise
+
+	def amount_max_available(self):
+		"""
+		:return: Max. amount of information available for processing on this tick. Adjusted for noise, plan, and
+		technical capabilities of the modeled node
+		"""
+		res = min(
+			self.amount_planned() - self.op_state.processed_container.amount,
+			self.op_state.input_container.amount,
+		)
+		intensity_adjusted = (self.intensity() * self.intensity_fraction() + self.noise()) * self.sim_env.dt()
+		intensity_adjusted_neg = (self.intensity_neg() * self.intensity_fraction_neg() + self.noise_neg()) \
+			* self.sim_env.dt()
+		res = ut.clamp(res, -intensity_adjusted_neg, intensity_adjusted)
+
+		return res
 
 
 class Simulation(core.SimEnv):
