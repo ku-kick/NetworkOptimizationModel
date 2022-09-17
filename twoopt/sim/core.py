@@ -8,11 +8,7 @@ import linsmat
 
 
 @dataclass
-class SimEnv:
-	row_index: linsmat.RowIndex
-	schema: linsmat.Schema
-	data_interface: object
-
+class SimEnv(linsmat.Env):
 	def l(self):
 		"""
 		:return:  Id of the current structural stability interval
