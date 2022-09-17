@@ -3,7 +3,8 @@ import pathlib
 import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / 'twoopt'))
-from twoopt import *
+from twoopt import sim, cli
+from sim import sim
 import os
 import pathlib
 import math
@@ -30,7 +31,7 @@ class TestData(unittest.TestCase):
 		chart.render_to_png("out.svg")
 
 	def test_run_sim(self):
-		simulation = sim.sim.Simulation.make_from_file(schema_file=self.__SCHEMA_FILE, storage_file=self.__CSV_OUTPUT_FILE)
+		simulation = sim.Simulation.make_from_file(schema_file=self.__SCHEMA_FILE, storage_file=self.__CSV_OUTPUT_FILE)
 		simulation.run()
 		graph_renderer = cli.Format.simulation_trace_graph_scatter(simulation=simulation,
 			variables=["x^", "y^", "z^", "g^"])

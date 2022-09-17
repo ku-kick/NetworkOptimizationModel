@@ -13,9 +13,10 @@ import sim
 import linsmat
 import functools
 from dataclasses import dataclass, field
+from sim import core
 
 
-class GeneratorOp(sim.core.Op):
+class GeneratorOp(core.Op):
 	"""
 	Some nodes receive input information from outside. GeneratorOp models this process.
 	"""
@@ -34,7 +35,7 @@ class GeneratorOp(sim.core.Op):
 		self.op_state.process(amount)
 
 
-class Simulation(sim.core.SimEnv):
+class Simulation(core.SimEnv):
 
 	@dataclass
 	class Trace:
