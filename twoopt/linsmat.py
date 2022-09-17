@@ -14,6 +14,7 @@ import re
 import io
 import os
 import csv
+import pathlib
 from generic import Log
 
 
@@ -340,3 +341,30 @@ class DataInterface:
 
 	def __del__(self):
 		self.provider.sync()
+
+
+@dataclass
+class Env:
+	row_index: RowIndex
+	schema: Schema
+	data_interface: object
+
+	@staticmethod
+	def make_from_file(schema_file, storage_file, row_index_variables: list):
+		storage_file = pathlib.Path(storage_file)
+		schema_file = pathlib.Path(schema_file).resolve()
+		storage_provider_type = {
+			".csv": PermissiveCsvBufferedDataProvider,
+		}
+		schema = Schema(schema_file=schema_file)
+		row_index = RowIndex.make_from_schema(schema, row_index_variables)
+
+		try:
+			storage_provider = storage_provider_type[storage_file.suffix](str(storage_file))
+		except KeyError as e:
+			Log.error("Could not find an appropriate storage provider", str(e))
+			raise e
+
+		data_interface = DataInterface(provider=storage_provider, schema=schema)
+
+		return Env(row_index=row_index, schema=schema, data_interface=data_interface)
