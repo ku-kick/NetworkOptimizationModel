@@ -237,6 +237,7 @@ class Schema:
 		"""
 		[VARAIBLE, {"index1": INDEX1, "index2": INDEX2}] -> [VARIABLE, INDEX1, INDEX2]
 		"""
+		Log.debug(Schema.indices_dict_to_plain, variable, indices, self.data["variableindices"][variable])
 		assert type(variable) is str
 		assert set(self.data["variableindices"][variable]) == set(indices.keys())
 		indices_plain = tuple(map(lambda i: indices[i], self.data["variableindices"][variable]))
