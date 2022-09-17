@@ -122,12 +122,20 @@ class Simulation(core.SimEnv):
 	def trace(self):
 		return self._trace
 
+	def _t_iter(self):
+		t = 0
+
+		while t < self.duration():
+			yield t
+
+			t += self.dt()
+
 	def run(self):
 
 		prev_l = 0
 		self._trace = dict()
 
-		for t in range(self.duration()):
+		for t in self._t_iter():
 			l = self.l(t)
 			ops = self._ops_all()
 
