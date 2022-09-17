@@ -3,7 +3,7 @@ import pathlib
 import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / 'twoopt'))
-from twoopt import linsmat
+from twoopt import *
 import os
 import pathlib
 import math
@@ -12,6 +12,8 @@ import pygal
 
 class TestData(unittest.TestCase):
 	__HERE = pathlib.Path(os.path.realpath(__file__)).parent
+	__SCHEMA_FILE = str((__HERE / "test_schema_3.json").resolve())
+	__CSV_OUTPUT_FILE = str((__HERE / "test_sim_output.csv").resolve())
 	#TODO implement test run and produce a trace output (see Simulation.Trace)
 
 	def test_pygal(self):
@@ -26,6 +28,13 @@ class TestData(unittest.TestCase):
 		chart.add('set1', signal)
 		chart.add('set2', signal2)
 		chart.render_to_png("out.svg")
+
+	def test_run_sim(self):
+		simulation = sim.sim.Simulation.make_from_file(schema_file=self.__SCHEMA_FILE, storage_file=self.__CSV_OUTPUT_FILE)
+		simulation.run()
+		graph_renderer = cli.Format.simulation_trace_graph_scatter(simulation=simulation,
+			variables=["x^", "y^", "z^", "g^"])
+		graph_renderer.output()
 
 
 unittest.main()
