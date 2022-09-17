@@ -71,8 +71,8 @@ class Simulation(core.SimEnv):
 		self.reset()
 
 	def reset(self):
-		self.__make_ops()
 		self.__make_input_containers()
+		self.__make_ops()
 		self._trace = self.Trace(self.schema)  # Accumulated time series for each node
 
 		assert self.schema.get_var_indices("tl") == ["l"]
@@ -208,7 +208,7 @@ class Simulation(core.SimEnv):
 					op_identity=sim.core.OpIdentity(
 						indices=indices,
 						var_amount_planned=var_amount_planned,
-						var_intensity={k: v for k, v in indices.items() if k != "rho"},
+						var_intensity={k: v for k, v in indices[1].items() if k != "rho"},
 						var_intensity_fraction=var_intensity_fraction,
 						var_amount_processed=var_amount_processed,
 						indices_amount_planned=indices,
@@ -224,15 +224,15 @@ class Simulation(core.SimEnv):
 
 				if var_amount_planned == "x_eq":
 					# Initialize `var_intensity` and `var_intensity_fraction` for x_eq (external information inflow)
-					amount_planned = self.data_interface.get(var_amount_planned, **indices)
-					l_duration = self.data_interface.get("tl", indices["l"])
-					self.data_interface.set(var_intensity, amount_planned / l_duration, **indices)
-					self.data_interface.set(var_intensity_fraction, 1, **indices)
+					amount_planned = self.data_interface.get(var_amount_planned, **indices[1])
+					l_duration = self.data_interface.get("tl", l=indices[1]["l"])
+					self.data_interface.set(var_intensity, amount_planned / l_duration, **indices[1])
+					self.data_interface.set(var_intensity_fraction, 1, **indices[1])
 					# Initialize input containers with initial values
 					self.ops[indices_plain].op_state.input_container.amount = self.data_interface.get("x_eq",
-						**self.ops[indices_plain].op_indentity.indices)
+						**self.ops[indices_plain].op_indentity.indices[1])
 					self.ops[indices_plain].op_state.output_container = self._input_container(j=j, rho=rho, l=l)
 
 				if var_amount_planned == "x":
-					storage[indices_plain].op_state.output_container = self._input_container(j=indices["i"], rho=rho,
+					storage[indices_plain].op_state.output_container = self._input_container(j=indices[1]["i"], rho=rho,
 						l=l)
