@@ -133,7 +133,7 @@ class TransferOp(Op):
 
 	def on_tick(self):
 		self.amount = self.amount_max_available()
-		self.op_state.processed_container -= self.amount
+		self.op_state.processed_container.amount -= self.amount
 		# TODO: register processed
 
 	def on_tick_after(self):
