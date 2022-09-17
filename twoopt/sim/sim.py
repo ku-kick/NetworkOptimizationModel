@@ -65,7 +65,9 @@ class Simulation(core.SimEnv):
 
 
 	def _ops_all(self):
-		return self.generator_ops.values() + random.shuffle(self.ops.values()) + self.drop_ops.values()
+		generic_ops = list(self.ops.values())
+		random.shuffle(generic_ops)
+		return list(self.generator_ops.values()) + generic_ops + list(self.drop_ops.values())
 
 	def __post_init__(self):
 		sim.core.SimEnv.__post_init__(self)
