@@ -96,7 +96,7 @@ class Simulation(core.SimEnv):
 		is considered absent.
 		"""
 		psi = self.data_interface.get("psi", j=j, i=i, rho=rho, l=l)
-		mm = self.data_interface.get("mm_psi", j=j, i=i, rho=rho, l=l)
+		mm = self.data_interface.get("mm_psi", j=j, i=i, l=l)
 		x = self.data_interface.get("x", j=j, i=i, rho=rho, l=l)
 		m = self.data_interface.get("m_psi", j=j, i=i, rho=rho, l=l)
 
