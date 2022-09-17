@@ -186,7 +186,7 @@ class Simulation(core.SimEnv):
 				["x^", "y^", "g^", "z^", "x_eq^"],
 				[sim.core.TransferOp, sim.core.MemorizeOp, sim.core.ProcessOp, sim.core.DropOp, GeneratorOp]):
 			for indices in self.schema.radix_map_iter_var_dict(var_amount_planned):
-				j, rho, l = (indices[ind] for ind in ["j", "rho", "l"])
+				j, rho, l = [indices[1][ind] for ind in ["j", "rho", "l"]]
 
 				if self.var_amount_planned == "x":
 					i = indices["i"]
