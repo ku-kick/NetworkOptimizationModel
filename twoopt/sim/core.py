@@ -5,6 +5,7 @@ import random
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))  # We need files from "src/", that's how we access them
 import ut
 import linsmat
+from generic import Log
 
 
 @dataclass
@@ -66,7 +67,7 @@ class Op:
 			**self.op_identity.indices)
 
 	def var_value_get(self, var_name, index_names):
-		return self.sim_env.data_interface.get(var_name, {i: self.op_identity.indices[i] for i in index_names})
+		return self.sim_env.data_interface.get(var_name, **{i: self.op_identity.indices[i] for i in index_names})
 
 	def on_tick_before(self):
 		"""
@@ -87,6 +88,7 @@ class Op:
 		"""
 		Wrapper over data interface
 		"""
+		Log.debug(Op.intensity, self.op_identity.indices_intensity)
 		return self.var_value_get(self.op_identity.var_intensity, self.op_identity.indices_intensity)
 
 	intensity_neg = intensity  # Disk read / write speed. Expected to return an absolute value
@@ -118,7 +120,7 @@ class Op:
 			self.amount_planned() - self.op_state.processed_container.amount,
 			self.op_state.input_container.amount,
 		)
-		intensity_adjusted = (self.intensity() * self.intensity_fraction() + self.noise()) * self.sim_info.dt()
+		intensity_adjusted = (self.intensity() * self.intensity_fraction() + self.noise()) * self.sim_env.dt()
 		intensity_adjusted_neg = (self.intensity_neg() * self.intensity_fraction_neg() + self.noise_neg()) \
 			* self.sim_info.dt()
 		res = ut.clamp(res, -intensity_adjusted_neg, intensity_adjusted)
