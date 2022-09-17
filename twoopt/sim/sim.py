@@ -14,6 +14,7 @@ import linsmat
 import functools
 from dataclasses import dataclass, field
 from sim import core
+from generic import Log
 
 
 class GeneratorOp(core.Op):
@@ -181,7 +182,7 @@ class Simulation(core.SimEnv):
 
 		for var_amount_planned, var_intensity, var_intensity_fraction, var_amount_processed, op_type in zip(
 				["x", "y", "g", "z", "x_eq"],  # Ops will be identified using this set of variables
-				["mm_psi", "mm_v", "mm_phi", "", ""],  # TODO: Handle empty variables
+				["mm_psi", "mm_v", "mm_phi", "", "mm_x_eq"],  # TODO: Handle empty variables
 				["m_psi", "m_v", "m_phi", "", ""],
 				["x^", "y^", "g^", "z^", "x_eq^"],
 				[sim.core.TransferOp, sim.core.MemorizeOp, sim.core.ProcessOp, sim.core.DropOp, GeneratorOp]):
@@ -195,7 +196,7 @@ class Simulation(core.SimEnv):
 					if not self._is_connected(j=j, i=i, rho=rho, l=l):
 						continue
 
-				indices_plain = (var_amount_planned, *self.schema.indices_dict_to_plain(var_amount_planned, **indices[1]))
+				indices_plain = self.schema.indices_dict_to_plain(var_amount_planned, **indices[1])
 				storage = self.ops
 
 				if var_amount_planned == "z":
@@ -206,15 +207,15 @@ class Simulation(core.SimEnv):
 				storage[indices_plain] = op_type(
 					sim_env=self,
 					op_identity=sim.core.OpIdentity(
-						indices=indices,
+						indices=indices[1],
 						var_amount_planned=var_amount_planned,
-						var_intensity={k: v for k, v in indices[1].items() if k != "rho"},
+						var_intensity=var_intensity,
 						var_intensity_fraction=var_intensity_fraction,
 						var_amount_processed=var_amount_processed,
-						indices_amount_planned=indices,
-						indices_intensity=indices,
-						indices_intensity_fraction=indices,
-						indices_amount_processed=indices
+						indices_amount_planned=indices[1],
+						indices_intensity=indices[1].copy().pop("rho"),
+						indices_intensity_fraction=indices[1],
+						indices_amount_processed=indices[1]
 					),
 					op_state = sim.core.OpState(
 						input_container=self._input_container(j=j, rho=rho, l=l),
@@ -223,15 +224,11 @@ class Simulation(core.SimEnv):
 				)
 
 				if var_amount_planned == "x_eq":
-					# Initialize `var_intensity` and `var_intensity_fraction` for x_eq (external information inflow)
-					amount_planned = self.data_interface.get(var_amount_planned, **indices[1])
-					l_duration = self.data_interface.get("tl", l=indices[1]["l"])
-					self.data_interface.set(var_intensity, amount_planned / l_duration, **indices[1])
-					self.data_interface.set(var_intensity_fraction, 1, **indices[1])
 					# Initialize input containers with initial values
-					self.ops[indices_plain].op_state.input_container.amount = self.data_interface.get("x_eq",
-						**self.ops[indices_plain].op_indentity.indices[1])
-					self.ops[indices_plain].op_state.output_container = self._input_container(j=j, rho=rho, l=l)
+					Log.debug("indices_plain", indices_plain)
+					storage[indices_plain].op_state.input_container.amount = self.data_interface.get("x_eq",
+						**storage[indices_plain].op_identity.indices)
+					storage[indices_plain].op_state.output_container = self._input_container(j=j, rho=rho, l=l)
 
 				if var_amount_planned == "x":
 					storage[indices_plain].op_state.output_container = self._input_container(j=indices[1]["i"], rho=rho,
