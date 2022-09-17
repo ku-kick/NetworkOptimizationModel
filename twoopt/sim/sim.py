@@ -26,7 +26,10 @@ class GeneratorOp(core.Op):
 		return self.sim_env.data_interface.get("x_eq", **self.op_identity.indices)
 
 	def intensity(self):
-		tl = self.sim_env.data_interface.get("tl", self.op_identity.indices.get("l"))
+		tl = self.sim_env.data_interface.get("tl", l=self.op_identity.indices.get("l"))
+		amount = self.sim_env.data_interface.get(self.op_identity.var_amount_planned, **self.op_identity.indices)
+
+		return amount / tl
 
 	def intensity_fraction(self):
 		return 1
@@ -53,9 +56,9 @@ class Simulation(core.SimEnv):
 		schema: object
 		state: dict = field(default_factory=dict)
 
-		def update(self, op):
+		def add_point(self, op):
 			index = self.schema.indices_dict_to_plain(op.op_identity.var_amount_processed,
-				op.op_identity.indices_amount_processed)
+				**op.op_identity.indices_amount_processed)
 			index = tuple(index)
 
 			if index not in self.state:
@@ -124,7 +127,7 @@ class Simulation(core.SimEnv):
 		return op.op_identity.indices["l"] == l
 
 	def trace(self):
-		return self._trace
+		return self._trace.state
 
 	def _t_iter(self):
 		t = 0
@@ -137,7 +140,7 @@ class Simulation(core.SimEnv):
 	def run(self):
 
 		prev_l = 0
-		self._trace = dict()
+		self._trace = self.Trace(self.schema)
 
 		for t in self._t_iter():
 			l = self.l(t)
@@ -145,7 +148,8 @@ class Simulation(core.SimEnv):
 
 			# Trigger "tick_before"
 			for op in ops:
-				self._trace.update(op)  # Place a new tick in the history
+				Log.debug(op)
+				self._trace.add_point(op)  # Place a new tick in the history
 
 				if not self.op_check_l(op, l):
 					continue
@@ -159,17 +163,17 @@ class Simulation(core.SimEnv):
 
 					op.register_processed()
 
-				op.tick_before()
+				op.on_tick_before()
 
 			# Trigger "tick"
 			for op in ops:
 				if self.op_check_l(op, l):
-					op.tick()
+					op.on_tick()
 
 			# Trigger "tick_after"
 			for op in ops:
 				if self.op_check_l(op, l):
-					op.tick_after()
+					op.on_tick_after()
 
 			prev_l = l
 
@@ -215,7 +219,7 @@ class Simulation(core.SimEnv):
 						var_intensity_fraction=var_intensity_fraction,
 						var_amount_processed=var_amount_processed,
 						indices_amount_planned=indices[1],
-						indices_intensity=indices[1].copy().pop("rho"),
+						indices_intensity=dict(filter(lambda d: d[0] != "rho", indices[1].items())),
 						indices_intensity_fraction=indices[1],
 						indices_amount_processed=indices[1]
 					),
@@ -224,6 +228,7 @@ class Simulation(core.SimEnv):
 						processed_container=sim.core.Container(),
 					)
 				)
+				Log.debug("constructed op", storage[indices_plain], "\n\n")
 
 				if var_amount_planned == "x_eq":
 					# Initialize input containers with initial values
