@@ -28,7 +28,7 @@ class RandomGenerator:
 	def _functor_iter_wrapper(self):
 		for var in self.variables:
 			for prod in ut.radix_cartesian_product(self.schema.get_var_radix(var)):
-				if var in self.var_lower_bounds:
+				if var in self.var_lower_bounds.keys():
 					yield (var, *prod,), random.uniform(self.var_lower_bounds[var], self.var_bounds[var])
 				else:
 					yield (var, *prod,), random.uniform(0, self.var_bounds[var])
