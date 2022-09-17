@@ -23,11 +23,15 @@ class RandomGenerator:
 	schema_filename: str
 	variables: list
 	var_bounds: dict
+	var_lower_bounds: dict
 
 	def _functor_iter_wrapper(self):
 		for var in self.variables:
 			for prod in ut.radix_cartesian_product(self.schema.get_var_radix(var)):
-				yield (var, *prod,), random.uniform(0, self.var_bounds[var])
+				if var in self.var_lower_bounds:
+					yield (var, *prod,), random.uniform(self.var_lower_bounds[var], self.var_bounds[var])
+				else:
+					yield (var, *prod,), random.uniform(0, self.var_bounds[var])
 
 	def __post_init__(self):
 		self.schema = linsmat.Schema(None, self.schema_filename)
@@ -43,9 +47,13 @@ class RandomGenerator:
 
 def generate_random(schema, psi_upper, phi_upper, v_upper, x_eq_upper, mm_phi_upper, mm_v_upper, mm_psi_upper,
 		tl_upper, output):
-	generator = RandomGenerator(schema, ["psi", "v", "phi", "alpha_1", "x_eq", "mm_phi", "mm_v", "mm_psi", "tl"],
+	sch = linsmat.Schema(None, schema)
+	n_rho = sch.get_index_bound("rho")
+	generator = RandomGenerator(schema, ["psi", "v", "phi", "alpha_1", "x_eq", "mm_phi", "mm_v", "mm_psi", "tl",
+		"m_v", "m_psi", "m_phi"],
 		dict(psi=psi_upper, phi=phi_upper, v=v_upper, alpha_1=1.0, x_eq=x_eq_upper, mm_phi=mm_phi_upper,
-		mm_v=mm_v_upper, mm_psi=mm_psi_upper, tl=tl_upper))
+		mm_v=mm_v_upper, mm_psi=mm_psi_upper, tl=tl_upper, m_v=1.0 / n_rho, m_psi=1.0 / n_rho, m_phi=1.0 / n_rho),
+		dict(m_v=1.0 / n_rho, m_psi=1.0 / n_rho, m_phi=1.0 / n_rho))
 	ut.file_create_if_not_exists(output)
 	csv_data_provider = linsmat.PermissiveCsvBufferedDataProvider(output)
 
