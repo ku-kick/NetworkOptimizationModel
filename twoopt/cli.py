@@ -16,9 +16,9 @@ from sim import sim
 class RandomGenerator:
 	"""
 	Domain-aware random input generator. Generates constraints for the linear programming-based optimizer. Expects the
-	provided schema to match the structure of data implied by the 2022 paper
+	provided schema to match the structure of data implied by the 2022 paper.
 
-	Generated sequences have the "k/v" format: (k, v)
+	Generated sequences have the "k/v" format: (k, v).
 	"""
 	schema_filename: str
 	variables: list
