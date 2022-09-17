@@ -49,6 +49,12 @@ class GeneratorOp:
 
 	noise_neg = noise
 
+	def on_tick(self):
+		pass
+
+	def on_tick_after(self):
+		pass
+
 	def amount_max_available(self):
 		"""
 		:return: Max. amount of information available for processing on this tick. Adjusted for noise, plan, and
