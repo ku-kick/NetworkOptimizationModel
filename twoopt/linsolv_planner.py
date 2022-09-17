@@ -136,7 +136,17 @@ class LinsolvPlanner:
 		return stub
 
 	def solve(self):
-		return scipy.optimize.linprog(c=self.obj, bounds=self.bnd, A_eq=self.eq_lhs, b_eq=self.eq_rhs)
+		solution = scipy.optimize.linprog(c=self.obj, bounds=self.bnd, A_eq=self.eq_lhs, b_eq=self.eq_rhs)
+
+		if 0 == solution.status:
+			Log.info(LinsolvPlanner.solve, "registering solution results in data interface")
+			for variable in self.row_index.variables.keys():
+				for indices in self.schema.radix_map_iter_var_dict(variable):
+					Log.debug(LinsolvPlanner.solve, indices)
+					pos = self.row_index.get_pos(variable, **indices[1])
+					self.data_interface.set(variable, solution.x[pos], **indices[1])
+
+		return solution
 
 
 class InfluxConstraintLp(LinsolvPlanner):
