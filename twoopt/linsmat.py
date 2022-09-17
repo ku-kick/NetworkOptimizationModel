@@ -356,7 +356,7 @@ class Env:
 		storage_provider_type = {
 			".csv": PermissiveCsvBufferedDataProvider,
 		}
-		schema = Schema(schema_file=schema_file)
+		schema = Schema(filename=schema_file)
 		row_index = RowIndex.make_from_schema(schema, row_index_variables)
 
 		try:
