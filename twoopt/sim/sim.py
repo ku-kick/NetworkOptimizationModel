@@ -188,14 +188,14 @@ class Simulation(core.SimEnv):
 			for indices in self.schema.radix_map_iter_var_dict(var_amount_planned):
 				j, rho, l = [indices[1][ind] for ind in ["j", "rho", "l"]]
 
-				if self.var_amount_planned == "x":
-					i = indices["i"]
+				if var_amount_planned == "x":
+					i = indices[1]["i"]
 
 					# Optimization to prevent exponential explosion
 					if not self._is_connected(j=j, i=i, rho=rho, l=l):
 						continue
 
-				indices_plain = (var_amount_planned, *self.schema.indices_dict_to_plain(var_amount_planned, **indices))
+				indices_plain = (var_amount_planned, *self.schema.indices_dict_to_plain(var_amount_planned, **indices[1]))
 				storage = self.ops
 
 				if var_amount_planned == "z":
