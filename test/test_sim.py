@@ -57,6 +57,7 @@ class TestSim(unittest.TestCase):
 	def test_run_sim(self):
 		simulation = sim.Simulation.make_from_file(schema_file=self.__SCHEMA_FILE, storage_file=self.__CSV_OUTPUT_FILE,
 			row_index_variables=[])
+		simulation.reset()
 		simulation.run()
 		graph_renderer = cli.Format.simulation_trace_graph_scatter(simulation=simulation,
 			variables=["x^", "y^", "z^", "g^"])

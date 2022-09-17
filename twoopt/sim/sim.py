@@ -67,10 +67,11 @@ class Simulation(core.SimEnv):
 		return self.generator_ops.values() + random.shuffle(self.ops.values()) + self.drop_ops.values()
 
 	def __post_init__(self):
+		sim.core.SimEnv.__post_init__(self)
 		self.reset()
 
 	def reset(self):
-		sim.core.SimEnv.__post_init__(self)
+		self.__make_ops()
 		self.__make_input_containers()
 		self._trace = self.Trace(self.schema)  # Accumulated time series for each node
 
@@ -105,7 +106,7 @@ class Simulation(core.SimEnv):
 		sum = 0
 
 		for l in range(self.schema.get_index_bound("l")):
-			sum += self.data_interface.get("tl", l)
+			sum += self.data_interface.get("tl", l=l)
 
 			if now < sum:
 				return l
@@ -183,7 +184,7 @@ class Simulation(core.SimEnv):
 				["mm_psi", "mm_v", "mm_phi", "", ""],  # TODO: Handle empty variables
 				["m_psi", "m_v", "m_phi", "", ""],
 				["x^", "y^", "g^", "z^", "x_eq^"],
-				[sim.core.TransferOp, sim.core.MemorizeOp, sim.core.ProcessOp, sim.core.DropOp, sim.core.GeneratorOp]):
+				[sim.core.TransferOp, sim.core.MemorizeOp, sim.core.ProcessOp, sim.core.DropOp, GeneratorOp]):
 			for indices in self.schema.radix_map_iter_var_dict(var_amount_planned):
 				j, rho, l = (indices[ind] for ind in ["j", "rho", "l"])
 
