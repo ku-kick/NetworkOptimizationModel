@@ -62,6 +62,9 @@ class Simulation(sim.core.SimEnv):
 		return self.generator_ops.values() + random.shuffle(self.ops.values()) + self.drop_ops.values()
 
 	def __post_init__(self):
+		self.reset()
+
+	def reset(self):
 		sim.core.SimEnv.__post_init__(self)
 		self.__make_input_containers()
 		self._trace = self.Trace(self.schema)  # Accumulated time series for each node
