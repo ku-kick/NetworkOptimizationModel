@@ -131,8 +131,8 @@ class TransferOp(Op):
 
 	def on_tick(self):
 		self.amount = self.amount_max_available()
-		self.op_state.processed_container.amount -= self.amount
-		# TODO: register processed
+		self.op_state.input_container.amount -= self.amount
+		self.op_state.processed_container.amount += self.amount
 
 	def on_tick_after(self):
 		self.op_state.output_container.amount += self.amount
