@@ -67,7 +67,6 @@ class Op:
 			**self.op_identity.indices)
 
 	def var_value_get(self, var_name, index_names):
-		Log.debug(Op.var_value_get, "var_name", var_name, "index_names", index_names)
 		return self.sim_env.data_interface.get(var_name, **index_names)
 
 	def on_tick_before(self):
@@ -89,7 +88,6 @@ class Op:
 		"""
 		Wrapper over data interface
 		"""
-		Log.debug(Op.intensity, self.op_identity.indices_intensity, type(self))
 		return self.var_value_get(self.op_identity.var_intensity, self.op_identity.indices_intensity)
 
 	intensity_neg = intensity  # Disk read / write speed. Expected to return an absolute value

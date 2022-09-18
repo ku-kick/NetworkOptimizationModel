@@ -165,15 +165,10 @@ class Simulation(core.SimEnv):
 		return op.op_identity.indices["l"] == l
 
 	def trace(self):
-		return self._trace.state
+		return self._trace.state.items()
 
 	def _t_iter(self):
-		t = 0
-
-		while t < self.duration():
-			yield t
-
-			t += self.dt()
+		return ut.frange(0, self.duration(), self.dt())
 
 	def run(self):
 
@@ -187,7 +182,6 @@ class Simulation(core.SimEnv):
 
 			# Trigger "tick_before"
 			for op in ops:
-				Log.debug(op)
 				self._trace.add_point(op)  # Place a new tick in the history
 
 				if not self.op_check_l(op, l):
@@ -267,11 +261,9 @@ class Simulation(core.SimEnv):
 						processed_container=sim.core.Container(),
 					)
 				)
-				Log.debug("constructed op", storage[indices_plain], "\n\n")
 
 				if var_amount_planned == "x_eq":
 					# Initialize input containers with initial values
-					Log.debug("indices_plain", indices_plain)
 					storage[indices_plain].op_state.input_container.amount = self.data_interface.get("x_eq",
 						**storage[indices_plain].op_identity.indices)
 					storage[indices_plain].op_state.output_container = self._input_container(j=j, rho=rho, l=l)
