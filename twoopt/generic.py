@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.DEBUG, format="%(levelname)s - %(message)s")
 
 
 class Log:
-	_FILTER_ALLOW = ["current time"]
+	_FILTER_ALLOW = None
 	_FILTER_DISABLE = None
 
 	@staticmethod
