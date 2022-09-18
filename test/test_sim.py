@@ -67,4 +67,5 @@ class TestSim(unittest.TestCase):
 		graph_renderer.output()
 
 
-unittest.main()
+if __name__ == "__main__":
+	unittest.main()
