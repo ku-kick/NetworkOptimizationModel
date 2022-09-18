@@ -10,6 +10,24 @@ logging.basicConfig(level=logging.DEBUG, format="%(levelname)s - %(message)s")
 
 
 class Log:
+	_FILTER_ALLOW = ["current time"]
+	_FILTER_DISABLE = None
+
+	@staticmethod
+	def check_filter(out):
+		res = Log._FILTER_ALLOW is None
+
+		if Log._FILTER_ALLOW is not None:
+			for s in Log._FILTER_ALLOW:
+				if s in out:
+					res = True
+
+		if Log._FILTER_DISABLE is not None:
+			for s in Log._FILTER_DISABLE:
+				if s in out:
+					res = res and False
+
+		return res
 
 	@staticmethod
 	def set_level(level):
@@ -17,23 +35,38 @@ class Log:
 
 	@staticmethod
 	def info(*args, **kwargs):
-		return logging.info(Log.format(*args, **kwargs))
+		fmt = Log.format(*args, **kwargs)
+
+		if Log.check_filter(fmt):
+			return logging.info(fmt)
 
 	@staticmethod
 	def warning(*args, **kwargs):
-		return logging.warning(Log.format(*args, **kwargs))
+		fmt = Log.format(*args, **kwargs)
+
+		if Log.check_filter(fmt):
+			return logging.warning(fmt)
 
 	@staticmethod
 	def error(*args, **kwargs):
-		return logging.error(Log.format(*args, **kwargs))
+		fmt = Log.format(*args, **kwargs)
+
+		if Log.check_filter(fmt):
+			return logging.error(fmt)
 
 	@staticmethod
 	def debug(*args, **kwargs):
-		return logging.debug(Log.format(*args, **kwargs))
+		fmt = Log.format(*args, **kwargs)
+
+		if Log.check_filter(fmt):
+			return logging.debug(fmt)
 
 	@staticmethod
 	def critical(*args, **kwargs):
-		return logging.critical(Log.format(*args, **kwargs))
+		fmt = Log.format(*args, **kwargs)
+
+		if Log.check_filter(fmt):
+			return logging.critical(fmt)
 
 	@staticmethod
 	def format(*args, **kwargs):
