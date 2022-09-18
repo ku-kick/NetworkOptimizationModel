@@ -126,15 +126,12 @@ class Format:
 			def output(self):
 				self.renderable.render_to_png("out.svg")
 
-		chart = pygal.XY(stroke=False, style=pygal.style.RedBlueStyle)
+		chart = pygal.XY(stroke=False)
 
 		for k, y in simulation.trace():
 			if flt(k, y):
 				title = str(k)
-				x = list(ut.frange(0, simulation.duration(), simulation.dt()))
-				Log.debug("x", len(x), "y", len(y))
-				assert len(x) == len(y)
-				chart.add(title=title, values=[x, y])
+				chart.add(title=title, values=y)
 
 		return GraphObject(chart)
 
