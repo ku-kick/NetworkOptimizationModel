@@ -94,7 +94,7 @@ class Simulation(core.SimEnv):
 		schema: object
 		state: dict = field(default_factory=dict)
 
-		def add_point(self, op):
+		def add_point(self, t, op):
 			index = self.schema.indices_dict_to_plain(op.op_identity.var_amount_processed,
 				**op.op_identity.indices_amount_processed)
 			index = tuple(index)
@@ -102,7 +102,7 @@ class Simulation(core.SimEnv):
 			if index not in self.state:
 				self.state[index] = list()
 
-			self.state[index].append(op.op_state.processed_container.amount)
+			self.state[index].append((t, op.op_state.processed_container.amount,))
 
 
 	def _ops_all(self):
@@ -182,7 +182,7 @@ class Simulation(core.SimEnv):
 
 			# Trigger "tick_before"
 			for op in ops:
-				self._trace.add_point(op)  # Place a new tick in the history
+				self._trace.add_point(t, op)  # Place a new tick in the history
 
 				if not self.op_check_l(op, l):
 					continue
