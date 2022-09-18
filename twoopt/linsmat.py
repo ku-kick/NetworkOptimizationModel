@@ -214,7 +214,6 @@ class Schema:
 	get_radix_map = get_var_radix
 
 	def radix_map_iter(self, *indices):
-		Log.debug(Schema.radix_map_iter, indices)
 		radix_map = self.make_radix_map(*indices)
 
 		for ind in ut.radix_cartesian_product(radix_map):
@@ -226,7 +225,6 @@ class Schema:
 
 	def radix_map_iter_var(self, var):
 		indices = self.get_var_indices(var)
-		Log.debug(Schema.radix_map_iter_var, "indices", indices)
 		yield from self.radix_map_iter(*indices)
 
 	def radix_map_iter_var_dict(self, var):
@@ -237,7 +235,6 @@ class Schema:
 		"""
 		[VARAIBLE, {"index1": INDEX1, "index2": INDEX2}] -> [VARIABLE, INDEX1, INDEX2]
 		"""
-		Log.debug(Schema.indices_dict_to_plain, variable, indices, self.data["variableindices"][variable])
 		assert type(variable) is str
 		assert set(self.data["variableindices"][variable]) == set(indices.keys())
 		indices_plain = tuple(map(lambda i: indices[i], self.data["variableindices"][variable]))
