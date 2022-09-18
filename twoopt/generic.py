@@ -1,12 +1,6 @@
-import logging
 import pathlib
 import os
 import inspect
-import time
-import threading
-
-# logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
-logging.basicConfig(level=logging.DEBUG, format="%(levelname)s - %(message)s")
 
 
 class Log:
@@ -29,44 +23,63 @@ class Log:
 
 		return res
 
-	@staticmethod
-	def set_level(level):
-		logging.getLogger().setLevel(level)
+	LEVEL_SHUT_UP = 0
+	LEVEL_CRITICAL = 1
+	LEVEL_ERROR = 2
+	LEVEL_WARN = 3
+	LEVEL_INFO = 4
+	LEVEL_DEBUG = 5
+	LEVEL = LEVEL_DEBUG
 
 	@staticmethod
 	def info(*args, **kwargs):
+		if Log.LEVEL < Log.LEVEL_INFO:
+			return
+
 		fmt = Log.format(*args, **kwargs)
 
 		if Log.check_filter(fmt):
-			return logging.info(fmt)
+			print("INFO - ", fmt)
 
 	@staticmethod
 	def warning(*args, **kwargs):
+		if Log.LEVEL < Log.LEVEL_WARNING:
+			return
+
 		fmt = Log.format(*args, **kwargs)
 
 		if Log.check_filter(fmt):
-			return logging.warning(fmt)
+			print("WARN - ", fmt)
 
 	@staticmethod
 	def error(*args, **kwargs):
+		if Log.LEVEL < Log.LEVEL_ERROR:
+			return
+
 		fmt = Log.format(*args, **kwargs)
 
 		if Log.check_filter(fmt):
-			return logging.error(fmt)
+			print("ERROR - ", fmt)
 
 	@staticmethod
 	def debug(*args, **kwargs):
+		if Log.LEVEL < Log.LEVEL_DEBUG:
+			return
+
 		fmt = Log.format(*args, **kwargs)
 
 		if Log.check_filter(fmt):
-			return logging.debug(fmt)
+			print("DEBUG - ", fmt)
 
 	@staticmethod
 	def critical(*args, **kwargs):
+		if Log.LEVEL < Log.LEVEL_CRITICAL:
+			return
+
 		fmt = Log.format(*args, **kwargs)
 
 		if Log.check_filter(fmt):
-			return logging.critical(fmt)
+			print("CRITICAL - ", fmt)
 
 	@staticmethod
 	def format(*args, **kwargs):
