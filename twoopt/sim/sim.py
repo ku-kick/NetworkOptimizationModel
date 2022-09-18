@@ -33,21 +33,10 @@ class GeneratorOp:
 
 		return amount / tl
 
-	intensity_neg = intensity
-
-	def intensity_fraction(self):
-		return 1
-
-	intensity_fraction_neg = intensity_fraction
-
 	def on_tick_before(self):
-		amount = self.amount_max_available()
-		self.op_state.process(amount)
-
-	def noise(self):
-		return 0.0
-
-	noise_neg = noise
+		amount = self.intensity()
+		self.op_state.output_container.amount = amount
+		Log.debug(GeneratorOp, self.op_identity.indices, "putting info for processing", amount, self.op_state)
 
 	def on_tick(self):
 		pass
@@ -65,10 +54,7 @@ class GeneratorOp:
 		:return: Max. amount of information available for processing on this tick. Adjusted for noise, plan, and
 		technical capabilities of the modeled node
 		"""
-		res = min(
-			self.amount_planned() - self.op_state.processed_container.amount,
-			self.op_state.input_container.amount,
-		)
+		res = self.amount_planned() - self.op_state.processed_container.amount
 		intensity_adjusted = (self.intensity() * self.intensity_fraction() + self.noise()) * self.sim_env.dt()
 		intensity_adjusted_neg = (self.intensity_neg() * self.intensity_fraction_neg() + self.noise_neg()) \
 			* self.sim_env.dt()
