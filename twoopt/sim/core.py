@@ -63,7 +63,7 @@ class Op:
 	op_state: OpState
 
 	def register_processed(self):
-		self.sim_env.data_interface.set(self.op_identity.var_amount_processed, self.op_state.processed_container,
+		self.sim_env.data_interface.set(self.op_identity.var_amount_processed, self.op_state.processed_container.amount,
 			**self.op_identity.indices)
 
 	def var_value_get(self, var_name, index_names):

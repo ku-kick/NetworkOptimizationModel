@@ -55,6 +55,11 @@ class GeneratorOp:
 	def on_tick_after(self):
 		pass
 
+	def register_processed(self):
+		self.sim_env.data_interface.set(self.op_identity.var_amount_processed, self.op_state.processed_container.amount,
+			**self.op_identity.indices)
+
+
 	def amount_max_available(self):
 		"""
 		:return: Max. amount of information available for processing on this tick. Adjusted for noise, plan, and
@@ -176,6 +181,7 @@ class Simulation(core.SimEnv):
 		self._trace = self.Trace(self.schema)
 
 		for t in self._t_iter():
+			Log.debug(Simulation.run, "current time", t)
 			l = self.l(t)
 			ops = self._ops_all()
 
@@ -192,7 +198,7 @@ class Simulation(core.SimEnv):
 						ind = op.op_identity.indices.copy()
 						ind["l"] = l - 1
 						# Keep the amount of processed info
-						op.op_state.processed_container.amount = self.ops[("y", self.schema.indices_dict_to_plain("y", **ind))].op_state.processed_container.amount
+						op.op_state.processed_container.amount = self.ops[self.schema.indices_dict_to_plain("y", **ind)].op_state.processed_container.amount
 
 					op.register_processed()
 
