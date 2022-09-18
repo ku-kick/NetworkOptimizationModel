@@ -158,7 +158,7 @@ class MemorizeOp(Op):
 		# Put the unprocessed info back into memory
 		if self.amount < 0:
 			self.amount = ut.clamp(self.amount, -self.op_state.input_container.amount, 0)
-			self.op_state.input_container.process(self.amount)
+			self.op_state.process(self.amount)
 
 
 class ProcessOp(Op):
