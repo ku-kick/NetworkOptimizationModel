@@ -131,8 +131,8 @@ class Format:
 		for k, y in simulation.trace():
 			if flt(k, y):
 				title = str(k)
-				x = list(ut.frange(0, simulation.dt() * len(y) + simulation.dt(), simulation.dt()))
-				print(x, y)
+				x = list(ut.frange(0, simulation.duration(), simulation.dt()))
+				Log.debug("x", len(x), "y", len(y))
 				assert len(x) == len(y)
 				chart.add(title=title, values=[x, y])
 
