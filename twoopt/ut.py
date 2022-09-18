@@ -30,6 +30,22 @@ def clamp(val, vmin=-float("inf"), vmax=float("inf")):
 	return max(min(val, vmax), vmin)
 
 
+def frange(base, ceil, step):
+	assert step != 0
+	assert base != ceil
+	assert (base < ceil) == (step > 0)
+
+	if base < ceil:
+		cmp = lambda a, b: a < b
+	else:
+		cmp = lambda a, b: a > b
+
+	while cmp(base, ceil):
+		yield base
+
+		base += step
+
+
 class Datetime:
 	DATE_FORMAT = "%Y-%m-%d"
 	TIME_FORMAT = "%Y%m%d%H%M"
