@@ -10,6 +10,7 @@ from generic import Log
 import pygal
 import sim
 from sim import sim
+import os
 
 
 @dataclass
@@ -115,25 +116,28 @@ class Format:
 			res = True
 
 			if variables is not None:
-				res = res and k[0] in variables
+				res = res and key[0] in variables
 
 			return res
 
 		@dataclass
 		class GraphObject:
-			renderable: object
+			trace: object
 
 			def output(self):
-				self.renderable.render_to_png("out.svg")
+				try:
+					os.mkdir("out")
+				except FileExistsError:
+					pass
 
-		chart = pygal.XY(stroke=False)
+				for k, s in self.trace:
+					if flt(k, s):
+						title = '_'.join(list(map(str, k)))
+						chart = pygal.XY(stroke=True)
+						chart.add(title=title, values=s)
+						chart.render_to_png("out/out_%s.svg" % title)
 
-		for k, y in simulation.trace():
-			if flt(k, y):
-				title = str(k)
-				chart.add(title=title, values=y)
-
-		return GraphObject(chart)
+		return GraphObject(simulation.trace())
 
 
 def _main():
