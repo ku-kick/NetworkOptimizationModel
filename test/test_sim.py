@@ -63,7 +63,8 @@ class TestSim(unittest.TestCase):
 		simulation.reset()
 		simulation.run()
 		graph_renderer = cli.Format.simulation_trace_graph_scatter(simulation=simulation,
-			variables=["x^", "y^", "z^", "g^"])
+			# variables=["x^"])
+			variables = ["x^", "y^", "z^", "g^"])
 		graph_renderer.output()
 
 
