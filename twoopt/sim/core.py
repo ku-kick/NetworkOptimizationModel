@@ -62,6 +62,15 @@ class Op:
 	op_identity: OpIdentity
 	op_state: OpState
 
+	def id_str(self):
+		return '_'.join(list(map(str, self.id_tuple())))
+
+	def id_tuple(self):
+		indices = self.sim_env.schema.indices_dict_to_plain(self.op_identity.var_amount_processed,
+			**self.op_identity.indices_amount_processed)
+
+		return indices
+
 	def register_processed(self):
 		self.sim_env.data_interface.set(self.op_identity.var_amount_processed, self.op_state.processed_container.amount,
 			**self.op_identity.indices)

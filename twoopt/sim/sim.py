@@ -57,9 +57,7 @@ class Simulation(core.SimEnv):
 		state: dict = field(default_factory=dict)
 
 		def add_point(self, t, op):
-			index = self.schema.indices_dict_to_plain(op.op_identity.var_amount_processed,
-				**op.op_identity.indices_amount_processed)
-			index = tuple(index)
+			index = op.id_tuple()
 
 			if index not in self.state:
 				self.state[index] = list()
