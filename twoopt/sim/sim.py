@@ -19,11 +19,7 @@ import ut
 
 
 @dataclass
-class GeneratorOp:
-	sim_env: core.SimEnv
-	op_identity: core.OpIdentity
-	op_state: core.OpState
-
+class GeneratorOp(core.Op):
 	def amount_planned(self):
 		return self.sim_env.data_interface.get("x_eq", **self.op_identity.indices)
 
@@ -38,29 +34,9 @@ class GeneratorOp:
 		self.op_state.output_container.amount = amount
 		Log.debug(GeneratorOp, self.op_identity.indices, "putting info for processing", amount, self.op_state)
 
-	def on_tick(self):
-		pass
-
-	def on_tick_after(self):
-		pass
-
 	def register_processed(self):
 		self.sim_env.data_interface.set(self.op_identity.var_amount_processed, self.op_state.processed_container.amount,
 			**self.op_identity.indices)
-
-
-	def amount_max_available(self):
-		"""
-		:return: Max. amount of information available for processing on this tick. Adjusted for noise, plan, and
-		technical capabilities of the modeled node
-		"""
-		res = self.amount_planned() - self.op_state.processed_container.amount
-		intensity_adjusted = (self.intensity() * self.intensity_fraction() + self.noise()) * self.sim_env.dt()
-		intensity_adjusted_neg = (self.intensity_neg() * self.intensity_fraction_neg() + self.noise_neg()) \
-			* self.sim_env.dt()
-		res = ut.clamp(res, -intensity_adjusted_neg, intensity_adjusted)
-
-		return res
 
 
 class Simulation(core.SimEnv):
@@ -89,7 +65,6 @@ class Simulation(core.SimEnv):
 				self.state[index] = list()
 
 			self.state[index].append((t, op.op_state.processed_container.amount,))
-
 
 	def _ops_all(self):
 		generic_ops = list(self.ops.values())
