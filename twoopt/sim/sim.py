@@ -20,6 +20,7 @@ import ut
 
 @dataclass
 class GeneratorOp(core.Op):
+
 	def amount_planned(self):
 		return self.sim_env.data_interface.get("x_eq", **self.op_identity.indices)
 
@@ -32,6 +33,7 @@ class GeneratorOp(core.Op):
 	def on_tick_before(self):
 		amount = self.intensity()
 		self.op_state.output_container.amount = amount
+		self.op_state.processed_container.amount += amount
 		Log.debug(GeneratorOp, self.op_identity.indices, "putting info for processing", amount, self.op_state)
 
 	def register_processed(self):
