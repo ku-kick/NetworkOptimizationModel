@@ -112,14 +112,6 @@ class Format:
 		:return: Graph object with "output()" method
 		"""
 
-		def flt(key, val):
-			res = True
-
-			if variables is not None:
-				res = res and key[0] in variables
-
-			return res
-
 		@dataclass
 		class GraphObject:
 			trace: object
@@ -130,12 +122,17 @@ class Format:
 				except FileExistsError:
 					pass
 
-				for k, s in self.trace:
-					if flt(k, s):
-						title = '_'.join(list(map(str, k)))
-						chart = pygal.XY(stroke=True)
-						chart.add(title=title, values=s)
-						chart.render_to_png("out/out_%s.svg" % title)
+				for k, series in self.trace:
+					title = '_'.join(list(map(str, k)))
+					chart = pygal.XY(stroke=True, title=title)
+
+					for s in series:
+						chart.add(title=s.title, values=s.as_line_x1y1())
+
+						if s.title != "trajectory":
+							Log.debug(s)
+
+					chart.render_to_png("out/out_%s.svg" % title)
 
 		return GraphObject(simulation.trace())
 
