@@ -129,7 +129,8 @@ class Simulation(core.SimEnv):
 				self._trace.add_point(t, op)  # Place a new tick in the history
 
 				if prev_l != l:
-					self._trace.add_l(l, op)
+					self._trace.add_l(t, op)
+					Log.info("simulation", "new l", l, "at", t)
 
 				if not self.op_check_l(op, l):
 					continue
