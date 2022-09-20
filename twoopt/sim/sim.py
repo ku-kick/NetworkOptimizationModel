@@ -47,23 +47,6 @@ class Simulation(core.SimEnv):
 
 		return Simulation(row_index=env.row_index, schema=env.schema, data_interface=env.data_interface)
 
-	@dataclass
-	class Trace:
-		"""
-		Accumulated history of ticks
-		"""
-
-		schema: object
-		state: dict = field(default_factory=dict)
-
-		def add_point(self, t, op):
-			index = op.id_tuple()
-
-			if index not in self.state:
-				self.state[index] = list()
-
-			self.state[index].append((t, op.op_state.processed_container.amount,))
-
 	def _ops_all(self):
 		generic_ops = list(self.ops.values())
 		random.shuffle(generic_ops)
@@ -76,7 +59,7 @@ class Simulation(core.SimEnv):
 	def reset(self):
 		self.__make_input_containers()
 		self.__make_ops()
-		self._trace = self.Trace(self.schema)  # Accumulated time series for each node
+		self._trace = ut.Trace()  # Accumulated time series for each node
 
 		assert self.schema.get_var_indices("tl") == ["l"]
 
@@ -124,15 +107,17 @@ class Simulation(core.SimEnv):
 		return op.op_identity.indices["l"] == l
 
 	def trace(self):
-		return self._trace.state.items()
+		return self._trace.as_iter()
 
 	def _t_iter(self):
 		return ut.frange(0, self.duration(), self.dt())
 
 	def run(self):
 
+		#TODO integrate new Trace class
+
 		prev_l = 0
-		self._trace = self.Trace(self.schema)
+		self._trace = ut.Trace()
 
 		for t in self._t_iter():
 			Log.debug(Simulation.run, "current time", t)
@@ -142,6 +127,9 @@ class Simulation(core.SimEnv):
 			# Trigger "tick_before"
 			for op in ops:
 				self._trace.add_point(t, op)  # Place a new tick in the history
+
+				if prev_l != l:
+					self._trace.add_l(l, op)
 
 				if not self.op_check_l(op, l):
 					continue
