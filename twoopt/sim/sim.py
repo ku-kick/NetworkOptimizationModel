@@ -34,7 +34,6 @@ class GeneratorOp(core.Op):
 		amount = self.intensity()
 		self.op_state.output_container.amount = amount
 		self.op_state.processed_container.amount += amount
-		Log.debug(GeneratorOp, self.op_identity.indices, "putting info for processing", amount, self.op_state)
 
 	def register_processed(self):
 		self.sim_env.data_interface.set(self.op_identity.var_amount_processed, self.op_state.processed_container.amount,
