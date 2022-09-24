@@ -17,11 +17,14 @@ class TestSim(unittest.TestCase):
 	__CSV_OUTPUT_FILE = str((__HERE / "test_sim_output.csv").resolve())
 	#TODO implement test run and produce a trace output (see Simulation.Trace)
 
+	def __init__(self, *args, **kwargs):
+		unittest.TestCase.__init__(self, *args, **kwargs)
+
 	def setUp(self) -> None:
-		psi_upper = 10
-		phi_upper = 10
-		v_upper = 10
-		x_eq_upper = 20
+		psi_upper = 40
+		phi_upper = 30
+		v_upper = 70
+		x_eq_upper = 200
 		tl_upper = 500
 		mm_psi_upper = psi_upper / tl_upper
 		mm_phi_upper = phi_upper / tl_upper
@@ -43,33 +46,27 @@ class TestSim(unittest.TestCase):
 				entry_nodes=entry_nodes,
 				output=self.__CSV_OUTPUT_FILE
 			)
-
-	def test_pygal(self):
-		"""
-		Just a test plot to get started rapidly w/ plotting routines when debugging / tracking the simulation
-		"""
-		chart = pygal.XY(stroke=False, style=pygal.style.RedBlueStyle)
-		chart.title = ''
-		signal_len = 100
-		signal = list(zip(list(range(1, signal_len)), list(map(lambda i: i * math.log2(i), range(1, signal_len)))))
-		signal2 = list(zip(list(range(1, signal_len)), list(map(lambda i: -i * math.log2(i), range(1, signal_len)))))
-		chart.add('set1', signal)
-		chart.add('set2', signal2)
-		chart.render_to_png("out.svg")
-
-	def test_run_sim(self):
-		simulation = sim.Simulation.make_from_file(schema_file=self.__SCHEMA_FILE, storage_file=self.__CSV_OUTPUT_FILE,
+			self.sim_run()
+			self.sim_visualize()
+		self.env = linsmat.Env.make_from_file(schema_file=self.__SCHEMA_FILE, storage_file=self.__CSV_OUTPUT_FILE,
 			row_index_variables=[])
-		ls_planner = linsolv_planner.LinsolvPlanner(simulation.data_interface, simulation.schema)
+
+	def sim_run(self):
+		self.simulation = sim.Simulation.make_from_file(schema_file=self.__SCHEMA_FILE, storage_file=self.__CSV_OUTPUT_FILE,
+			row_index_variables=[])
+		ls_planner = linsolv_planner.LinsolvPlanner(self.simulation.data_interface, self.simulation.schema)
 		ls_planner.solve()  # Populate the output CSV
 		# simulation.data_interface.sync()
-		simulation.reset()
-		simulation.run()
-		graph_renderer = cli.Format.simulation_trace_graph_scatter(simulation=simulation,
-			# variables=["x^"])
+		self.simulation.reset()
+		self.simulation.run()
+
+	def sim_visualize(self):
+		graph_renderer = cli.Format.simulation_trace_graph_scatter(simulation=self.simulation,
 			variables = ["x^", "y^", "z^", "g^"])
 		graph_renderer.output()
 
+	def test_run_sim_balance(self):
+		data_interface = self.env.data_interface
 
 if __name__ == "__main__":
 	unittest.main()
