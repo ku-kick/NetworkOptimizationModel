@@ -24,8 +24,9 @@ class TestLinsolvPlanner(unittest.TestCase):
 		mm_psi_upper = psi_upper / tl_upper
 		mm_phi_upper = phi_upper / tl_upper
 		mm_v_upper = v_upper / tl_upper
-
 		Log.LEVEL = Log.LEVEL_DEBUG
+		self.schema = linsmat.Schema(filename=TestLinsolvPlanner.SCHEMA_FILE_JSON)
+		entry_nodes = list(map(lambda rho: dict(j=0, l=0, rho=rho), range(self.schema.get_index_bound("rho"))))
 
 		if not os.path.exists(TestLinsolvPlanner.DATA_FILE_CSV):
 			cli.generate_random(
@@ -38,11 +39,11 @@ class TestLinsolvPlanner(unittest.TestCase):
 				mm_phi_upper=mm_phi_upper,
 				mm_v_upper=mm_v_upper,
 				tl_upper=tl_upper,
+				entry_nodes=entry_nodes,
 				output=self.DATA_FILE_CSV
 			)
 
 		self.data_provider = linsmat.PermissiveCsvBufferedDataProvider(csv_file_name=TestLinsolvPlanner.DATA_FILE_CSV)
-		self.schema = linsmat.Schema(filename=TestLinsolvPlanner.SCHEMA_FILE_JSON)
 		self.data_interface = linsmat.DataInterface(self.data_provider, self.schema)
 
 	def tearDown(self) -> None:
@@ -156,4 +157,5 @@ class TestInfluxConstraintLp:
 			count += 1
 
 
-unittest.main()
+if __name__ == "__main__":
+	unittest.main()
