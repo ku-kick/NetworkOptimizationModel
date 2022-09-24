@@ -3,7 +3,7 @@ import pathlib
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 import linsmat
 import argparse
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import ut
 import random
 from generic import Log
@@ -25,11 +25,29 @@ class RandomGenerator:
 	variables: list
 	var_bounds: dict
 	var_lower_bounds: dict
+	# Format {variable: {indices_plain: (bound_lower, bound_upper)}, ...}. Unlike `var_lower_bounds`, specifies indices too
+	var_index_bounds: dict = field(default_factory=dict)
+
+	def var_lower_bound(self, var):
+		if var in self.var_lower_bounds.keys():
+			return self.var_index_bounds[var]
+		else:
+			return 0
+
+	def var_upper_bound(self, var):
+		return self.var_bounds[var]
 
 	def _functor_iter_wrapper(self):
 		for var in self.variables:
 			for prod in ut.radix_cartesian_product(self.schema.get_var_radix(var)):
-				if var in self.var_lower_bounds.keys():
+				if var in self.var_index_bounds.keys():
+					if prod in self.var_index_bounds.keys():
+						yield (var, *prod), random.uniform(self.var_index_bounds[var][prod][0],
+							self.var_index_bounds[var][prod][1])
+					else:
+						yield (var, *prod), random.uniform(self.var_lower_bound(var), self.var_upper_bound(var))
+
+				elif var in self.var_lower_bounds.keys():
 					yield (var, *prod,), random.uniform(self.var_lower_bounds[var], self.var_bounds[var])
 				else:
 					yield (var, *prod,), random.uniform(0, self.var_bounds[var])
