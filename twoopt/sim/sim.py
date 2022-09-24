@@ -83,6 +83,7 @@ class Simulation(core.SimEnv):
 		is considered absent.
 		"""
 		if j == i:
+			Log.info(Simulation._is_connected, j, "and", i, "are not connected")
 			return False
 
 		psi = self.data_interface.get("psi", j=j, i=i, rho=rho, l=l)
@@ -90,7 +91,12 @@ class Simulation(core.SimEnv):
 		x = self.data_interface.get("x", j=j, i=i, rho=rho, l=l)
 		m = self.data_interface.get("m_psi", j=j, i=i, rho=rho, l=l)
 
-		return psi > 0 and mm > 0 and x > 0 and m > 0
+		res = psi > 0 and mm > 0 and x > 0 and m > 0
+
+		if not res:
+			Log.info(Simulation._is_connected, j, "and", i, "are not connected")
+
+		return res
 
 	def l(self, now):
 		sum = 0
