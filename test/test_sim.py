@@ -3,7 +3,7 @@ import pathlib
 import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / 'twoopt'))
-from twoopt import sim, cli, linsolv_planner
+from twoopt import sim, cli, linsolv_planner, linsmat
 from sim import sim
 import os
 import pathlib
@@ -26,6 +26,8 @@ class TestSim(unittest.TestCase):
 		mm_psi_upper = psi_upper / tl_upper
 		mm_phi_upper = phi_upper / tl_upper
 		mm_v_upper = v_upper / tl_upper
+		self.schema = linsmat.Schema(filename=self.__SCHEMA_FILE)
+		entry_nodes = list(map(lambda rho: dict(j=0, l=0, rho=rho), range(self.schema.get_index_bound("rho"))))
 
 		if not os.path.exists(self.__CSV_OUTPUT_FILE):
 			cli.generate_random(
@@ -38,6 +40,7 @@ class TestSim(unittest.TestCase):
 				mm_phi_upper=mm_phi_upper,
 				mm_v_upper=mm_v_upper,
 				tl_upper=tl_upper,
+				entry_nodes=entry_nodes,
 				output=self.__CSV_OUTPUT_FILE
 			)
 
