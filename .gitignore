@@ -4,5 +4,4 @@ test/output_data.csv
 venv/
 test/test_linsolv_planner_output_data.csv
 *.svg
-*.csv
-*.csv
+./test/*.csv
