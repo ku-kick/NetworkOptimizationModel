@@ -132,6 +132,7 @@ class Simulation(core.SimEnv):
 				if prev_l != l:
 					self._trace.add_l(t, op)
 					Log.info("simulation", "new l", l, "at", t)
+					op.register_processed()
 
 				if not self.op_check_l(op, l):
 					continue
@@ -142,8 +143,6 @@ class Simulation(core.SimEnv):
 						ind["l"] = l - 1
 						# Keep the amount of processed info
 						op.op_state.processed_container.amount = self.ops[self.schema.indices_dict_to_plain("y", **ind)].op_state.processed_container.amount
-
-					op.register_processed()
 
 				op.on_tick_before()
 
