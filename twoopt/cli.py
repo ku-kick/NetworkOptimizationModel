@@ -117,6 +117,18 @@ def generate_random(schema=None, psi_upper=None, phi_upper=None, v_upper=None, x
 			generator.var_ind_set_bound("x_eq", indices, 0, x_eq_upper)
 
 	for k, v in generator:
+		# Filter out self-connected nodes
+		var = k[0]
+		indices_dict = sch.indices_plain_to_dict(*k)[1]
+
+		if var in ["mm_psi", "m_psi"]:
+			j = indices_dict["j"]
+			i = indices_dict["i"]
+			Log.debug(__file__, generate_random, "skippping self connected node", i, j)
+
+			if i == j:
+				continue
+
 		csv_data_provider.set_plain(*k, v)
 
 	csv_data_provider.set_plain("alpha_0", 1 - csv_data_provider.get_plain("alpha_1"))
