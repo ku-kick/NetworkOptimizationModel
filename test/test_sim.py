@@ -21,7 +21,7 @@ class TestSim(unittest.TestCase):
 		psi_upper = 10
 		phi_upper = 10
 		v_upper = 10
-		x_eq_upper = 10
+		x_eq_upper = 20
 		tl_upper = 500
 		mm_psi_upper = psi_upper / tl_upper
 		mm_phi_upper = phi_upper / tl_upper
