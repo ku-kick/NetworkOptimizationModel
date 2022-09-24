@@ -124,10 +124,10 @@ def generate_random(schema=None, psi_upper=None, phi_upper=None, v_upper=None, x
 		if var in ["mm_psi", "m_psi"]:
 			j = indices_dict["j"]
 			i = indices_dict["i"]
-			Log.debug(__file__, generate_random, "skippping self connected node", i, j)
 
 			if i == j:
 				continue
+				Log.debug(__file__, generate_random, "skippping self connected node", i, j)
 
 		csv_data_provider.set_plain(*k, v)
 
