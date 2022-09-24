@@ -25,7 +25,7 @@ class TestLinsolvPlanner(unittest.TestCase):
 		mm_phi_upper = phi_upper / tl_upper
 		mm_v_upper = v_upper / tl_upper
 
-		Log.set_level(logging.DEBUG)
+		Log.LEVEL = Log.LEVEL_DEBUG
 
 		if not os.path.exists(TestLinsolvPlanner.DATA_FILE_CSV):
 			cli.generate_random(
