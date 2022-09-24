@@ -28,29 +28,47 @@ class RandomGenerator:
 	# Format {variable: {indices_plain: (bound_lower, bound_upper)}, ...}. Unlike `var_lower_bounds`, specifies indices too
 	var_index_bounds: dict = field(default_factory=dict)
 
-	def var_lower_bound(self, var):
+	def var_lower_bound(self, var, indices_plain):
+		if var in self.var_index_bounds.keys():
+			if indices_plain in self.var_index_bounds[var].keys():
+				return self.var_index_bounds[var][indices_plain][0]
+
 		if var in self.var_lower_bounds.keys():
-			return self.var_index_bounds[var]
+			return self.var_lower_bounds[var]
 		else:
 			return 0
 
-	def var_upper_bound(self, var):
+	def var_upper_bound(self, var, indices_plain):
+		if var in self.var_index_bounds.keys():
+			if indices_plain in self.var_index_bounds[var].keys():
+				return self.var_index_bounds[var][indices_plain][1]
+
 		return self.var_bounds[var]
+
+	def var_set_bound(self, var, lower=None, upper=None):
+		if lower is not None:
+			self.var_lower_bounds[var] = lower
+
+		if upper is not None:
+			self.var_bounds[var] = upper
+
+	def var_ind_set_bound(self, var, indices_dict: dict, lower, upper):
+		indices_plain = self.schema.indices_dict_to_plain(var, **indices_dict)
+		indices_plain = indices_plain[1:]
+
+		if var not in self.var_index_bounds.keys():
+			self.var_index_bounds[var] = dict()
+
+		self.var_index_bounds[var][indices_plain] = (lower, upper,)
 
 	def _functor_iter_wrapper(self):
 		for var in self.variables:
 			for prod in ut.radix_cartesian_product(self.schema.get_var_radix(var)):
-				if var in self.var_index_bounds.keys():
-					if prod in self.var_index_bounds.keys():
-						yield (var, *prod), random.uniform(self.var_index_bounds[var][prod][0],
-							self.var_index_bounds[var][prod][1])
-					else:
-						yield (var, *prod), random.uniform(self.var_lower_bound(var), self.var_upper_bound(var))
+				lower = self.var_lower_bound(var, prod)
+				upper = self.var_upper_bound(var, prod)
+				Log.debug("var", var, "lower", lower, "upper", upper)
 
-				elif var in self.var_lower_bounds.keys():
-					yield (var, *prod,), random.uniform(self.var_lower_bounds[var], self.var_bounds[var])
-				else:
-					yield (var, *prod,), random.uniform(0, self.var_bounds[var])
+				yield (var, *prod), random.uniform(lower, upper)
 
 	def __post_init__(self):
 		self.schema = linsmat.Schema(None, self.schema_filename)
@@ -65,7 +83,23 @@ class RandomGenerator:
 
 
 def generate_random(schema=None, psi_upper=None, phi_upper=None, v_upper=None, x_eq_upper=None,
-		mm_phi_upper=None, mm_v_upper=None, mm_psi_upper=None, tl_upper=None, output=None):
+		mm_phi_upper=None, mm_v_upper=None, mm_psi_upper=None, tl_upper=None, entry_nodes=list(), output=None):
+	"""
+	:param schema:
+	:param psi_upper:
+	:param phi_upper:
+	:param v_upper:
+	:param x_eq_upper:
+	:param mm_phi_upper:
+	:param mm_v_upper:
+	:param mm_psi_upper:
+	:param tl_upper:
+	:param entry_nodes: Nodes that have informational intake from outside the system. If specified, only x_eq
+	                    corresponding to entry nodes will be more than 0. Any other node will maintain zero-sum balance.
+	                    Format [{j:number, rho:number, l:number}, {j: number, ...}, ...]
+	:param output:
+	:return:
+	"""
 	sch = linsmat.Schema(None, schema)
 	n_rho = sch.get_index_bound("rho")
 	generator = RandomGenerator(schema, ["psi", "v", "phi", "alpha_1", "x_eq", "mm_phi", "mm_v", "mm_psi", "tl",
@@ -75,6 +109,12 @@ def generate_random(schema=None, psi_upper=None, phi_upper=None, v_upper=None, x
 		dict(m_v=1.0 / n_rho, m_psi=1.0 / n_rho, m_phi=1.0 / n_rho))
 	ut.file_create_if_not_exists(output)
 	csv_data_provider = linsmat.PermissiveCsvBufferedDataProvider(output)
+
+	if len(entry_nodes) > 0:
+		generator.var_set_bound("x_eq", 0, 0)
+
+		for indices in entry_nodes:
+			generator.var_ind_set_bound("x_eq", indices, 0, x_eq_upper)
 
 	for k, v in generator:
 		csv_data_provider.set_plain(*k, v)
