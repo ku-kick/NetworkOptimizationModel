@@ -46,8 +46,8 @@ class RandomGenerator:
 		return next(self.iter_state)
 
 
-def generate_random(schema, psi_upper, phi_upper, v_upper, x_eq_upper, mm_phi_upper, mm_v_upper, mm_psi_upper,
-		tl_upper, output):
+def generate_random(schema=None, psi_upper=None, phi_upper=None, v_upper=None, x_eq_upper=None,
+		mm_phi_upper=None, mm_v_upper=None, mm_psi_upper=None, tl_upper=None, output=None):
 	sch = linsmat.Schema(None, schema)
 	n_rho = sch.get_index_bound("rho")
 	generator = RandomGenerator(schema, ["psi", "v", "phi", "alpha_1", "x_eq", "mm_phi", "mm_v", "mm_psi", "tl",
