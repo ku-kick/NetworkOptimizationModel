@@ -82,6 +82,9 @@ class Simulation(core.SimEnv):
 		transfered between two nodes, or technical limitations imply no information flow between two nodes, the channel
 		is considered absent.
 		"""
+		if j == i:
+			return False
+
 		psi = self.data_interface.get("psi", j=j, i=i, rho=rho, l=l)
 		mm = self.data_interface.get("mm_psi", j=j, i=i, l=l)
 		x = self.data_interface.get("x", j=j, i=i, rho=rho, l=l)
