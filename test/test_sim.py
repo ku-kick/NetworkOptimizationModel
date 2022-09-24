@@ -3,7 +3,7 @@ import pathlib
 import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / 'twoopt'))
-from twoopt import sim, cli, linsolv_planner, linsmat
+from twoopt import sim, cli, linsolv_planner, linsmat, generic
 from sim import sim
 import os
 import pathlib
@@ -59,14 +59,44 @@ class TestSim(unittest.TestCase):
 		# simulation.data_interface.sync()
 		self.simulation.reset()
 		self.simulation.run()
+		self.simulation.data_interface.provider.sync()
 
 	def sim_visualize(self):
 		graph_renderer = cli.Format.simulation_trace_graph_scatter(simulation=self.simulation,
 			variables = ["x^", "y^", "z^", "g^"])
-		graph_renderer.output()
+		# graph_renderer.output()
 
 	def test_run_sim_balance(self):
 		data_interface = self.env.data_interface
+		schema = self.env.schema
+
+		def x_processed_or_zero(j, i, rho, l):
+			nonlocal data_interface
+
+			if j == i:
+				return 0
+
+			return data_interface.get("x^", j=j, i=i, rho=rho, l=l)
+
+		for j, rho, l in self.env.schema.radix_map_iter("j", "rho", "l"):
+			x_eq = data_interface.get("x_eq^", j=j, rho=rho, l=l)
+			z = data_interface.get("z^", j=j, rho=rho, l=l)
+			g = data_interface.get("g^", j=j, rho=rho, l=l)
+			y = data_interface.get("y^", j=j, rho=rho, l=l)
+
+			if l > 0:
+				y_prev = data_interface.get("y^", j=j, rho=rho, l=l - 1)
+			else:
+				y_prev = 0
+
+			n_nodes = schema.get_index_bound("j")
+			x_out = list(map(lambda i: x_processed_or_zero(j=j, i=i, rho=rho, l=l), range(n_nodes)))
+			x_in = list(map(lambda i: x_processed_or_zero(j=i, i=j, rho=rho, l=l), range(n_nodes)))
+			generic.Log.debug("j rho l", j, rho, l, "x_eq", x_eq, "y^", y, "y_prev^", y_prev, "g^",
+							  g, "z^", z, "x_out^", sum(x_out), "x_in^", sum(x_in))
+			balance = y - y_prev + z + g + sum(x_out) - sum(x_in)
+			generic.Log.debug("x_eq", x_eq, "balance", balance)
+			self.assertTrue(math.isclose(x_eq, balance, abs_tol=0.1))
 
 if __name__ == "__main__":
 	unittest.main()
