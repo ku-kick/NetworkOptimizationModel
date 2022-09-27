@@ -94,7 +94,7 @@ class Simulation(core.SimEnv):
 		res = psi > 0 and mm > 0 and x > 0 and m > 0
 
 		if not res:
-			Log.info(Simulation._is_connected, j, "and", i, "are not connected")
+			Log.info(Simulation._is_connected, j, "and", i, "at", l, "are not connected")
 
 		return res
 
@@ -141,7 +141,6 @@ class Simulation(core.SimEnv):
 				if prev_l != l:
 					self._trace.add_l(t, op)
 					Log.info("simulation", "new l", l, "at", t)
-					op.register_processed()
 
 				if not self.op_check_l(op, l):
 					continue
@@ -164,6 +163,9 @@ class Simulation(core.SimEnv):
 			for op in ops:
 				if self.op_check_l(op, l):
 					op.on_tick_after()
+
+			for op in ops:
+				op.register_processed()
 
 			prev_l = l
 
