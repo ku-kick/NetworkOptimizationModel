@@ -137,6 +137,15 @@ class StoreOp(Operation):
 			self.amount_processed_add(-self.__amount_proc)
 
 
+class ProcessOp(Operation):
+
+	def step(self):
+		# TODO handle transfer b/w l
+		amount_proc = self.amount_proc_available()
+		self.amount_input_add(-amount_proc)
+		self.amount_processed_add(amount_proc)
+
+
 @dataclass
 class Simulation:
 	env: linsmat.Env
@@ -189,6 +198,17 @@ class Simulation:
 					self.helper_virt.indices_store_to_indices_container(indices)))
 			self.store_ops_add(op)
 
+	def process_ops_add(self, op):
+		self.process_ops[op.indices_planned_plain] = op
+
+	def _init_make_process_ops(self):
+		for indices in self.helper_virt.indices_process_iter_plain():
+			op = ProcessOp(sim_global=self.sim_global, indices_planned_plain=indices,
+				amount_planned=self.helper_virt.amount_planned_process(indices),
+				proc_intensity_fraction=self.helper_virt.intensity_fraction_process(indices),
+				proc_intensity_upper=self.helper_virt.intensity_upper_process(indices),
+				container_input=self.container_by_plain(self.helper_virt.indices_process_to_indices_container(indices)))
+			self.process_ops_add(op)
 
 	def __post_init__(self):
 		if self.helper_virt is None:
@@ -201,3 +221,5 @@ class Simulation:
 		self._init_make_transfer_ops()
 		self.store_ops = dict()
 		self._init_make_store_ops()
+		self.process_ops = dict()
+		self._init_make_process_ops()
