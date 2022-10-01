@@ -120,7 +120,7 @@ class TransferOp(Operation):
 		self._proc_step = 0.0
 
 
-class MemorizeOp(Operation):
+class StoreOp(Operation):
 
 	def amount_stash(self):
 		return self.amount_processed
@@ -175,19 +175,19 @@ class Simulation:
 				self.transfer_ops_add(op)
 				log.verbose("created TransferOp", op)
 
-	def memoize_ops_add(self, op):
-		self.memoize_ops[op.indices_planned_plain] = op
+	def store_ops_add(self, op):
+		self.store_ops[op.indices_planned_plain] = op
 
-	def _init_make_memoize_ops(self):
-		for indices in self.helper_virt.indices_memoize_iter_plain():
-			op = MemorizeOp(sim_global=self.sim_global, indices_planned_plain=indices,
-				amount_planned=self.helper_virt.amount_planned_memoize(indices),
-				proc_intensity_fraction=self.helper_virt.intensity_fraction_memoize(indices),
-				proc_intensity_upper=self.helper_virt.intensity_upper_memoize(indices),
-				proc_intensity_lower=-self.helper_virt.intensity_upper_memoize(indices),
+	def _init_make_store_ops(self):
+		for indices in self.helper_virt.indices_store_iter_plain():
+			op = StoreOp(sim_global=self.sim_global, indices_planned_plain=indices,
+				amount_planned=self.helper_virt.amount_planned_store(indices),
+				proc_intensity_fraction=self.helper_virt.intensity_fraction_store(indices),
+				proc_intensity_upper=self.helper_virt.intensity_upper_store(indices),
+				proc_intensity_lower=-self.helper_virt.intensity_upper_store(indices),
 				container_input=self.container_by_plain(
-					self.helper_virt.indices_memoize_to_indices_container(indices)))
-			self.memoize_ops_add(op)
+					self.helper_virt.indices_store_to_indices_container(indices)))
+			self.store_ops_add(op)
 
 
 	def __post_init__(self):
@@ -199,5 +199,5 @@ class Simulation:
 		self._init_make_containers()
 		self.transfer_ops = dict()
 		self._init_make_transfer_ops()
-		self.memoize_ops = dict()
-		self._init_make_memoize_ops()
+		self.store_ops = dict()
+		self._init_make_store_ops()
