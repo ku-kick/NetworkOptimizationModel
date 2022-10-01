@@ -380,10 +380,10 @@ class HelperVirt:
 	var_transfer_intensity: str = "mm_psi"  # What is the maximum intensity of a channel
 	var_transfer_intensity_fraction: str = "m_psi" # What fraction of intensity is being used during the transfer
 	var_transfer_intensity_handled: str = "x^"  # How much information has been handled
-	var_memorize_planned: str = "y"
-	var_memorize_intensity: str = "mm_v"
-	var_memorize_intensity_fraction: str = "m_v"
-	var_memorize_intensity_handled: str = "y^"
+	var_store_planned: str = "y"
+	var_store_intensity: str = "mm_v"
+	var_store_intensity_fraction: str = "m_v"
+	var_store_intensity_handled: str = "y^"
 	var_process_planned: str = "g"
 	var_process_intensity: str = "mm_phi"
 	var_process_intensity_fraction: str = "m_phi"
@@ -452,21 +452,21 @@ class HelperVirt:
 
 		return self.env.data_interface.get(self.var_transfer_intensity, j=j, i=i, l=l)
 
-	def indices_memoize_to_indices_container(self, indices_memoize_plain):
+	def indices_store_to_indices_container(self, indices_store_plain):
 		assert self.indices_container == ["j", "rho", "l"]
-		j, i, rho, l = self.indices_planned_decompose(self.var_memorize_planned, indices_memoize_plain)
+		j, i, rho, l = self.indices_planned_decompose(self.var_store_planned, indices_store_plain)
 
 		return j, rho, l
 
-	def indices_memoize_iter_plain(self):
-		return self.indices_iter_plain(self.env.schema.get_var_indices(self.var_memorize_planned))
+	def indices_store_iter_plain(self):
+		return self.indices_iter_plain(self.env.schema.get_var_indices(self.var_store_planned))
 
-	def amount_planned_memoize(self, indices_memoize):
-		return self.env.data_interface.get_plain(self.var_memorize_planned, *indices_memoize)
+	def amount_planned_store(self, indices_store):
+		return self.env.data_interface.get_plain(self.var_store_planned, *indices_store)
 
-	def intensity_fraction_memoize(self, indices_memoize):
-		return self.env.data_interface.get_plain(self.var_memorize_intensity_fraction, *indices_memoize)
+	def intensity_fraction_store(self, indices_store):
+		return self.env.data_interface.get_plain(self.var_store_intensity_fraction, *indices_store)
 
-	def intensity_upper_memoize(self, indices_memoize):
-		j, i, rho, l = self.indices_planned_decompose(self.var_memorize_planned, indices_memoize)
-		return self.env.data_interface.get(self.var_memorize_intensity, j=j, l=l)
+	def intensity_upper_store(self, indices_store):
+		j, i, rho, l = self.indices_planned_decompose(self.var_store_planned, indices_store)
+		return self.env.data_interface.get(self.var_store_intensity, j=j, l=l)
