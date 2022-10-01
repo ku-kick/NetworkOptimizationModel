@@ -145,6 +145,21 @@ class Trace:
 		for index, series in self.state.items():
 			yield index, [series["trajectory"]] + list(series["marks"])
 
+	def tick(self, t, op):
+		index = op.id_tuple()
+
+		if index not in self.state.keys():
+			self.state[index] = dict()
+			self.state[index]["trajectory"] = self.TimeSeries("trajectory")
+			self.state[index]["marks"] = list()
+			planned = op.amount_planned
+			self.state[index]["marks"].append(self.ValueThreshold("planned", self.hor_bound, planned))
+
+		processed = op.amount_processed
+		self.state[index]["trajectory"].append(t, processed)
+		self._bound_update(hor=t, vert=processed)
+
+	# Obsolete
 	def add_point(self, t, op):
 		index = op.id_tuple()
 
