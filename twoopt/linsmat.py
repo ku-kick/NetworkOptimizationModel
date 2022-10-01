@@ -447,7 +447,7 @@ class HelperVirt:
 	def intensity_fraction_transfer(self, indices_transfer_planned_plain):
 		return self.env.data_interface.get_plain(self.var_transfer_intensity_fraction, *indices_transfer_planned_plain)
 
-	def intensity_transfer_upper(self, indices_planned_transfer_plain):
+	def intensity_upper_transfer(self, indices_planned_transfer_plain):
 		j, i, rho, l = self.indices_planned_decompose(self.var_transfer_planned, indices_planned_transfer_plain)
 
 		return self.env.data_interface.get(self.var_transfer_intensity, j=j, i=i, l=l)
