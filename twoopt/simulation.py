@@ -216,6 +216,18 @@ class Simulation:
 				container_input=self.container_by_plain(self.helper_virt.indices_process_to_indices_container(indices)))
 			self.process_ops_add(op)
 
+	def drop_ops_add(self, op):
+		self.drop_ops[op.indices_planned_plain] = op
+
+	def _init_make_drop_ops(self):
+		for indices in self.helper_virt.indices_drop_iter_plain():
+			op = ProcessOp(sim_global=self.sim_global, indices_planned_plain=indices,
+				amount_planned=self.helper_virt.amount_planned_drop(indices),
+				proc_intensity_fraction=self.helper_virt.intensity_fraction_drop(indices),
+				proc_intensity_upper=self.helper_virt.intensity_upper_drop(indices),
+				container_input=self.container_by_plain(self.helper_virt.indices_drop_to_indices_container(indices)))
+			self.drop_ops_add(op)
+
 	def __post_init__(self):
 		if self.helper_virt is None:
 			self.helper_virt = linsmat.HelperVirt(env=self.env)
@@ -229,3 +241,5 @@ class Simulation:
 		self._init_make_store_ops()
 		self.process_ops = dict()
 		self._init_make_process_ops()
+		self.drop_ops = dict()
+		self._init_make_drop_ops()
