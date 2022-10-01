@@ -94,10 +94,13 @@ class Operation:
 
 class TransferOp(Operation):
 
+	def __init__(self, *args, **kwargs):
+		self.container_output = kwargs.pop("container_output", None)
+		Operation.__init__(self, *args, **kwargs)
+
 	def __post_init__(self):
 		log.verbose("created TranferOp", str(self))
 		Operation.__post_init__(self)
-		self.container_output: Container = None
 
 		if math.isclose(0.0, self.amount_planned, abs_tol=0.001):
 			log.warning("created TransferOp", self.as_str_short(), "with the planned amount being equal zero")
@@ -133,6 +136,27 @@ class Simulation:
 			log.verbose("creating container with indices", indices, self.containers)
 			self.containers_add_by_plain(indices, Container())
 
+	def transfer_ops_add(self, op):
+		self.transfer_ops[op.indices_planned_plain] = op
+
+	def _init_make_transfer_ops(self):
+		for indices in self.helper_virt.indices_transfer_iter_plain():
+			if self.helper_virt.indices_transfer_is_connected(indices):
+				# Ensure connectedness by picking the correct input and output containers
+				indices_container_input = self.helper_virt.indices_transfer_to_indices_container_sender(indices)
+				container_input = self.container_by_plain(indices_container_input)
+				indices_container_output = self.helper_virt.indices_transfer_to_indices_container_receiver(indices)
+				container_output = self.container_by_plain(indices_container_output)
+				# Create the op itself
+				op = TransferOp(sim_global=self.sim_global, indices_planned_plain=indices,
+					amount_planned=self.helper_virt.amount_planned_transfer(indices),
+					proc_intensity_fraction=self.helper_virt.intensity_fraction_transfer(indices),
+					proc_intensity_upper=self.helper_virt.intensity_transfer_upper(indices),
+					container_input=container_input, container_output=container_output)
+				# Register the op
+				self.transfer_ops_add(op)
+				log.verbose("created TransferOp", op)
+
 	def __post_init__(self):
 		if self.helper_virt is None:
 			self.helper_virt = linsmat.HelperVirt(env=self.env)
@@ -140,3 +164,5 @@ class Simulation:
 		self.sim_global = SimGlobal()
 		self.containers = dict()
 		self._init_make_containers()
+		self.transfer_ops = dict()
+		self._init_make_transfer_ops()
