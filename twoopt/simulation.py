@@ -128,7 +128,7 @@ class Simulation:
 	def container_by_plain(self, indices_plain):
 		return self.containers[indices_plain]
 
-	def _init_containers(self):
+	def _init_make_containers(self):
 		for indices in self.env.schema.radix_map_iter(*self.indices_container):
 			log.verbose("creating container with indices", indices, self.containers)
 			self.containers_add_by_plain(indices, Container())
@@ -136,4 +136,4 @@ class Simulation:
 	def __post_init__(self):
 		self.sim_global = SimGlobal()
 		self.containers = dict()
-		self._init_containers()
+		self._init_make_containers()
