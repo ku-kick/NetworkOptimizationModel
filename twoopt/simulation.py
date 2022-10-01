@@ -152,6 +152,12 @@ class DropOp(Operation):
 		self.container_input.amount = 0
 
 
+class GenerateOp(Operation):
+
+	def step(self):
+		self.container_input.amount = self.proc_intensity_upper
+
+
 @dataclass
 class Simulation:
 	env: linsmat.Env
@@ -228,6 +234,18 @@ class Simulation:
 				container_input=self.container_by_plain(self.helper_virt.indices_drop_to_indices_container(indices)))
 			self.drop_ops_add(op)
 
+	def generate_ops_add(self, op):
+		self.generate_ops[op.indices_planned_plain] = op
+
+	def _init_generate_ops(self):
+		for indices in self.helper_virt.indices_generate_iter_plain():
+			op = GenerateOp(sim_global=self.sim_global, indices_planned_plain=indices,
+				amount_planned=self.helper_virt.amount_planned_generate(indices), proc_intensity_fraction=1.0,
+				proc_intensity_upper=self.helper_virt.intensity_upper_generate(indices),
+				container_input=self.container_by_plain(
+				self.helper_virt.indices_generate_to_indices_container(indices)))
+			self.generate_ops_add(op)
+
 	def __post_init__(self):
 		if self.helper_virt is None:
 			self.helper_virt = linsmat.HelperVirt(env=self.env)
@@ -243,3 +261,5 @@ class Simulation:
 		self._init_make_process_ops()
 		self.drop_ops = dict()
 		self._init_make_drop_ops()
+		self.generate_ops = dict()
+		self._init_generate_ops()
