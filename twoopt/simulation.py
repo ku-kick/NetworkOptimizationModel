@@ -27,7 +27,7 @@ class Container:
 @dataclass
 class Operation:
 	sim_global: SimGlobal
-	indices_planned_plain: dict
+	indices_planned_plain: dict  # For identification
 	amount_planned: float
 	proc_intensity_fraction: float
 	proc_intensity_upper: float
@@ -117,11 +117,23 @@ class TransferOp(Operation):
 		self._proc_step = 0.0
 
 
+@dataclass
 class Simulation:
 	env: linsmat.Env
+	indices_container: list  # List of strings denoting indices using for container creation
 
-	def transfer_ops_init(self):
-		pass
+	def containers_add_by_plain(self, indices_plain: tuple, c: Container):
+		self.containers[indices_plain] = c
 
-	def transfer_ops_connect(self):
-		pass
+	def container_by_plain(self, indices_plain):
+		return self.containers[indices_plain]
+
+	def _init_containers(self):
+		for indices in self.env.schema.radix_map_iter(*self.indices_container):
+			log.verbose("creating container with indices", indices, self.containers)
+			self.containers_add_by_plain(indices, Container())
+
+	def __post_init__(self):
+		self.sim_global = SimGlobal()
+		self.containers = dict()
+		self._init_containers()
