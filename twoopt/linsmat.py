@@ -371,7 +371,7 @@ class Env:
 @dataclass
 class HelperVirt:
 	"""
-	Enfuses data storage with subject area-related semantics, namely, with the simulation of data exchange in a
+	Enfuses data storage with subject area-related semantics. Pertains to simulation of data exchange in a
 	virtualized network (see the 2022 paper)
 	"""
 	env: Env
@@ -390,6 +390,8 @@ class HelperVirt:
 	var_process_intensity_handled: str = "g^"
 	var_drop_planned: str = "z"
 	var_drop_processed: str = "z^"
+	var_generate_planned: str = "x_eq"
+	var_generate_processed: str = "x_eq^"
 
 	def __post_init__(self):
 		self.indices_container = ["j", "rho", "l"]
@@ -508,3 +510,15 @@ class HelperVirt:
 		j, i, rho, l = self.indices_planned_decompose(self.var_drop_planned, indices_planned_drop)
 
 		return j, rho, l
+
+	def indices_generate_iter_plain(self):
+		return self.indices_iter_plain(self.env.schema.get_var_indices(self.var_generate_planned))
+
+	def amount_planned_generate(self, indices_planned_generate):
+		return self.env.data_interface.get_plain(self.var_generate_planned, *indices_planned_generate)
+
+	def intensity_upper_generate(self, indices_planned_generate):
+		return self.env.data_interface.get_plain(self.var_generate_planned, *indices_planned_generate)
+
+	def indices_generate_to_indices_container(self, indices_planned_generate):
+		return indices_planned_generate  # j, rho, l
