@@ -451,3 +451,22 @@ class HelperVirt:
 		j, i, rho, l = self.indices_planned_decompose(self.var_transfer_planned, indices_planned_transfer_plain)
 
 		return self.env.data_interface.get(self.var_transfer_intensity, j=j, i=i, l=l)
+
+	def indices_memoize_to_indices_container(self, indices_memoize_plain):
+		assert self.indices_container == ["j", "rho", "l"]
+		j, i, rho, l = self.indices_planned_decompose(self.var_memorize_planned, indices_memoize_plain)
+
+		return j, rho, l
+
+	def indices_memoize_iter_plain(self):
+		return self.indices_iter_plain(self.env.schema.get_var_indices(self.var_memorize_planned))
+
+	def amount_planned_memoize(self, indices_memoize):
+		return self.env.data_interface.get_plain(self.var_memorize_planned, *indices_memoize)
+
+	def intensity_fraction_memoize(self, indices_memoize):
+		return self.env.data_interface.get_plain(self.var_memorize_intensity_fraction, *indices_memoize)
+
+	def intensity_upper_memoize(self, indices_memoize):
+		j, i, rho, l = self.indices_planned_decompose(self.var_memorize_planned, indices_memoize)
+		return self.env.data_interface.get(self.var_memorize_intensity, j=j, l=l)
