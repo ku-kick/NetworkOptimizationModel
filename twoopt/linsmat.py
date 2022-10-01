@@ -470,3 +470,24 @@ class HelperVirt:
 	def intensity_upper_store(self, indices_store):
 		j, i, rho, l = self.indices_planned_decompose(self.var_store_planned, indices_store)
 		return self.env.data_interface.get(self.var_store_intensity, j=j, l=l)
+
+	def indices_process_iter_plain(self):
+		return self.indices_iter_plain(self.env.schema.get_var_indices(self.var_process_planned))
+
+	def amount_planned_process(self, indices_planned_process):
+		return self.env.data_interface.get_plain(self.var_process_planned, *indices_planned_process)
+
+	def intensity_fraction_process(self, indices_planned_process):
+		j, i, rho, l = self.indices_planned_decompose(self.var_process_planned, indices_planned_process)
+
+		return self.env.data_interface.get(self.var_process_intensity_fraction, j=j, l=l, rho=rho)
+
+	def intensity_upper_process(self, indices_planned_process):
+		j, i, rho, l = self.indices_planned_decompose(self.var_process_planned, indices_planned_process)
+
+		return self.env.data_interface.get(self.var_process_intensity, j=j, l=l)
+
+	def indices_process_to_indices_container(self, indices_planned_process):
+		j, i, rho, l = self.indices_planned_decompose(self.var_process_planned, indices_planned_process)
+
+		return j, rho, l
