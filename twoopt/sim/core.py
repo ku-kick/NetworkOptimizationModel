@@ -147,7 +147,7 @@ class TransferOp(Op):
 		self.op_state.output_container.amount += self.amount
 
 
-class MemorizeOp(Op):
+class StoreOp(Op):
 	def noise(self):
 		return 0.0
 
