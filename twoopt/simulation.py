@@ -146,6 +146,12 @@ class ProcessOp(Operation):
 		self.amount_processed_add(amount_proc)
 
 
+class DropOp(Operation):
+	def step(self):
+		self.amount_processed_add(self.amount_input())
+		self.container_input.amount = 0
+
+
 @dataclass
 class Simulation:
 	env: linsmat.Env
