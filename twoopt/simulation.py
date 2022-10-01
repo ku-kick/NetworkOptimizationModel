@@ -152,7 +152,7 @@ class Simulation:
 					amount_planned=self.helper_virt.amount_planned_transfer(indices),
 					proc_intensity_fraction=self.helper_virt.intensity_fraction_transfer(indices),
 					proc_intensity_upper=self.helper_virt.intensity_transfer_upper(indices),
-					container_input=container_input, container_output=container_output)
+					container_input=container_input, container_output=container_output, proc_noise_type="gauss")
 				# Register the op
 				self.transfer_ops_add(op)
 				log.verbose("created TransferOp", op)
