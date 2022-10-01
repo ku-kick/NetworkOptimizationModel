@@ -183,7 +183,7 @@ class Simulation(core.SimEnv):
 				["mm_psi", "mm_v", "mm_phi", "", "mm_x_eq"],  # TODO: Handle empty variables
 				["m_psi", "m_v", "m_phi", "", ""],
 				["x^", "y^", "g^", "z^", "x_eq^"],
-				[sim.core.TransferOp, sim.core.MemorizeOp, sim.core.ProcessOp, sim.core.DropOp, GeneratorOp]):
+				[sim.core.TransferOp, sim.core.StoreOp, sim.core.ProcessOp, sim.core.DropOp, GeneratorOp]):
 			for indices in self.schema.radix_map_iter_var_dict(var_amount_planned):
 				j, rho, l = [indices[1][ind] for ind in ["j", "rho", "l"]]
 
