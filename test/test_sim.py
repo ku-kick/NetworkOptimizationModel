@@ -122,6 +122,8 @@ class TestSim(unittest.TestCase):
 		transfer.set_container_input(container)
 		transfer.set_container_output(container_output)
 		chunk = proc_intensity_upper * proc_intensity_fraction * 2
+		self.assertTrue(math.isclose(container.amount, 0, abs_tol=0.001))
+		self.assertTrue(math.isclose(container_output.amount, 0, abs_tol=0.001))
 
 		for i in range(5):
 			container.amount = chunk
@@ -129,6 +131,7 @@ class TestSim(unittest.TestCase):
 			transfer.step_teardown()
 
 		self.assertTrue(transfer.amount_processed > 0)
+		self.assertTrue(container_output.amount > 0)
 
 
 if __name__ == "__main__":
