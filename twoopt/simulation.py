@@ -120,6 +120,23 @@ class TransferOp(Operation):
 		self._proc_step = 0.0
 
 
+class MemorizeOp(Operation):
+
+	def amount_stash(self):
+		return self.amount_processed
+
+	def step(self):
+		self.__amount_proc = self.amount_proc_available()
+		self.amount_input_add(-self.__amount_proc)
+		self.amount_processed_add(self.__amount_proc)
+
+	def step_teardown(self):
+		if self.__amount_proc < 0:
+			self.__amount_proc = ut.clamp(self.__amount_proc, -self.amount_input(), 0)  # Store it back
+			self.amount_input_add(self.__amount_proc)
+			self.amount_processed_add(-self.__amount_proc)
+
+
 @dataclass
 class Simulation:
 	env: linsmat.Env
@@ -143,6 +160,7 @@ class Simulation:
 		for indices in self.helper_virt.indices_transfer_iter_plain():
 			if self.helper_virt.indices_transfer_is_connected(indices):
 				# Ensure connectedness by picking the correct input and output containers
+				#TODO indices: missing variable str
 				indices_container_input = self.helper_virt.indices_transfer_to_indices_container_sender(indices)
 				container_input = self.container_by_plain(indices_container_input)
 				indices_container_output = self.helper_virt.indices_transfer_to_indices_container_receiver(indices)
