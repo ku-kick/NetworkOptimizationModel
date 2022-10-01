@@ -136,34 +136,34 @@ class TestSim(unittest.TestCase):
 		self.assertTrue(transfer.amount_processed > 0)
 		self.assertTrue(container_output.amount > 0)
 
-	def test_memorize_op(self):
+	def test_store_op(self):
 		sim_global = sml.SimGlobal()
 		intensity_upper=3.0
 		container_input = sml.Container()
 		amount_planned=6  # Plain is not fullfilled
-		memorize_op = sml.MemorizeOp(sim_global=sim_global,
+		store_op = sml.StoreOp(sim_global=sim_global,
 			indices_planned_plain=self.env.schema.indices_dict_to_plain("y", j=0, rho=0, l=0),
 			amount_planned=amount_planned, proc_intensity_upper=intensity_upper, proc_intensity_lower=-intensity_upper,
 			proc_intensity_fraction=1.0, container_input=container_input)
 
 		for i in range(3):
 			container_input.amount = intensity_upper
-			memorize_op.step()
-			memorize_op.step_teardown()
+			store_op.step()
+			store_op.step_teardown()
 			container_input.amount = 0
 
-		self.assertTrue(math.isclose(amount_planned, memorize_op.amount_processed, abs_tol=0.00001))
+		self.assertTrue(math.isclose(amount_planned, store_op.amount_processed, abs_tol=0.00001))
 		amount_processed_initial = 10
-		memorize_op.amount_processed = amount_processed_initial  # Plan is exceeded
+		store_op.amount_processed = amount_processed_initial  # Plan is exceeded
 
 		for i in range(3):
 			container_input.amount = intensity_upper / 2
-			memorize_op.step()
+			store_op.step()
 			container_input.amount /= 2
-			memorize_op.step_teardown()
+			store_op.step_teardown()
 			container_input.amount = 0
 
-		self.assertTrue(amount_planned <= memorize_op.amount_processed < amount_processed_initial)
+		self.assertTrue(amount_planned <= store_op.amount_processed < amount_processed_initial)
 
 	def test_create_containers(self):
 		s = sml.Simulation(env=self.env)
