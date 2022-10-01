@@ -120,7 +120,7 @@ class TransferOp(Operation):
 @dataclass
 class Simulation:
 	env: linsmat.Env
-	indices_container: list  # List of strings denoting indices using for container creation
+	helper_virt: linsmat.HelperVirt = None
 
 	def containers_add_by_plain(self, indices_plain: tuple, c: Container):
 		self.containers[indices_plain] = c
@@ -129,11 +129,14 @@ class Simulation:
 		return self.containers[indices_plain]
 
 	def _init_make_containers(self):
-		for indices in self.env.schema.radix_map_iter(*self.indices_container):
+		for indices in self.helper_virt.indices_container_iter_plain():
 			log.verbose("creating container with indices", indices, self.containers)
 			self.containers_add_by_plain(indices, Container())
 
 	def __post_init__(self):
+		if self.helper_virt is None:
+			self.helper_virt = linsmat.HelperVirt(env=self.env)
+
 		self.sim_global = SimGlobal()
 		self.containers = dict()
 		self._init_make_containers()
