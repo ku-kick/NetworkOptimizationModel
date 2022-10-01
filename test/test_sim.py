@@ -1,6 +1,9 @@
 import unittest
 import pathlib
 import sys
+
+from scipy.optimize._lsap import linear_sum_assignment
+
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / 'twoopt'))
 from twoopt import sim, cli, linsolv_planner, linsmat, generic
@@ -9,6 +12,7 @@ import os
 import pathlib
 import math
 import pygal
+import simulation as sml
 
 
 class TestSim(unittest.TestCase):
@@ -46,10 +50,14 @@ class TestSim(unittest.TestCase):
 				entry_nodes=entry_nodes,
 				output=self.__CSV_OUTPUT_FILE
 			)
-			self.sim_run()
-			self.sim_visualize()
 		self.env = linsmat.Env.make_from_file(schema_file=self.__SCHEMA_FILE, storage_file=self.__CSV_OUTPUT_FILE,
 			row_index_variables=[])
+		self.solve()
+
+	def solve(self):
+		self.planner = linsolv_planner.LinsolvPlanner(self.env.data_interface, self.env.schema)
+		self.planner.solve()
+		self.env.data_interface.provider.sync()
 
 	def sim_run(self):
 		self.simulation = sim.Simulation.make_from_file(schema_file=self.__SCHEMA_FILE, storage_file=self.__CSV_OUTPUT_FILE,
@@ -66,7 +74,7 @@ class TestSim(unittest.TestCase):
 			variables = ["x^", "y^", "z^", "g^"])
 		# graph_renderer.output()
 
-	def test_run_sim_balance(self):
+	def run_sim_balance(self):
 		data_interface = self.env.data_interface
 		schema = self.env.schema
 
@@ -97,6 +105,31 @@ class TestSim(unittest.TestCase):
 			balance = y - y_prev + z + g + sum(x_out) - sum(x_in)
 			generic.Log.debug("x_eq", x_eq, "balance", balance)
 			self.assertTrue(math.isclose(x_eq, balance, abs_tol=0.1))
+
+	def test_transfer_op(self):
+		sim_global = sml.SimGlobal()
+		proc_intensity_upper = self.env.data_interface.get("mm_psi", j=0, l=0, i=1)
+		proc_intensity_fraction = self.env.data_interface.get("m_psi", j=0, l=0, i=1, rho=0)
+		transfer = sml.TransferOp(sim_global=sim_global,
+			indices_planned_plain=self.env.schema.indices_dict_to_plain("x", j=0, i=1, l=0, rho=0),
+			amount_planned=proc_intensity_fraction * proc_intensity_upper * 1000,
+			proc_intensity_fraction=proc_intensity_fraction,
+			proc_intensity_upper=proc_intensity_upper,
+			proc_intensity_lower=0,
+			proc_noise_type="gauss")
+		container = sml.Container()
+		container_output = sml.Container()
+		transfer.set_container_input(container)
+		transfer.set_container_output(container_output)
+		chunk = proc_intensity_upper * proc_intensity_fraction * 2
+
+		for i in range(5):
+			container.amount = chunk
+			transfer.step()
+			transfer.step_teardown()
+
+		self.assertTrue(transfer.amount_processed > 0)
+
 
 if __name__ == "__main__":
 	unittest.main()
