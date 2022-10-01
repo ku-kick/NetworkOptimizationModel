@@ -134,7 +134,7 @@ class TestSim(unittest.TestCase):
 		self.assertTrue(container_output.amount > 0)
 
 	def test_create_containers(self):
-		s = sml.Simulation(env=self.env, indices_container=["j", "rho", "l"])
+		s = sml.Simulation(env=self.env)
 		self.assertTrue(len(list(self.env.schema.radix_map_iter("j", "rho", "l"))) > 0)
 		self.assertEqual(len(s.containers), len(list(self.env.schema.radix_map_iter("j", "rho", "l"))))
 
