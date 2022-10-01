@@ -39,6 +39,8 @@ class Operation:
 	def as_str_short(self):
 		return '_'.join(map(str, self.indices_planned_plain))
 
+	id_tuple = as_str_short  # Compatibility
+
 	def amount_input(self):
 		return self.container_input.amount
 
