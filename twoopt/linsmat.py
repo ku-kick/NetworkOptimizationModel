@@ -345,7 +345,7 @@ class DataInterface:
 class Env:
 	row_index: RowIndex
 	schema: Schema
-	data_interface: object
+	data_interface: DataInterface
 
 	@staticmethod
 	def make_from_file(schema_file, storage_file, row_index_variables: list):
@@ -394,8 +394,60 @@ class HelperVirt:
 	def __post_init__(self):
 		self.indices_container = ["j", "rho", "l"]
 
+	def indices_planned_decompose(self, var, indices_planned_plain):
+		"""
+		Decomposes indices into j, i, rho, and l. If some is not present, the returned value is none
+		"""
+		ind = self.env.schema.indices_plain_to_dict(var, *indices_planned_plain)[1]
+		j = ind.pop("j", None)
+		i = ind.pop("i", None)
+		rho = ind.pop("rho", None)
+		l = ind.pop("l", None)
+
+		return j, i, rho, l
+
 	def indices_iter_plain(self, index_names):
 		return self.env.schema.radix_map_iter(*index_names)
 
 	def indices_container_iter_plain(self):
 		return self.indices_iter_plain(self.indices_container)
+
+	def indices_transfer_iter_plain(self):
+		return self.indices_iter_plain(self.env.schema.get_var_indices(self.var_transfer_planned))
+
+	def indices_transfer_to_indices_container_receiver(self, indices_transfer_plain):
+		assert self.indices_container == ["j", "rho", "l"]
+		j, i, rho, l = self.indices_planned_decompose(self.var_transfer_planned, indices_transfer_plain)
+
+		return i, rho, l
+
+	def indices_transfer_to_indices_container_sender(self, indices_transfer_plain):
+		assert self.indices_container == ["j", "rho", "l"]
+		j, i, rho, l = self.indices_planned_decompose(self.var_transfer_planned, indices_transfer_plain)
+
+		return j, rho, l
+
+	def indices_transfer_is_connected(self, indices):
+		"""
+		Determine by indices, whether there is a connection b/w j and i
+		"""
+		j, i, rho, l = self.indices_planned_decompose(self.var_transfer_planned, indices)
+
+		if i == j:
+			return False
+
+		intensity = self.env.data_interface.get(self.var_transfer_intensity, j=j, i=i, l=l)
+		intensity_fraction = self.env.data_interface.get(self.var_transfer_intensity_fraction, j=j, i=i, rho=rho, l=l)
+
+		return intensity > 0 and intensity_fraction > 0
+
+	def amount_planned_transfer(self, indices_transfer_plain):
+		return self.env.data_interface.get_plain(self.var_transfer_planned, *indices_transfer_plain)
+
+	def intensity_fraction_transfer(self, indices_transfer_planned_plain):
+		return self.env.data_interface.get_plain(self.var_transfer_intensity_fraction, *indices_transfer_planned_plain)
+
+	def intensity_transfer_upper(self, indices_planned_transfer_plain):
+		j, i, rho, l = self.indices_planned_decompose(self.var_transfer_planned, indices_planned_transfer_plain)
+
+		return self.env.data_interface.get(self.var_transfer_intensity, j=j, i=i, l=l)
