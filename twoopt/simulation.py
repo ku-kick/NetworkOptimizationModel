@@ -1,8 +1,13 @@
 from dataclasses import dataclass, field
+from math import log
+
 import linsmat
 import ut
 import random
 import generic
+import math
+
+log = ut.Log(file=__file__, level=ut.Log.LEVEL_VERBOSE)
 
 
 @dataclass
@@ -30,6 +35,9 @@ class Operation:
 	proc_noise_type: bool = None  # None, "gauss"
 	amount_processed: float = 0.0
 	container_input: Container = field(default_factory=Container)
+
+	def as_str_short(self):
+		return '_'.join(map(str, self.indices_planned_plain))
 
 	def amount_input(self):
 		return self.container_input.amount
@@ -85,8 +93,12 @@ class Operation:
 class TransferOp(Operation):
 
 	def __post_init__(self):
+		log.verbose("created TranferOp", str(self))
 		Operation.__post_init__(self)
 		self.container_output: Container = None
+
+		if math.isclose(0.0, self.amount_planned, abs_tol=0.001):
+			log.warning("created TransferOp", self.as_str_short(), "with the planned amount being equal zero")
 
 	def set_container_output(self, c: Container):
 		self.container_output = c
@@ -94,7 +106,6 @@ class TransferOp(Operation):
 	def step(self):
 		assert self.container_output is not None
 		self._proc_step = self.amount_proc_available()
-		generic.Log.debug(self._proc_step)
 		self.amount_input_add(-self._proc_step)
 
 	def step_teardown(self):
