@@ -491,3 +491,20 @@ class HelperVirt:
 		j, i, rho, l = self.indices_planned_decompose(self.var_process_planned, indices_planned_process)
 
 		return j, rho, l
+
+	def indices_drop_iter_plain(self):
+		return self.indices_iter_plain(self.env.schema.get_var_indices(self.var_drop_planned))
+
+	def amount_planned_drop(self, indices_planned_drop):
+		return self.env.data_interface.get_plain(self.var_drop_planned, *indices_planned_drop)
+
+	def intensity_fraction_drop(self, indices_planned_drop):
+		return 1.0
+
+	def intensity_upper_drop(self, indices_planned_drop):
+		return float("inf")
+
+	def indices_drop_to_indices_container(self, indices_planned_drop):
+		j, i, rho, l = self.indices_planned_decompose(self.var_drop_planned, indices_planned_drop)
+
+		return j, rho, l
