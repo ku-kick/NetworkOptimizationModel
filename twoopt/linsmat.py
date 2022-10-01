@@ -366,3 +366,36 @@ class Env:
 		data_interface = DataInterface(provider=storage_provider, schema=schema)
 
 		return Env(row_index=row_index, schema=schema, data_interface=data_interface)
+
+
+@dataclass
+class HelperVirt:
+	"""
+	Enfuses data storage with subject area-related semantics, namely, with the simulation of data exchange in a
+	virtualized network (see the 2022 paper)
+	"""
+	env: Env
+	indices_container: list = None
+	var_transfer_planned: str = "x"  # How much information was planned to be transferred
+	var_transfer_intensity: str = "mm_psi"  # What is the maximum intensity of a channel
+	var_transfer_intensity_fraction: str = "m_psi" # What fraction of intensity is being used during the transfer
+	var_transfer_intensity_handled: str = "x^"  # How much information has been handled
+	var_memorize_planned: str = "y"
+	var_memorize_intensity: str = "mm_v"
+	var_memorize_intensity_fraction: str = "m_v"
+	var_memorize_intensity_handled: str = "y^"
+	var_process_planned: str = "g"
+	var_process_intensity: str = "mm_phi"
+	var_process_intensity_fraction: str = "m_phi"
+	var_process_intensity_handled: str = "g^"
+	var_drop_planned: str = "z"
+	var_drop_processed: str = "z^"
+
+	def __post_init__(self):
+		self.indices_container = ["j", "rho", "l"]
+
+	def indices_iter_plain(self, index_names):
+		return self.env.schema.radix_map_iter(*index_names)
+
+	def indices_container_iter_plain(self):
+		return self.indices_iter_plain(self.indices_container)
