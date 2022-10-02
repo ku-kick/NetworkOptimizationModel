@@ -6,6 +6,7 @@ import ut
 import random
 import generic
 import math
+import functools
 
 log = ut.Log(file=__file__, level=ut.Log.LEVEL_VERBOSE)
 
@@ -14,6 +15,7 @@ log = ut.Log(file=__file__, level=ut.Log.LEVEL_VERBOSE)
 class SimGlobal:
 	dt: float = 1.0
 	t: float = 0.0
+	l: int = 0
 
 	def t_inc(self):
 		self.t += self.dt
@@ -35,6 +37,10 @@ class Operation:
 	proc_noise_type: bool = None  # None, "gauss"
 	amount_processed: float = 0.0
 	container_input: Container = field(default_factory=Container)
+
+	def reset(self):
+		self.container_input.amount = 0.0
+		self.amount_processed = 0.0
 
 	def as_str_short(self):
 		return '_'.join(map(str, self.indices_planned_plain))
@@ -263,3 +269,40 @@ class Simulation:
 		self._init_make_drop_ops()
 		self.generate_ops = dict()
 		self._init_generate_ops()
+
+	def ops_all(self):
+		return sum(functools.reduce(lambda a, b: list(a) + list(b),
+			[self.drop_ops.items(), self.generate_ops.items(), self.process_ops.items(), self.store_ops.items(),
+			self.transfer_ops.items()], []))
+
+	def payload_ops_shuffled(self):
+		ops = list(self.process_ops.items()) + list(self.transfer_ops.items()) + list(self.store_ops.items())
+		random.shuffle(ops)
+
+		return ops
+
+	def teardown_ops(self):
+		return list(self.process_ops.items()) + list(self.store_ops.items())
+
+	def reset(self):
+		self.sim_global.t = 0.0
+		self.sim_global.l = 0
+
+		for op in self.ops_all():
+			op.reset()
+
+	def step(self):
+		# TODO How to know whether an op pertains to the current structural stability span
+		for op in self.generate_ops.items():
+			op.step()
+
+		for op in self.payload_ops_shuffled():
+			op.step()
+
+		for op in self.teardown_ops():
+			op.step_teardown()
+
+		for op in self.drop_ops.items():
+			op.step()
+
+		self.sim_global.t_inc()
