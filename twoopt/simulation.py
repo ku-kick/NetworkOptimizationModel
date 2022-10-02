@@ -134,7 +134,7 @@ class TransferOp(Operation):
 		Operation.__init__(self, *args, **kwargs)
 
 	def __post_init__(self):
-		log.verbose("created TranferOp", str(self))
+		# log.verbose("created TranferOp", str(self))
 		Operation.__post_init__(self)
 
 		if math.isclose(0.0, self.amount_planned, abs_tol=0.001):
@@ -189,6 +189,8 @@ class ProcessOp(Operation):
 
 class DropOp(Operation):
 	def step(self):
+		log.verbose(DropOp, self.as_str_short(), "dropping: ", self.amount_input(), "planned to drop",
+			self.amount_processed, "accumulated", self.amount_processed)
 		self.amount_processed_add(self.amount_input())
 		self.container_input.amount = 0
 
@@ -239,7 +241,7 @@ class Simulation:
 					container_input=container_input, container_output=container_output, proc_noise_type="gauss")
 				# Register the op
 				self.transfer_ops_add(op)
-				log.verbose("created TransferOp", op)
+				# log.verbose("created TransferOp", op)
 
 	def store_ops_add(self, op):
 		self.store_ops[op.indices_planned_plain] = op
