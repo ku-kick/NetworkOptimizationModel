@@ -189,7 +189,9 @@ class DropOp(Operation):
 class GenerateOp(Operation):
 
 	def step(self):
-		self.container_input.amount = self.proc_intensity_upper
+		diff = self.proc_intensity_upper
+		self.container_input.amount = diff
+		self.amount_processed_add(diff)
 
 
 @dataclass
