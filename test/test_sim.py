@@ -167,10 +167,15 @@ class TestSim(unittest.TestCase):
 
 		self.assertTrue(amount_planned <= store_op.amount_processed < amount_processed_initial)
 
-	def test_create_containers(self):
+	def test_init(self):
 		s = sml.Simulation(env=self.env)
 		self.assertTrue(len(list(self.env.schema.radix_map_iter("j", "rho", "l"))) > 0)
 		self.assertEqual(len(s.containers), len(list(self.env.schema.radix_map_iter("j", "rho", "l"))))
+		self.assertEqual(len(s.containers_processed), len(list(self.env.schema.radix_map_iter("j", "rho"))))
+		# self.assertEqual(len(s.transfer_ops), len(list(self.env.schema.radix_map_iter("j", "i", "rho", "l"))))  # Wrong, because self-connected and zero-throughput channels are optimized out
+		self.assertEqual(len(s.drop_ops), len(list(self.env.schema.radix_map_iter("j", "rho", "l"))))
+		self.assertEqual(len(s.process_ops), len(list(self.env.schema.radix_map_iter("j", "rho", "l"))))
+		self.assertEqual(len(s.store_ops), len(list(self.env.schema.radix_map_iter("j", "rho", "l"))))
 
 
 if __name__ == "__main__":
