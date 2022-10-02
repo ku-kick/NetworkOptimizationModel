@@ -30,7 +30,7 @@ class Container:
 class Operation:
 	sim_global: SimGlobal
 	indices_planned_plain: dict  # For identification
-	index_l: float
+	val_l: float
 	amount_planned: float
 	proc_intensity_fraction: float
 	proc_intensity_upper: float
@@ -40,7 +40,7 @@ class Operation:
 	container_input: Container = field(default_factory=Container)
 
 	def is_current_l(self):
-		return self.sim_global.l == self.index_l
+		return self.sim_global.l == self.val_l
 
 	def reset(self):
 		self.container_input.amount = 0.0
