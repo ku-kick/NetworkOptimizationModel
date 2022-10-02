@@ -13,6 +13,7 @@ log = ut.Log(file=__file__, level=ut.Log.LEVEL_VERBOSE)
 
 @dataclass
 class SimGlobal:
+	helper_virt: linsmat.HelperVirt = None
 	dt: float = 1.0
 	t: float = 0.0
 	l: int = 0
@@ -278,7 +279,7 @@ class Simulation:
 		if self.helper_virt is None:
 			self.helper_virt = linsmat.HelperVirt(env=self.env)
 
-		self.sim_global = SimGlobal()
+		self.sim_global = SimGlobal(self.helper_virt)
 		self.containers = dict()
 		self._init_make_containers()
 		self.containers_processed = dict()
