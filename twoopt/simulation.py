@@ -326,9 +326,11 @@ class Simulation:
 		return self.__trace
 
 	def ops_all(self):
-		return sum(functools.reduce(lambda a, b: list(a) + list(b),
-			[self.drop_ops.values(), self.generate_ops.values(), self.process_ops.values(), self.store_ops.values(),
-			self.transfer_ops.values()], []))
+		yield from self.generate_ops.values()
+		yield from self.drop_ops.values()
+		yield from self.process_ops.values()
+		yield from self.store_ops.values()
+		yield from self.transfer_ops.values()
 
 	def payload_ops_shuffled(self):
 		ops = list(self.process_ops.values()) + list(self.transfer_ops.values()) + list(self.store_ops.values())
