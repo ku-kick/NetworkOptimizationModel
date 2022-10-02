@@ -167,6 +167,17 @@ class TestSim(unittest.TestCase):
 
 		self.assertTrue(amount_planned <= store_op.amount_processed < amount_processed_initial)
 
+	def test_generate_op(self):
+		n_steps = 3
+		intensity = 4.0
+		op = sml.GenerateOp(sim_global=sml.SimGlobal(), indices_planned_plain=(0, 0, 0), amount_planned=None,
+			proc_intensity_fraction=1.0, proc_intensity_upper=intensity, val_l=0)
+
+		for _ in range(n_steps):
+			op.step()
+
+		self.assertTrue(math.isclose(intensity * n_steps, op.amount_processed))
+
 	def test_init(self):
 		s = sml.Simulation(env=self.env)
 		self.assertTrue(len(list(self.env.schema.radix_map_iter("j", "rho", "l"))) > 0)
