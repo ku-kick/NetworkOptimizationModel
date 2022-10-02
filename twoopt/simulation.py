@@ -9,6 +9,7 @@ import math
 import functools
 
 log = ut.Log(file=__file__, level=ut.Log.LEVEL_VERBOSE)
+log.filter_disable = ["dropping"]
 
 
 @dataclass
@@ -95,7 +96,7 @@ class Operation:
 	def noise(self):
 		if self.proc_noise_type is None:
 			return 0.0
-		elif self.proc_noise_type is "gauss":
+		elif self.proc_noise_type == "gauss":
 			diff_planned = self.amount_diff_planned()
 
 			if diff_planned > 0:
