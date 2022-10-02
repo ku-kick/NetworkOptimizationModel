@@ -11,6 +11,10 @@ import functools
 log = ut.Log(file=__file__, level=ut.Log.LEVEL_VERBOSE)
 log.filter_disable = ["dropping"]
 
+# The following flags manage randomness in the model. It makes sense to disable those during debugging routines
+_SIM_USE_NOISE = False
+_SIM_SHUFFLE_OPS = False
+
 
 @dataclass
 class SimGlobal:
@@ -94,6 +98,9 @@ class Operation:
 		self.container_input = c
 
 	def noise(self):
+		if not _SIM_USE_NOISE:
+			return 0.0
+
 		if self.proc_noise_type is None:
 			return 0.0
 		elif self.proc_noise_type == "gauss":
@@ -338,7 +345,9 @@ class Simulation:
 
 	def payload_ops_shuffled(self):
 		ops = list(self.process_ops.values()) + list(self.transfer_ops.values()) + list(self.store_ops.values())
-		random.shuffle(ops)
+
+		if _SIM_SHUFFLE_OPS:
+			random.shuffle(ops)
 
 		return ops
 
