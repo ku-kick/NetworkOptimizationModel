@@ -17,13 +17,19 @@ class SimGlobal:
 	dt: float = 1.0
 	t: float = 0.0
 	l: int = 0
+	__new_l: bool = False
 
 	def t_inc(self):
+		self.new_l = False
 		self.t += self.dt
 
 		while self.t >= self.helper_virt.tl(self.l):
 			self.l += 1
 			log.info(SimGlobal, "updated l. New l: ", self.l)
+			self.__new_l = True
+
+	def is_new_l(self):
+		return self.new_l
 
 
 @dataclass
