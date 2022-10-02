@@ -215,20 +215,25 @@ class TestSim(unittest.TestCase):
 		for j, rho, l in self.env.schema.radix_map_iter("j", "rho", "l"):
 			ind = tuple([j, rho, l])
 			generated = s.generate_ops[ind].amount_processed
+			stored_prev = 0.0
 			stored = s.store_ops[ind].amount_processed
 			processed = s.process_ops[ind].amount_processed
 			dropped = s.drop_ops[ind].amount_processed
 			input = 0.0
 			output = 0.0
 
+			if l > 0:
+				stored_prev = s.store_ops[(j, rho, l - 1,)].amount_processed
+
 			for i in range(self.env.schema.get_index_bound("i")):
 				if s.helper_virt.indices_transfer_is_connected((j, i, rho, l,)):
 					output += s.transfer_ops[(j, i, rho, l)].amount_processed
 					input += s.transfer_ops[(i, j, rho, l)].amount_processed
 
-			balance = stored + processed + dropped + output - input
+			balance = stored - stored_prev + processed + dropped + output - input
 			log.info("test simulation ", "indices", ind, "balance", balance, "vs generated", generated, ": stored",
-				stored, "processed", processed, "input", input, "output", output, "dropped", dropped)
+				stored, "stored prev.", stored_prev, "processed", processed, "input", input, "output", output,
+				"dropped", dropped)
 			self.assertTrue(math.isclose(balance, generated, abs_tol=0.001))
 
 
