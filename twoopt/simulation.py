@@ -128,6 +128,10 @@ class TransferOp(Operation):
 
 class StoreOp(Operation):
 
+	def __init__(self, *args, **kwargs):
+		self.container_processed: Container = kwargs.pop("container_processed")
+		Operation.__init__(self, *args, **kwargs)
+
 	def amount_stash(self):
 		return self.amount_processed
 
@@ -205,6 +209,11 @@ class Simulation:
 	def store_ops_add(self, op):
 		self.store_ops[op.indices_planned_plain] = op
 
+	def _init_make_containers_processed(self):
+		for indices in self.helper_virt.indices_container_processed_iter_plain():
+			log.verbose("containers processed index", indices)
+			self.containers_processed[indices] = Container()
+
 	def _init_make_store_ops(self):
 		for indices in self.helper_virt.indices_store_iter_plain():
 			op = StoreOp(sim_global=self.sim_global, indices_planned_plain=indices,
@@ -213,7 +222,9 @@ class Simulation:
 				proc_intensity_upper=self.helper_virt.intensity_upper_store(indices),
 				proc_intensity_lower=-self.helper_virt.intensity_upper_store(indices),
 				container_input=self.container_by_plain(
-					self.helper_virt.indices_store_to_indices_container(indices)))
+					self.helper_virt.indices_store_to_indices_container(indices)),
+				container_processed=self.containers_processed[
+					self.helper_virt.indices_store_to_indices_container_processed(indices)])
 			self.store_ops_add(op)
 
 	def process_ops_add(self, op):
@@ -259,6 +270,8 @@ class Simulation:
 		self.sim_global = SimGlobal()
 		self.containers = dict()
 		self._init_make_containers()
+		self.containers_processed = dict()
+		self._init_make_containers_processed()
 		self.transfer_ops = dict()
 		self._init_make_transfer_ops()
 		self.store_ops = dict()
