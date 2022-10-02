@@ -189,6 +189,9 @@ class TestSim(unittest.TestCase):
 		self.assertEqual(len(s.store_ops), len(list(self.env.schema.radix_map_iter("j", "rho", "l"))))
 		self.assertTrue(len(s.drop_ops) > 0)
 
+		self.assertTrue(not (s.process_ops[(0, 0, 0)].container_input is s.process_ops[(0, 1, 0)].container_input))
+		self.assertTrue(not (s.generate_ops[(0, 0, 0)].container_input is s.process_ops[(0, 1, 0)].container_input))
+
 		for j, rho, l in self.env.schema.radix_map_iter("j", "rho", "l"):
 			ind = tuple([j, rho, l])
 			self.assertTrue(s.containers[ind] is s.generate_ops[ind].container_input)
