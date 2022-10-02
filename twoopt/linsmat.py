@@ -17,6 +17,8 @@ import csv
 import pathlib
 from generic import Log
 
+log = ut.Log(file=__file__, level=ut.Log.LEVEL_VERBOSE)
+
 
 @dataclass
 class RowIndex:
@@ -459,6 +461,17 @@ class HelperVirt:
 		j, i, rho, l = self.indices_planned_decompose(self.var_store_planned, indices_store_plain)
 
 		return j, rho, l
+
+	def indices_container_processed_iter_plain(self):
+		return self.env.schema.radix_map_iter("j", "rho")
+
+	def indices_store_to_indices_container_processed(self, indices_store_planned_plain):
+		"""
+		"Processed info. container" ensures connection between store operations across structural stability timespan
+		"""
+		j, i, rho, l = self.indices_planned_decompose(self.var_store_planned, indices_store_planned_plain)
+
+		return j, rho
 
 	def indices_store_iter_plain(self):
 		return self.indices_iter_plain(self.env.schema.get_var_indices(self.var_store_planned))
