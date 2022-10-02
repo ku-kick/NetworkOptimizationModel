@@ -72,7 +72,7 @@ class Operation:
 		self.amount_processed = 0.0
 
 	def as_str_short(self):
-		return '_'.join([str(type(self))] + list(map(str, self.indices_planned_plain)))
+		return '_'.join([type(self).__name__] + list(map(str, self.indices_planned_plain)))
 
 	id_tuple = as_str_short  # Compatibility
 
