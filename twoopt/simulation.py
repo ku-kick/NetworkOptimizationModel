@@ -327,17 +327,20 @@ class Simulation:
 			op.reset()
 
 	def step(self):
-		# TODO How to know whether an op pertains to the current structural stability span
 		for op in self.generate_ops.items():
-			op.step()
+			if op.is_current_l():
+				op.step()
 
 		for op in self.payload_ops_shuffled():
-			op.step()
+			if op.is_current_l():
+				op.step()
 
 		for op in self.teardown_ops():
-			op.step_teardown()
+			if op.is_current_l():
+				op.step_teardown()
 
 		for op in self.drop_ops.items():
-			op.step()
+			if op.is_current_l():
+				op.step()
 
 		self.sim_global.t_inc()
