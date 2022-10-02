@@ -535,3 +535,28 @@ class HelperVirt:
 
 	def indices_generate_to_indices_container(self, indices_planned_generate):
 		return indices_planned_generate  # j, rho, l
+
+	def indices_process_l(self, indices_planned_process_plain):
+		j, i, rho, l = self.indices_planned_decompose(self.var_process_planned, indices_planned_process_plain)
+
+		return l
+
+	def indices_transfer_l(self, indices_planned_transfer_plain):
+		j, i, rho, l = self.indices_planned_decompose(self.var_transfer_planned, indices_planned_transfer_plain)
+
+		return l
+
+	def indices_store_l(self, indices_planned_store_plain):
+		j, i, rho, l = self.indices_planned_decompose(self.var_store_planned, indices_planned_store_plain)
+
+		return l
+
+	def indices_drop_l(self, indices_planned_drop_plain):
+		j, i, rho, l = self.indices_planned_decompose(self.var_drop_planned, indices_planned_drop_plain)
+
+		return l
+
+	def indices_generate_l(self, indices_planned_generate_plain):
+		j, i, rho, l = self.indices_planned_decompose(self.var_generate_planned, indices_planned_generate_plain)
+
+		return l
