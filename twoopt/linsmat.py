@@ -532,7 +532,10 @@ class HelperVirt:
 		return self.env.data_interface.get_plain(self.var_generate_planned, *indices_planned_generate)
 
 	def intensity_upper_generate(self, indices_planned_generate):
-		return self.env.data_interface.get_plain(self.var_generate_planned, *indices_planned_generate)
+		j, i, rho, l = self.indices_planned_decompose(self.var_generate_planned, indices_planned_generate)
+
+		return self.env.data_interface.get_plain(self.var_generate_planned,
+			*indices_planned_generate) / self.env.data_interface.get("tl", l=l)
 
 	def indices_generate_to_indices_container(self, indices_planned_generate):
 		return indices_planned_generate  # j, rho, l
