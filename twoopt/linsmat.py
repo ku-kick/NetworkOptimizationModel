@@ -563,3 +563,11 @@ class HelperVirt:
 
 	def tl(self, l):
 		return self.env.data_interface.get("tl", l=l)
+
+	def duration(self):
+		duration = 0.0
+
+		for l in range(self.env.schema.get_index_bound("l")):
+			duration += self.env.data_interface.get("tl", l=l)
+
+		return duration
