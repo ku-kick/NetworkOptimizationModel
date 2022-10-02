@@ -330,7 +330,7 @@ class Simulation:
 		return ops
 
 	def teardown_ops(self):
-		return list(self.process_ops.values()) + list(self.store_ops.values())
+		return list(self.transfer_ops.values()) + list(self.store_ops.values())
 
 	def reset(self):
 		self.sim_global.t = 0.0
