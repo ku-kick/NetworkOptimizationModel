@@ -280,7 +280,7 @@ class Simulation:
 
 	def _init_make_drop_ops(self):
 		for indices in self.helper_virt.indices_drop_iter_plain():
-			op = ProcessOp(sim_global=self.sim_global, indices_planned_plain=indices,
+			op = DropOp(sim_global=self.sim_global, indices_planned_plain=indices,
 				val_l=self.helper_virt.indices_drop_l(indices),
 				amount_planned=self.helper_virt.amount_planned_drop(indices),
 				proc_intensity_fraction=self.helper_virt.intensity_fraction_drop(indices),
