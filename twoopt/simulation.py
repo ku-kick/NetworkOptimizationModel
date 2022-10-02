@@ -191,7 +191,7 @@ class ProcessOp(Operation):
 class DropOp(Operation):
 	def step(self):
 		log.verbose(DropOp, self.as_str_short(), "dropping: ", self.amount_input(), "planned to drop",
-			self.amount_processed, "accumulated", self.amount_processed)
+			self.amount_planned, "accumulated", self.amount_processed)
 		self.amount_processed_add(self.amount_input())
 		self.container_input.amount = 0
 
