@@ -397,6 +397,7 @@ class HelperVirt:
 
 	def __post_init__(self):
 		self.indices_container = ["j", "rho", "l"]
+		self.__init_duration()
 
 	def indices_planned_decompose(self, var, indices_planned_plain):
 		"""
@@ -564,10 +565,21 @@ class HelperVirt:
 	def tl(self, l):
 		return self.env.data_interface.get("tl", l=l)
 
-	def duration(self):
+	def __init_duration(self):
+		self.__tl_bounds = []
 		duration = 0.0
 
 		for l in range(self.env.schema.get_index_bound("l")):
 			duration += self.env.data_interface.get("tl", l=l)
+			self.__tl_bounds.append(duration)
 
-		return duration
+	def l_to_t_bound(self, l):
+		return self.__tl_bounds[l]
+
+	def t_to_l(self, t):
+		for l, t_bound in enumerate(self.__tl_bounds):
+			if t < t_bound:
+				return l
+
+	def duration(self):
+		return self.__tl_bounds[-1]
