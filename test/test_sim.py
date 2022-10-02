@@ -189,6 +189,18 @@ class TestSim(unittest.TestCase):
 		self.assertEqual(len(s.store_ops), len(list(self.env.schema.radix_map_iter("j", "rho", "l"))))
 		self.assertTrue(len(s.drop_ops) > 0)
 
+		for j, rho, l in self.env.schema.radix_map_iter("j", "rho", "l"):
+			ind = tuple([j, rho, l])
+			self.assertTrue(s.containers[ind] is s.generate_ops[ind].container_input)
+			self.assertTrue(s.containers[ind] is s.process_ops[ind].container_input)
+			self.assertTrue(s.containers[ind] is s.store_ops[ind].container_input)
+			self.assertTrue(s.containers[ind] is s.drop_ops[ind].container_input)
+
+			for i in range(self.env.schema.get_index_bound("i")):
+				if s.helper_virt.indices_transfer_is_connected((j, i, rho, l,)):
+					self.assertTrue(s.containers[ind] is s.transfer_ops[(j, i, rho, l)].container_input)
+					self.assertTrue(s.containers[(i, rho, l,)] is s.transfer_ops[(j, i, rho, l)].container_output)
+
 	def test_simulation(self):
 		s = sml.Simulation(env=self.env)
 		s.run()
