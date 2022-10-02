@@ -19,6 +19,10 @@ class SimGlobal:
 	l: int = 0
 	__new_l: bool = False
 
+	def __post_init__(self):
+		if self.helper_virt is not None:
+			self.__duration = self.helper_virt.duration()
+
 	def t_inc(self):
 		self.new_l = False
 		self.t += self.dt
@@ -30,6 +34,9 @@ class SimGlobal:
 
 	def is_new_l(self):
 		return self.new_l
+
+	def is_finished(self):
+		self.dt >= self.__duration
 
 
 @dataclass
@@ -344,3 +351,6 @@ class Simulation:
 				op.step()
 
 		self.sim_global.t_inc()
+
+	def run(self):
+		pass
