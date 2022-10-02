@@ -29,7 +29,7 @@ class Log:
 	LEVEL_WARN = 3
 	LEVEL_INFO = 4
 	LEVEL_DEBUG = 5
-	LEVEL = LEVEL_DEBUG
+	LEVEL = LEVEL_SHUT_UP
 
 	@staticmethod
 	def info(*args, **kwargs):
