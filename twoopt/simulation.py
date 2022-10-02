@@ -204,6 +204,7 @@ class Simulation:
 				container_output = self.container_by_plain(indices_container_output)
 				# Create the op itself
 				op = TransferOp(sim_global=self.sim_global, indices_planned_plain=indices,
+					val_l = self.helper_virt.indices_transfer_l(indices),
 					amount_planned=self.helper_virt.amount_planned_transfer(indices),
 					proc_intensity_fraction=self.helper_virt.intensity_fraction_transfer(indices),
 					proc_intensity_upper=self.helper_virt.intensity_upper_transfer(indices),
@@ -223,6 +224,7 @@ class Simulation:
 	def _init_make_store_ops(self):
 		for indices in self.helper_virt.indices_store_iter_plain():
 			op = StoreOp(sim_global=self.sim_global, indices_planned_plain=indices,
+				val_l=self.helper_virt.indices_store_l(indices),
 				amount_planned=self.helper_virt.amount_planned_store(indices),
 				proc_intensity_fraction=self.helper_virt.intensity_fraction_store(indices),
 				proc_intensity_upper=self.helper_virt.intensity_upper_store(indices),
@@ -239,6 +241,7 @@ class Simulation:
 	def _init_make_process_ops(self):
 		for indices in self.helper_virt.indices_process_iter_plain():
 			op = ProcessOp(sim_global=self.sim_global, indices_planned_plain=indices,
+				val_l=self.helper_virt.indices_process_l(indices),
 				amount_planned=self.helper_virt.amount_planned_process(indices),
 				proc_intensity_fraction=self.helper_virt.intensity_fraction_process(indices),
 				proc_intensity_upper=self.helper_virt.intensity_upper_process(indices),
@@ -251,6 +254,7 @@ class Simulation:
 	def _init_make_drop_ops(self):
 		for indices in self.helper_virt.indices_drop_iter_plain():
 			op = ProcessOp(sim_global=self.sim_global, indices_planned_plain=indices,
+				val_l=self.helper_virt.indices_drop_l(indices),
 				amount_planned=self.helper_virt.amount_planned_drop(indices),
 				proc_intensity_fraction=self.helper_virt.intensity_fraction_drop(indices),
 				proc_intensity_upper=self.helper_virt.intensity_upper_drop(indices),
