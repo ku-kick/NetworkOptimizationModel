@@ -313,20 +313,24 @@ class Simulation:
 		self._init_make_drop_ops()
 		self.generate_ops = dict()
 		self._init_generate_ops()
+		self.__trace = ut.Trace()
+
+	def trace(self):
+		return self.__trace
 
 	def ops_all(self):
 		return sum(functools.reduce(lambda a, b: list(a) + list(b),
-			[self.drop_ops.items(), self.generate_ops.items(), self.process_ops.items(), self.store_ops.items(),
-			self.transfer_ops.items()], []))
+			[self.drop_ops.values(), self.generate_ops.values(), self.process_ops.values(), self.store_ops.values(),
+			self.transfer_ops.values()], []))
 
 	def payload_ops_shuffled(self):
-		ops = list(self.process_ops.items()) + list(self.transfer_ops.items()) + list(self.store_ops.items())
+		ops = list(self.process_ops.values()) + list(self.transfer_ops.values()) + list(self.store_ops.values())
 		random.shuffle(ops)
 
 		return ops
 
 	def teardown_ops(self):
-		return list(self.process_ops.items()) + list(self.store_ops.items())
+		return list(self.process_ops.values()) + list(self.store_ops.values())
 
 	def reset(self):
 		self.sim_global.t = 0.0
@@ -336,7 +340,7 @@ class Simulation:
 			op.reset()
 
 	def step(self):
-		for op in self.generate_ops.items():
+		for op in self.generate_ops.values():
 			if op.is_current_l():
 				op.step()
 
@@ -348,7 +352,7 @@ class Simulation:
 			if op.is_current_l():
 				op.step_teardown()
 
-		for op in self.drop_ops.items():
+		for op in self.drop_ops.values():
 			if op.is_current_l():
 				op.step()
 
