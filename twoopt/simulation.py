@@ -12,8 +12,8 @@ log = ut.Log(file=__file__, level=ut.Log.LEVEL_VERBOSE)
 log.filter_disable = ["dropping"]
 
 # The following flags manage randomness in the model. It makes sense to disable those during debugging routines
-_SIM_USE_NOISE = False
-_SIM_SHUFFLE_OPS = False
+_SIM_USE_NOISE = True
+_SIM_SHUFFLE_OPS = True
 
 
 @dataclass
