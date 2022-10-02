@@ -151,6 +151,9 @@ class TransferOp(Operation):
 	def set_container_output(self, c: Container):
 		self.container_output = c
 
+	def amount_output_add(self, diff):
+		self.container_output.amount += diff
+
 	def step(self):
 		assert self.container_output is not None
 		self._proc_step = self.amount_proc_available()
@@ -159,7 +162,7 @@ class TransferOp(Operation):
 	def step_teardown(self):
 		""" Flush out the stashed `_proc_step into the output container """
 		self.amount_processed_add(self._proc_step)
-		self.container_output.amount = self._proc_step
+		self.amount_output_add(self._proc_step)
 		self._proc_step = 0.0
 
 
