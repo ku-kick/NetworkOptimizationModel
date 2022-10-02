@@ -560,3 +560,6 @@ class HelperVirt:
 		j, i, rho, l = self.indices_planned_decompose(self.var_generate_planned, indices_planned_generate_plain)
 
 		return l
+
+	def tl(self, l):
+		return self.env.data_interface.get("tl", l=l)
