@@ -144,7 +144,7 @@ class TestSim(unittest.TestCase):
 		store_op = sml.StoreOp(sim_global=sim_global,
 			indices_planned_plain=self.env.schema.indices_dict_to_plain("y", j=0, rho=0, l=0),
 			amount_planned=amount_planned, proc_intensity_upper=intensity_upper, proc_intensity_lower=-intensity_upper,
-			proc_intensity_fraction=1.0, container_input=container_input)
+			proc_intensity_fraction=1.0, container_input=container_input, container_processed=sml.Container())
 
 		for i in range(3):
 			container_input.amount = intensity_upper
