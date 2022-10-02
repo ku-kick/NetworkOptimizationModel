@@ -187,6 +187,15 @@ class TestSim(unittest.TestCase):
 		self.assertEqual(len(s.drop_ops), len(list(self.env.schema.radix_map_iter("j", "rho", "l"))))
 		self.assertEqual(len(s.process_ops), len(list(self.env.schema.radix_map_iter("j", "rho", "l"))))
 		self.assertEqual(len(s.store_ops), len(list(self.env.schema.radix_map_iter("j", "rho", "l"))))
+		self.assertTrue(len(s.drop_ops) > 0)
+
+	def test_simulation(self):
+		s = sml.Simulation(env=self.env)
+		s.run()
+
+		for op in s.ops_all():
+			log.info("test_simulation", "op name:", op.as_str_short(), "amount processed:", op.amount_processed,
+				"amount planned", op.amount_planned)
 
 
 if __name__ == "__main__":
