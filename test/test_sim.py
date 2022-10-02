@@ -119,6 +119,7 @@ class TestSim(unittest.TestCase):
 			proc_intensity_fraction=proc_intensity_fraction,
 			proc_intensity_upper=proc_intensity_upper,
 			proc_intensity_lower=0,
+			val_l=0,
 			proc_noise_type="gauss")
 		container = sml.Container()
 		container_output = sml.Container()
@@ -144,6 +145,7 @@ class TestSim(unittest.TestCase):
 		store_op = sml.StoreOp(sim_global=sim_global,
 			indices_planned_plain=self.env.schema.indices_dict_to_plain("y", j=0, rho=0, l=0),
 			amount_planned=amount_planned, proc_intensity_upper=intensity_upper, proc_intensity_lower=-intensity_upper,
+			val_l=0,
 			proc_intensity_fraction=1.0, container_input=container_input, container_processed=sml.Container())
 
 		for i in range(3):
