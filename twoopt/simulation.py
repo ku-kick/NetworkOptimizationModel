@@ -197,6 +197,7 @@ class GenerateOp(Operation):
 
 	def step(self):
 		diff = self.proc_intensity_upper
+		diff = ut.clamp(diff, 0, self.amount_planned - self.amount_processed)
 		self.container_input.amount = diff
 		self.amount_processed_add(diff)
 
