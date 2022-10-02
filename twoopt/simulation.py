@@ -21,6 +21,10 @@ class SimGlobal:
 	def t_inc(self):
 		self.t += self.dt
 
+		while self.t >= self.helper_virt.tl(self.l):
+			self.l += 1
+			log.info(SimGlobal, "updated l. New l: ", self.l)
+
 
 @dataclass
 class Container:
