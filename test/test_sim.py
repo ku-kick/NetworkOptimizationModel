@@ -170,8 +170,8 @@ class TestSim(unittest.TestCase):
 	def test_generate_op(self):
 		n_steps = 3
 		intensity = 4.0
-		op = sml.GenerateOp(sim_global=sml.SimGlobal(), indices_planned_plain=(0, 0, 0), amount_planned=None,
-			proc_intensity_fraction=1.0, proc_intensity_upper=intensity, val_l=0)
+		op = sml.GenerateOp(sim_global=sml.SimGlobal(), indices_planned_plain=(0, 0, 0),
+			amount_planned=n_steps * intensity, proc_intensity_fraction=1.0, proc_intensity_upper=intensity, val_l=0)
 
 		for _ in range(n_steps):
 			op.step()
