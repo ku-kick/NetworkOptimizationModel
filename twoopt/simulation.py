@@ -267,6 +267,7 @@ class Simulation:
 	def _init_generate_ops(self):
 		for indices in self.helper_virt.indices_generate_iter_plain():
 			op = GenerateOp(sim_global=self.sim_global, indices_planned_plain=indices,
+				val_l=self.helper_virt.indices_generate_l(indices),
 				amount_planned=self.helper_virt.amount_planned_generate(indices), proc_intensity_fraction=1.0,
 				proc_intensity_upper=self.helper_virt.intensity_upper_generate(indices),
 				container_input=self.container_by_plain(
