@@ -153,7 +153,6 @@ class StoreOp(Operation):
 class ProcessOp(Operation):
 
 	def step(self):
-		# TODO handle transfer b/w l
 		amount_proc = self.amount_proc_available()
 		self.amount_input_add(-amount_proc)
 		self.amount_processed_add(amount_proc)
