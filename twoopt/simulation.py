@@ -24,19 +24,26 @@ class SimGlobal:
 			self.__duration = self.helper_virt.duration()
 
 	def t_inc(self):
-		self.new_l = False
+		self.__new_l = False
 		self.t += self.dt
 
-		while self.t >= self.helper_virt.tl(self.l):
-			self.l += 1
-			log.info(SimGlobal, "updated l. New l: ", self.l)
+		if self.is_finished():
+			log.info(SimGlobal, "simulation finished. Current time", self.t)
+			return
+
+		l = self.helper_virt.t_to_l(self.t)
+
+		if l != self.l:
 			self.__new_l = True
+			log.info(SimGlobal, "new l", l, "overall duration", self.__duration, "current time", self.t)
+
+		self.l = l
 
 	def is_new_l(self):
 		return self.new_l
 
 	def is_finished(self):
-		return self.dt >= self.__duration
+		return self.t >= self.__duration
 
 
 @dataclass
