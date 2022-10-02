@@ -36,7 +36,7 @@ class SimGlobal:
 		return self.new_l
 
 	def is_finished(self):
-		self.dt >= self.__duration
+		return self.dt >= self.__duration
 
 
 @dataclass
@@ -353,4 +353,5 @@ class Simulation:
 		self.sim_global.t_inc()
 
 	def run(self):
-		pass
+		while not self.sim_global.is_finished():
+			self.step()
