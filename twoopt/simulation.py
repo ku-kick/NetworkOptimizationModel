@@ -217,7 +217,7 @@ class Simulation:
 
 	def _init_make_containers(self):
 		for indices in self.helper_virt.indices_container_iter_plain():
-			log.verbose("creating container with indices", indices, self.containers)
+			log.verbose("creating container with indices", indices)
 			self.containers_add_by_plain(indices, Container())
 
 	def transfer_ops_add(self, op):
