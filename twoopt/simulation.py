@@ -136,6 +136,7 @@ class StoreOp(Operation):
 		return self.amount_processed
 
 	def step(self):
+		self.amount_processed = self.container_processed.amount  # Ensures connectedness b/w ops on different structural stability spans
 		self.__amount_proc = self.amount_proc_available()
 		self.amount_input_add(-self.__amount_proc)
 		self.amount_processed_add(self.__amount_proc)
@@ -145,6 +146,8 @@ class StoreOp(Operation):
 			self.__amount_proc = ut.clamp(self.__amount_proc, -self.amount_input(), 0)  # Store it back
 			self.amount_input_add(self.__amount_proc)
 			self.amount_processed_add(-self.__amount_proc)
+
+		self.container_processed.amount = self.amount_processed  # Ensures connectedness b/w ops on different structural stability spans
 
 
 class ProcessOp(Operation):
