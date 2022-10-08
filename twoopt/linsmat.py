@@ -343,6 +343,20 @@ class DataInterface:
 		self.provider.sync()
 
 
+class ZeroingDataInterface(DataInterface):
+	def get_plain(self, *args, **kwargs):
+		try:
+			return DataInterface.get_plain(self, *args, **kwargs)
+		except AssertionError:
+			return 0.0
+
+	def get(self, *args, **kwargs):
+		try:
+			return DataInterface.get(self, *args, **kwargs)
+		except AssertionError:
+			return 0.0
+
+
 @dataclass
 class Env:
 	row_index: RowIndex
