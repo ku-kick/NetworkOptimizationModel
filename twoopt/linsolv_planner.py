@@ -11,6 +11,9 @@ from generic import Log
 import scipy
 
 
+log = ut.Log(file=__file__, level=ut.Log.LEVEL_INFO)
+
+
 @dataclass
 class LinsolvPlanner:
 	"""
@@ -44,7 +47,7 @@ class LinsolvPlanner:
 		assert list(self.schema.get_var_indices("x")) == ["j", "i", "rho", "l"]
 
 		for var in ["x_eq", "y", "g", "z"]:
-			Log.debug(LinsolvPlanner, LinsolvPlanner.validate, "var", var, self.schema.get_var_indices(var))
+			log.debug(LinsolvPlanner, LinsolvPlanner.validate, "var", var, self.schema.get_var_indices(var))
 			assert list(self.schema.get_var_indices(var)) == ["j", "rho", "l"]
 
 	def __make_eq_lhs_vector(self, j, rho, l):
@@ -52,7 +55,7 @@ class LinsolvPlanner:
 		Left side equality constraint, one row.
 		"""
 		log_context = (LinsolvPlanner.__make_eq_lhs_vector,)
-		Log.debug(*log_context, "j", "rho", "l", j, rho, l)
+		log.debug(*log_context, "j", "rho", "l", j, rho, l)
 		stub = np.zeros(self.row_index.get_row_len())
 		y_pos = self.row_index.get_pos('y', j=j, l=l, rho=rho)
 		stub[y_pos] = 1
@@ -101,7 +104,7 @@ class LinsolvPlanner:
 		radix_map = self.schema.get_var_radix("x_eq")
 		map_get_x_eq_from_data = map(lambda indices: self.data_interface.get_plain("x_eq", *indices),
 			self.__x_eq_constraint_indices_iter())
-		Log.debug(self.schema.get_var_indices("x_eq"), list(self.__x_eq_constraint_indices_iter()))
+		log.debug(self.schema.get_var_indices("x_eq"), list(self.__x_eq_constraint_indices_iter()))
 		arr = np.array(list(map_get_x_eq_from_data))
 
 		return arr
@@ -142,7 +145,7 @@ class LinsolvPlanner:
 			Log.info(LinsolvPlanner.solve, "registering solution results in data interface")
 			for variable in self.row_index.variables.keys():
 				for indices in self.schema.radix_map_iter_var_dict(variable):
-					Log.debug(LinsolvPlanner.solve, indices)
+					log.debug(LinsolvPlanner.solve, indices)
 					pos = self.row_index.get_pos(variable, **indices[1])
 					self.data_interface.set(variable, solution.x[pos], **indices[1])
 
@@ -168,7 +171,7 @@ class InfluxConstraintLp(LinsolvPlanner):
 
 	def __init_le_iter(self):
 		for j, rho, l_bound in self.schema.radix_map_iter_var('g'):  # j, rho, l
-			Log.debug(InfluxConstraintLp.__init_le_iter, "j rho l_bound", j, rho, l_bound)
+			log.debug(InfluxConstraintLp.__init_le_iter, "j rho l_bound", j, rho, l_bound)
 			arr = [0 for _ in range(self.row_index.get_row_len())]
 			arr = linsmat.arr_set(arr, self.row_index, 1, 'y', j=j, rho=rho, l=l_bound)
 			arr = linsmat.arr_set(arr, self.row_index, -1, 'y', j=j, rho=rho, l=0)
@@ -180,7 +183,7 @@ class InfluxConstraintLp(LinsolvPlanner):
 				for i in range(self.schema.get_index_bound('j')):
 					arr = linsmat.arr_set(arr, self.row_index, -1, 'x', j=i, i=j, rho=rho, l=l)
 
-			Log.debug(InfluxConstraintLp.__init_le_iter, "arr", arr)
+			log.debug(InfluxConstraintLp.__init_le_iter, "arr", arr)
 			yield arr, 0
 
 	def __init_le(self):
