@@ -71,7 +71,35 @@ class TestLinsolvPlanner(unittest.TestCase):
 		data_interface = linsmat.ZeroingDataInterface(data_provider, schema)
 		planner = linsolv_planner.LinsolvPlanner(data_interface, schema)
 		res = planner.solve()
-		log.info(cli.Format.numpy_result(res, planner.schema))
+		log.info(TestLinsolvPlanner.test_solve_transfer_simple, cli.Format.numpy_result(res, planner.schema))
+
+		# Check index ordering to make sure we are on the same page w/ the schema
+		self.assertTrue(schema.get_var_indices("x") == ["j", "i", "rho", "l"])
+		self.assertTrue(schema.get_var_indices("g") == ["j", "rho", "l"])
+		self.assertTrue(schema.get_var_indices("x_eq") == ["j", "rho", "l"])
+
+		# Make sure that the required limitations are in place
+		process_0_capacity = data_interface.get("phi", j=0, rho=0, l=0)
+		log.debug(process_0_capacity)
+		self.assert_close(process_0_capacity, 0.0)
+		process_1_capacity = data_interface.get("phi", j=1, rho=0, l=0)
+		self.assertTrue(process_1_capacity > 100.0)
+		transfer_0_1_capacity = data_interface.get("psi", j=0, i=1, rho=0, l=0)
+		self.assertTrue(transfer_0_1_capacity >= process_1_capacity)
+		node_0_input = data_interface.get("x_eq", j=0, rho=0, l=0)
+		self.assertTrue(node_0_input >= process_1_capacity)
+
+		# Check the output
+		transfer_0_1_performed = res.x[planner.row_index.get_pos("x", j=0, i=1, rho=0, l=0)]
+		process_0_performed = res.x[planner.row_index.get_pos("g", j=0, rho=0, l=0)]
+		process_1_performed = res.x[planner.row_index.get_pos("g", j=1, rho=0, l=0)]
+		self.assert_close(0.0, process_0_performed)
+		self.assert_close(process_0_capacity, process_0_performed)
+		self.assert_close(process_1_capacity, process_1_performed)
+
+	def assert_close(self, a, b):
+		epsilon = 1e-6
+		self.assertTrue(math.isclose(a, b, abs_tol=epsilon))
 
 	def test_solve(self):
 		ls_planner = linsolv_planner.LinsolvPlanner(self.data_interface, self.schema)
