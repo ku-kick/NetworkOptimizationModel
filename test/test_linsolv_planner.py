@@ -74,7 +74,6 @@ class TestLinsolvPlanner(unittest.TestCase):
 		log.info(cli.Format.numpy_result(res, planner.schema))
 
 	def test_solve(self):
-		return
 		ls_planner = linsolv_planner.LinsolvPlanner(self.data_interface, self.schema)
 		res = ls_planner.solve()
 		Log.debug(cli.Format.numpy_result(res, ls_planner.schema))
