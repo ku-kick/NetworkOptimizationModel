@@ -9,6 +9,9 @@ import os
 import math
 from generic import Log
 import logging
+import ut
+
+log = ut.Log(file=__file__, level=ut.Log.LEVEL_VERBOSE)
 
 
 class TestLinsolvPlanner(unittest.TestCase):
@@ -55,6 +58,20 @@ class TestLinsolvPlanner(unittest.TestCase):
 		self.assertTrue(any(map(lambda i: len(i) == ls_planner.row_index.get_row_len(), ls_planner.eq_lhs)))
 		self.assertTrue(len(ls_planner.eq_lhs) == len(ls_planner.eq_rhs))
 		self.assertTrue(len(ls_planner.bnd) == ls_planner.row_index.get_row_len())
+
+	def test_solve_transfer_simple(self):
+		"""
+		A simple test case: (1) two nodes with (2) sufficient channel in between of the two. (3) 0th node has the
+		performance of 0. (4) 1st node has a very high performance. A sane solution is to pass the info from 0th to
+		1st and perform the processing on the former.
+		"""
+		data_provider = linsmat.PermissiveCsvBufferedDataProvider(csv_file_name="test_solve_transfer_simple.csv")
+		schema = linsmat.Schema(filename="test_solve_transfer_simple.json")
+		data_interface = linsmat.ZeroingDataInterface(data_provider, schema)
+		planner = linsolv_planner.LinsolvPlanner(data_interface, schema)
+		res = planner.solve()
+		log.info(cli.Format.numpy_result(res, planner.schema))
+
 
 	def test_solve(self):
 		ls_planner = linsolv_planner.LinsolvPlanner(self.data_interface, self.schema)
