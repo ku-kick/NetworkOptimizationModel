@@ -86,6 +86,8 @@ class TestLinsolvPlanner(unittest.TestCase):
 		self.assertTrue(process_1_capacity > 100.0)
 		transfer_0_1_capacity = data_interface.get("psi", j=0, i=1, rho=0, l=0)
 		self.assertTrue(transfer_0_1_capacity >= process_1_capacity)
+		transfer_1_0_capacity = data_interface.get("psi", j=1, i=0, rho=0, l=0)
+		self.assert_close(0.0, transfer_1_0_capacity)
 		node_0_input = data_interface.get("x_eq", j=0, rho=0, l=0)
 		self.assertTrue(node_0_input >= process_1_capacity)
 
