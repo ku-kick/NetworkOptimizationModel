@@ -3,6 +3,7 @@ Generates schedule for an information process based on technical limitations of 
 module will extend with other versions of linear programming solvers.
 """
 
+import math
 import linsmat
 from dataclasses import dataclass
 import numpy as np
@@ -128,6 +129,8 @@ class LinsolvPlanner:
 	def __init_obj(self):
 		alpha_g = -self.data_interface.get_plain("alpha_0")  # alpha_1 in the paper, inverted, because numpy can only solve minimization problems
 		alpha_z = self.data_interface.get_plain("alpha_1")  # alpha_2 in the paper, inverted, because numpy can only solve minimization problems
+		assert not math.isclose(alpha_g, 0.0, abs_tol=1e-6)
+		assert not math.isclose(alpha_z, 0.0, abs_tol=1e-6)
 		stub = np.ones(self.row_index.get_row_len())
 
 		for j, rho, l in ut.radix_cartesian_product(self.schema.make_radix_map("j", "rho", "l")):
