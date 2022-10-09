@@ -44,7 +44,7 @@ class TestLinsolvPlanner(unittest.TestCase):
 			)
 
 		self.data_provider = linsmat.PermissiveCsvBufferedDataProvider(csv_file_name=TestLinsolvPlanner.DATA_FILE_CSV)
-		self.data_interface = linsmat.DataInterface(self.data_provider, self.schema)
+		self.data_interface = linsmat.ZeroingDataInterface(self.data_provider, self.schema)
 
 	def tearDown(self) -> None:
 		os.remove(TestLinsolvPlanner.DATA_FILE_CSV)
