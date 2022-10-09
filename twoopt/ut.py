@@ -312,3 +312,7 @@ class Log:
 			topics = ' ' + ', '.join(topics) + ' | '
 
 		return '[' + ' : '.join(context) + ']' + topics + ' '.join(suffix)
+
+
+def module_file_get_abspath(module_file, other_file):
+	return str(pathlib.Path(module_file).parent / other_file)
