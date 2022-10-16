@@ -91,68 +91,6 @@ class LinsolvPlanner:
 			log.debug(LinsolvPlanner, LinsolvPlanner.validate, "var", var, self.schema.get_var_indices(var))
 			assert list(self.schema.get_var_indices(var)) == ["j", "rho", "l"]
 
-	def __make_eq_lhs_vector(self, j, rho, l):
-		"""
-		Left side equality constraint, one row.
-		"""
-		log_context = (LinsolvPlanner.__make_eq_lhs_vector,)
-		log.debug(*log_context, "j", "rho", "l", j, rho, l)
-		stub = np.zeros(self.row_index.get_row_len())
-		y_pos = self.row_index.get_pos('y', j=j, l=l, rho=rho)
-		stub[y_pos] = 1
-		z_pos = self.row_index.get_pos('z', j=j, l=l, rho=rho)
-		stub[z_pos] = 1
-		g_pos = self.row_index.get_pos('g', j=j, l=l, rho=rho)
-		stub[g_pos] = 1
-
-		if l != 0:
-			stub[self.row_index.get_pos('y', j=j, l=l - 1, rho=rho)] = -1
-
-		# Init. transfer channel coefficients. `j` - from, `i` - to
-		for i in range(self.schema.get_index_bound("i")):
-			if i != j:
-				# Output: positive coefficient
-				x_pos = self.row_index.get_pos("x", j=j, i=i, rho=rho, l=l)
-				stub[x_pos] = 1
-				# Input: negative coefficient
-				x_pos = self.row_index.get_pos("x", j=i, i=j, rho=rho, l=l)
-				stub[x_pos] = -1
-
-		return stub
-
-	def __init_eq_lhs_matrix(self):
-		"""
-		Left side equality constraint, entire matrix.
-		"""
-		make_vector = lambda j, rho, l: self.__make_eq_lhs_vector(j=j, l=l, rho=rho)
-		map_vectors = map(lambda i: make_vector(*i), self.__x_eq_constraint_indices_iter())
-		arr = np.array(list(map_vectors))
-
-		return arr
-
-	def __x_eq_constraint_indices_iter(self):
-		radix_map = self.schema.get_var_radix("x_eq")
-
-		for indices in ut.radix_cartesian_product(radix_map):
-			try:
-				self.data_interface.get_plain("x_eq", *indices)
-
-				yield indices
-			except AssertionError:
-				continue
-
-	def __init_eq_rhs_matrix(self):
-		"""
-		Right side equality constraint, entire matrix
-		"""
-		radix_map = self.schema.get_var_radix("x_eq")
-		map_get_x_eq_from_data = map(lambda indices: self.data_interface.get_plain("x_eq", *indices),
-			self.__x_eq_constraint_indices_iter())
-		log.debug(self.schema.get_var_indices("x_eq"), list(self.__x_eq_constraint_indices_iter()))
-		arr = np.array(list(map_get_x_eq_from_data))
-
-		return arr
-
 	def __init_bnd_matrix(self):
 		bnd = [[0, float("inf")] for _ in range(self.row_index.get_row_len())]
 
