@@ -1,9 +1,9 @@
 {
 	"indexbound": {
-		"i": 7,
-		"j": 7,
+		"i": 3,
+		"j": 3,
 		"rho": 2,
-		"l": 3
+		"l": 2
 	},
 	"variableindices": {
 		"x": ["j", "i", "rho", "l"],
