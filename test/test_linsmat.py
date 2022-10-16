@@ -4,9 +4,13 @@ import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / 'twoopt'))
 from twoopt import linsmat
+import ut
+import linsolv_planner
 import os
 import pathlib
 import math
+
+log = ut.Log(file=__file__, level=ut.Log.LEVEL_VERBOSE)
 
 
 class TestIndex(unittest.TestCase):
@@ -74,7 +78,20 @@ class TestData(unittest.TestCase):
 			provider=linsmat.PermissiveCsvBufferedDataProvider(str(TestData.__HERE / "test_data.csv")),
 			schema=linsmat.Schema(filename=str(TestData.__HERE / "test_schema.json")))
 		self.assertTrue(math.isclose(1.1, data_interface.get("x", **{"a": 1, "b": 2, "c": 3})))
-		self.assertTrue(math.isclose(3.2, data_interface.get("x", **{"a": 1, "b": 2, "c": 2})))
+		self.assertTrue(math.isclose(3.2, data_interface.get("x", **{"b": 2, "a": 1, "c": 2})))
 		self.assertTrue(math.isclose(3.0, data_interface.get("y", **{"c": 3, "a": 2})))
+
+	def test_indexing_simple(self):
+		data_provider = linsmat.PermissiveCsvBufferedDataProvider(
+			csv_file_name=ut.module_file_get_abspath(__file__, "test_solve_transfer_simple.csv"))
+		schema = linsmat.Schema(filename=ut.module_file_get_abspath(__file__, "test_solve_transfer_simple.json"))
+		data_interface = linsmat.ZeroingDataInterface(data_provider, schema)
+		planner = linsolv_planner.LinsolvPlanner(data_interface, schema)
+
+		pos_psi_1_0_0_0 = planner.row_index.get_pos("x", j=1, i=0, rho=0, l=0)
+		pos_psi_0_1_0_0 = planner.row_index.get_pos("x", j=0, i=1, rho=0, l=0)
+		psi_1_0_0_0 = planner.bnd[pos_psi_1_0_0_0]
+		psi_0_1_0_0 = planner.bnd[pos_psi_0_1_0_0]
+		self.assertTrue(math.isclose(psi_0_1_0_0[1], 10000.0))
 
 unittest.main()
