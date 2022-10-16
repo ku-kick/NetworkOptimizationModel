@@ -68,11 +68,14 @@ class LinsolvPlanner:
 		if l != 0:
 			stub[self.row_index.get_pos('y', j=j, l=l-1, rho=rho)] = -1
 
+		# Init. transfer channel coefficients. `j` - from, `i` - to
 		for i in range(self.schema.get_index_bound("i")):
 			if i != j:
-				x_pos = self.row_index.get_pos('x', i=i, j=j, rho=rho, l=l)
-				stub[self.row_index.get_pos('x', i=i, j=j, rho=rho, l=l)] = 1
-				x_pos = self.row_index.get_pos('x', i=j, j=i, rho=rho, l=l)
+				# Output: positive coefficient
+				x_pos = self.row_index.get_pos("x", j=j, i=i, rho=rho, l=l)
+				stub[x_pos] = 1
+				# Input: negative coefficient
+				x_pos = self.row_index.get_pos("x", j=i, i=j, rho=rho, l=l)
 				stub[x_pos] = -1
 
 		return stub
