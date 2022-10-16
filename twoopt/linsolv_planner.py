@@ -128,7 +128,7 @@ class LinsolvPlanner:
 				log.debug("var", var, "indices", indices, "upper_bound", upper_bound, "pos", pos)
 				bnd[pos][1] = upper_bound
 
-		log.debug("bnd", bnd)
+		log.debug("bnd", '\n\t' + '\n\t'.join(list(map(str, enumerate(bnd)))))
 		return bnd
 
 	def __init_obj(self):
