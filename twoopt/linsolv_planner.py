@@ -32,7 +32,7 @@ class LinsolvPlanner:
 	_NEQ_VAR_ORDER_RHS = ["psi", "v", "phi"]
 
 	def __post_init__(self):
-		self.row_index = linsmat.RowIndex.make_from_schema(self.schema, ["x", "y", "z", "g"])
+		self.row_index = linsmat.RowIndex.make_from_schema(self.schema, ["y", "x", "z", "g"])
 		self.validate()
 		self.eq_lhs, self.eq_rhs = self.__make_eq()
 		self.bnd = self.__init_bnd_matrix()
@@ -116,7 +116,7 @@ class LinsolvPlanner:
 			"alpha_1")  # alpha_2 in the paper, inverted, because numpy can only solve minimization problems
 		assert not math.isclose(alpha_g, 0.0, abs_tol=1e-6)
 		assert not math.isclose(alpha_z, 0.0, abs_tol=1e-6)
-		stub = np.ones(self.row_index.get_row_len())
+		stub = np.zeros(self.row_index.get_row_len())
 
 		for j, rho, l in ut.radix_cartesian_product(self.schema.make_radix_map("j", "rho", "l")):
 			pos_g = self.row_index.get_pos("g", j=j, rho=rho, l=l)
