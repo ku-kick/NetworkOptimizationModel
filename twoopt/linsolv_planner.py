@@ -12,7 +12,7 @@ from generic import Log
 import scipy
 
 
-log = ut.Log(file=__file__, level=ut.Log.LEVEL_INFO)
+log = ut.Log(file=__file__, level=ut.Log.LEVEL_DEBUG)
 
 
 @dataclass
@@ -125,6 +125,7 @@ class LinsolvPlanner:
 				_, indices_dict = self.schema.indices_plain_to_dict(var, *indices)  # ETL
 				pos = self.row_index.get_pos(var, **indices_dict)
 				upper_bound = self.data_interface.get_plain(bnd_var, *indices)
+				log.debug("var", var, "indices", indices, "upper_bound", upper_bound, "pos", pos)
 				bnd[pos][1] = upper_bound
 
 		return bnd
