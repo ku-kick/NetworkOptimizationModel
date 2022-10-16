@@ -11,7 +11,6 @@ import ut
 from generic import Log
 import scipy
 
-
 log = ut.Log(file=__file__, level=ut.Log.LEVEL_DEBUG)
 
 
@@ -35,10 +34,51 @@ class LinsolvPlanner:
 	def __post_init__(self):
 		self.row_index = linsmat.RowIndex.make_from_schema(self.schema, ["x", "y", "z", "g"])
 		self.validate()
-		self.eq_lhs = self.__init_eq_lhs_matrix()
-		self.eq_rhs = self.__init_eq_rhs_matrix()
+		self.eq_lhs, self.eq_rhs = self.__make_eq()
 		self.bnd = self.__init_bnd_matrix()
 		self.obj = self.__init_obj()
+
+	def __make_eq_lhs_rhs(self, j, rho, l):
+		assert self.schema.get_index_bound("j") == self.schema.get_index_bound("i")
+		vec = np.zeros(self.row_index.get_row_len())
+		g_pos = self.row_index.get_pos("g", j=j, rho=rho, l=l)
+		y_pos = self.row_index.get_pos("y", j=j, rho=rho, l=l)
+		z_pos = self.row_index.get_pos("z", j=j, rho=rho, l=l)
+		vec[g_pos] = 1
+		vec[y_pos] = 1
+		vec[z_pos] = 1
+
+		if l > 0:
+			y_prev_pos = self.row_index.get_pos("y", j=j, rho=rho, l=l - 1)
+			vec[y_prev_pos] = -1
+
+		for i in range(self.schema.get_index_bound("j")):
+			if i != j:
+				# Input: negative coefficient
+				x_in_pos = self.row_index.get_pos("x", j=i, i=j, rho=rho, l=l)
+				vec[x_in_pos] = -1
+				# Output: positive coefficient
+				x_out_pos = self.row_index.get_pos("x", j=j, i=i, rho=rho, l=l)
+				vec[x_out_pos] = 1
+
+		rhs = self.data_interface.get("x_eq", j=j, rho=rho, l=l)
+
+		return vec, rhs
+
+	def __make_eq(self):
+		lhs = []
+		rhs = []
+
+		for indices in self.schema.radix_map_iter_var_dict("x_eq"):
+			j = indices[1].pop("j")
+			rho = indices[1].pop("rho")
+			l = indices[1].pop("l")
+			assert len(indices[1].items()) == 0  # There should only be "j", "rho", and "l"
+			lhs_next, rhs_next = self.__make_eq_lhs_rhs(j=j, rho=rho, l=l)
+			lhs.append(lhs_next)
+			rhs.append(rhs_next)
+
+		return lhs, rhs
 
 	def validate(self):
 		"""
@@ -66,7 +106,7 @@ class LinsolvPlanner:
 		stub[g_pos] = 1
 
 		if l != 0:
-			stub[self.row_index.get_pos('y', j=j, l=l-1, rho=rho)] = -1
+			stub[self.row_index.get_pos('y', j=j, l=l - 1, rho=rho)] = -1
 
 		# Init. transfer channel coefficients. `j` - from, `i` - to
 		for i in range(self.schema.get_index_bound("i")):
@@ -132,8 +172,10 @@ class LinsolvPlanner:
 		return bnd
 
 	def __init_obj(self):
-		alpha_g = -self.data_interface.get_plain("alpha_0")  # alpha_1 in the paper, inverted, because numpy can only solve minimization problems
-		alpha_z = self.data_interface.get_plain("alpha_1")  # alpha_2 in the paper, inverted, because numpy can only solve minimization problems
+		alpha_g = -self.data_interface.get_plain(
+			"alpha_0")  # alpha_1 in the paper, inverted, because numpy can only solve minimization problems
+		alpha_z = self.data_interface.get_plain(
+			"alpha_1")  # alpha_2 in the paper, inverted, because numpy can only solve minimization problems
 		assert not math.isclose(alpha_g, 0.0, abs_tol=1e-6)
 		assert not math.isclose(alpha_z, 0.0, abs_tol=1e-6)
 		stub = np.ones(self.row_index.get_row_len())
