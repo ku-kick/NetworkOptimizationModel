@@ -11,7 +11,7 @@ import ut
 from generic import Log
 import scipy
 
-log = ut.Log(file=__file__, level=ut.Log.LEVEL_DEBUG)
+log = ut.Log(file=__file__, level=ut.Log.LEVEL_INFO)
 
 
 @dataclass
