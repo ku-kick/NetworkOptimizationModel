@@ -1,3 +1,7 @@
+"""
+Tests classes from `linsmat`, and ETL-related functionality from other modules.
+"""
+
 import unittest
 import pathlib
 import sys
