@@ -16,6 +16,7 @@ import os
 import csv
 import pathlib
 from generic import Log
+import copy
 
 log = ut.Log(file=__file__, level=ut.Log.LEVEL_VERBOSE)
 
@@ -323,6 +324,10 @@ class DictRamDataProvider(dict):
 	A data provider storing data in RAM.
 	"""
 
+	def __init__(self, *args, **kwargs):
+		dict.__init__(self, *args, **kwargs)
+		self.line_to_kv: object = lambda l: (tuple([l[0]] + list(map(int, l[1:-1]))), float(l[-1]))
+
 	def get_plain(self, *key):
 		assert key in self.keys()
 		return self[key]
@@ -333,7 +338,7 @@ class DictRamDataProvider(dict):
 		"""
 		assert len(args) >= 2
 		k, v = self.line_to_kv(args)
-		self[k] = v
+		self[copy.deepcopy(k)] = copy.deepcopy(v)
 
 	def sync(self, *args, **kwargs):
 		pass
@@ -358,7 +363,8 @@ class DataInterface:
 		dict_ram_data_provider = DictRamDataProvider()
 
 		for item in self.provider.into_iter_plain():
-			dict_ram_data_provider.set_plain(*copy.deepcopy(item))
+			item_copy = copy.deepcopy(item)
+			dict_ram_data_provider.set_plain(*item_copy)
 
 		data_interface = DataInterface(provider=dict_ram_data_provider, schema=copy.deepcopy(self.schema))
 
