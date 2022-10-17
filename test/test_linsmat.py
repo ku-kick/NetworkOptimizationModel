@@ -13,6 +13,7 @@ import linsolv_planner
 import os
 import pathlib
 import math
+import sim_opt
 
 log = ut.Log(file=__file__, level=ut.Log.LEVEL_VERBOSE)
 
@@ -116,5 +117,60 @@ class TestData(unittest.TestCase):
 		psi_1_0_0_0 = planner.bnd[pos_psi_1_0_0_0]
 		psi_0_1_0_0 = planner.bnd[pos_psi_0_1_0_0]
 		self.assertTrue(math.isclose(psi_0_1_0_0[1], 10000.0))
+
+
+class TestGaGeneVirt(unittest.TestCase):
+	"""
+	GA-based simulation parameters' optimizer uses GA as its optimization
+	algorithm. GaGeneVirt is a gene representation that provides
+	inteoperpability w/ ETL-related classes from `linsmat` module (w/
+	DataInterface in particular).
+	"""
+
+	__CSV_OUTPUT_FILE = "test_linsmat_ga_gene_virt.csv"
+	__SCHEMA_FILE = "test_schema_3.json"
+
+	def setUp(self) -> None:
+		psi_upper = 40
+		phi_upper = 30
+		v_upper = 70
+		x_eq_upper = 200
+		tl_upper = 500
+		mm_psi_upper = psi_upper / tl_upper
+		mm_phi_upper = phi_upper / tl_upper
+		mm_v_upper = v_upper / tl_upper
+		self.schema = linsmat.Schema(filename=self.__SCHEMA_FILE)
+		entry_nodes = list(map(lambda rho: dict(j=0, l=0, rho=rho), range(self.schema.get_index_bound("rho"))))
+
+		if not os.path.exists(self.__CSV_OUTPUT_FILE):
+			cli.generate_random(
+				schema=self.__SCHEMA_FILE,
+				psi_upper=psi_upper,
+				phi_upper=phi_upper,
+				v_upper=v_upper,
+				x_eq_upper=x_eq_upper,
+				mm_psi_upper=mm_psi_upper,
+				mm_phi_upper=mm_phi_upper,
+				mm_v_upper=mm_v_upper,
+				tl_upper=tl_upper,
+				entry_nodes=entry_nodes,
+				output=self.__CSV_OUTPUT_FILE
+			)
+		self.env = linsmat.Env.make_from_file(schema_file=self.__SCHEMA_FILE, storage_file=self.__CSV_OUTPUT_FILE,
+			row_index_variables=[])
+
+	def test_construct_compare(self):
+		"""
+		Construct a gene from a DataInterface instance and backwards. Make sure
+		that the instances of DataInterface do not share the same mem.
+		"""
+		helper_virt = linsmat.HelperVirt(env=self.env)
+		ga_gene = sim_opt.GaGeneVirt.new_from_helper_virt(helper_virt)
+		data_interface = ga_gene.as_data_interface(helper_virt)
+		data_interface.set(helper_virt.var_transfer_intensity_fraction, 42.0, j=0, rho=0, l=0)
+		original_val = self.env.data_interface.get(helper_virt.var_transfer_intensity_fraction, j=0, rho=0, l=0)
+		changed_val = data_interface.get(helper_virt.var_transfer_intensity_fraction, j=0, rho=0, l=0)
+		self.assertFalse(math.isclose(original_val, changed_val))
+
 
 unittest.main()
