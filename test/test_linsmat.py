@@ -81,6 +81,25 @@ class TestData(unittest.TestCase):
 		self.assertTrue(math.isclose(3.2, data_interface.get("x", **{"b": 2, "a": 1, "c": 2})))
 		self.assertTrue(math.isclose(3.0, data_interface.get("y", **{"c": 3, "a": 2})))
 
+	def test_dict_ram_data_provider_clone(self):
+		schema=linsmat.Schema("her")
+		data_interface = linsmat.DataInterface(
+			provider=linsmat.PermissiveCsvBufferedDataProvider(str(TestData.__HERE / "test_data.csv")),
+			schema=linsmat.Schema(filename=str(TestData.__HERE / "test_schema.json")))
+
+		# Clone data into RAM
+		dict_ram_data_interface = data_interface.clone_as_dict_ram()
+
+		# Change a value, and make sure that the changes have not been reflected in the data file
+		val_prev = data_interface.get("x", **{"b": 2, "a": 1, "c": 2})
+		dict_ram_data_interface.set("x", val_prev + 10.0, a=1, b=2, c=2)
+		del data_interface
+		data_interface = linsmat.DataInterface(
+			provider=linsmat.PermissiveCsvBufferedDataProvider(str(TestData.__HERE / "test_data.csv")),
+			schema=linsmat.Schema(filename=str(TestData.__HERE / "test_schema.json")))
+		self.assertTrue(math.isclose(data_interface.get("x", **{"b": 2, "a": 1, "c": 2}), val_prev))
+		self.assertFalse(math.isclose(dict_ram_data_interface.get("x", **{"b": 2, "a": 1, "c": 2}), val_prev))
+
 	def test_indexing_simple(self):
 		data_provider = linsmat.PermissiveCsvBufferedDataProvider(
 			csv_file_name=ut.module_file_get_abspath(__file__, "test_solve_transfer_simple.csv"))
