@@ -287,6 +287,8 @@ class PermissiveCsvBufferedDataProvider(dict):
 
 		return map(stitch, self.items())
 
+	into_iter_plain = _into_iter_plain  # Reveal the method
+
 	def __post_init__(self):
 		"""
 		Parses data from a CSV file containing sequences of the following format:
@@ -316,13 +318,51 @@ class PermissiveCsvBufferedDataProvider(dict):
 				writer.writerow(l)
 
 
+class DictRamDataProvider(dict):
+	"""
+	A data provider storing data in RAM.
+	"""
+
+	def get_plain(self, *key):
+		assert key in self.keys()
+		return self[key]
+
+	def set_plain(self, *args):
+		"""
+		Adds a sequence of format (VAR, INDEX1, INDEX2, ..., VALUE) into the dictionary
+		"""
+		assert len(args) >= 2
+		k, v = self.line_to_kv(args)
+		self[k] = v
+
+	def sync(self, *args, **kwargs):
+		pass
+
+
 @dataclass
 class DataInterface:
 	"""
-	Abstraction layer over data storage
+	Abstraction layer over data storage.
 	"""
 	provider: object  # Abstraction over storage medium
 	schema: Schema
+
+	def clone_as_dict_ram(self):
+		"""
+		Clones data from the currently used data provider into the new one
+		based using an instance of `DictRamDataProvider`.
+
+		Warning: the operation is potentially memory-expensive, and it employs
+		no guardrails to prevent memory overspending.
+		"""
+		dict_ram_data_provider = DictRamDataProvider()
+
+		for item in self.provider.into_iter_plain():
+			dict_ram_data_provider.set_plain(*copy.deepcopy(item))
+
+		data_interface = DataInterface(provider=dict_ram_data_provider, schema=copy.deepcopy(self.schema))
+
+		return data_interface
 
 	def get_plain(self, *args, **kwargs):
 		return self.provider.get_plain(*args, **kwargs)
