@@ -72,10 +72,10 @@ class GaSimVirtOpt:
 	N_ITERATIONS_DEFAULT = 10
 
 	simulation_constructor: object  # Callable `fn(data_interface) -> Simulation`
-	data_interface: gobject
-	conf_n_species: int = GaSimOpt.N_SPECIES_DEFAULT
-	conf_n_best: int = GaSimOpt.N_BEST_DEFAULT
-	conf_n_offsprings: int = GaSimOpt.N_OFFSPRINGS_DEFAULT
-	conf_n_iterations: int = GaSimOpt.N_ITERATIONS_DEFAULT
+	data_interface: object
+	conf_n_species: int = N_SPECIES_DEFAULT
+	conf_n_best: int = N_BEST_DEFAULT
+	conf_n_offsprings: int = N_OFFSPRINGS_DEFAULT
+	conf_n_iterations: int = N_ITERATIONS_DEFAULT
 
 
