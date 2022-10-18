@@ -141,7 +141,6 @@ class TestGaGeneVirt(unittest.TestCase):
 		mm_phi_upper = phi_upper / tl_upper
 		mm_v_upper = v_upper / tl_upper
 		self.schema = linsmat.Schema(filename=self.__SCHEMA_FILE)
-		entry_nodes = list(map(lambda rho: dict(j=0, l=0, rho=rho), range(self.schema.get_index_bound("rho"))))
 
 		if not os.path.exists(self.__CSV_OUTPUT_FILE):
 			cli.generate_random(
@@ -154,11 +153,11 @@ class TestGaGeneVirt(unittest.TestCase):
 				mm_phi_upper=mm_phi_upper,
 				mm_v_upper=mm_v_upper,
 				tl_upper=tl_upper,
-				entry_nodes=entry_nodes,
 				output=self.__CSV_OUTPUT_FILE
 			)
 		self.env = linsmat.Env.make_from_file(schema_file=self.__SCHEMA_FILE, storage_file=self.__CSV_OUTPUT_FILE,
 			row_index_variables=[])
+		self.env.data_interface = linsmat.ZeroingDataInterface(provider=self.env.data_interface.provider, schema=self.env.schema)  # Some values like those pertaining to loop channes are not present in the generated file
 
 	def test_construct_compare(self):
 		"""
