@@ -19,16 +19,16 @@ class GaGeneVirt(list):
 
 	@staticmethod
 	def new_from_helper_virt(helper_virt: linsmat.HelperVirt):
-		schema = helper_virt.schema
-		variables = self._helper_virt_to_index_var_list(helper_virt)
+		schema = helper_virt.env.schema
+		variables = GaGeneVirt._helper_virt_as_index_var_list(helper_virt)
 		row_index = linsmat.RowIndex.make_from_schema(schema, variables)
 		data_interface = helper_virt.env.data_interface
 		ret = GaGeneVirt([0 for _ in range(row_index.get_row_len())])
 
 		for var in variables:
 			for indices in schema.radix_map_iter_var_dict(var):
-				pos = row_index.get_pos(var, **indices)
-				val = data_interface.get(var, **indices)
+				pos = row_index.get_pos(var, **indices[1])
+				val = data_interface.get(var, **indices[1])
 				ret[pos] = val
 
 		return ret
