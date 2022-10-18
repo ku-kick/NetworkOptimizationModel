@@ -32,7 +32,7 @@ def file_create_if_not_exists(filename):
 
 
 def file_here_to_str_path(here, *args):
-	file = pathlib.Path(here)
+	file = pathlib.Path(here).parent
 
 	for a in args:
 		file = file / a
