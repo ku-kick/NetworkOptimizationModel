@@ -31,6 +31,15 @@ def file_create_if_not_exists(filename):
 			pass
 
 
+def file_here_to_str_path(here, *args):
+	file = pathlib.Path(here)
+
+	for a in args:
+		file = file / a
+
+	return file.resolve()
+
+
 def clamp(val, vmin=-float("inf"), vmax=float("inf")):
 	return max(min(val, vmax), vmin)
 
