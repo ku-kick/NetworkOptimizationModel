@@ -18,7 +18,7 @@ class GaGeneVirt(list):
 		]
 
 	@staticmethod
-	def new_from_helper_virt(self, helper_virt: linsmat.HelperVirt):
+	def new_from_helper_virt(helper_virt: linsmat.HelperVirt):
 		schema = helper_virt.schema
 		variables = self._helper_virt_to_index_var_list(helper_virt)
 		row_index = linsmat.RowIndex.make_from_schema(schema, variables)
@@ -30,17 +30,17 @@ class GaGeneVirt(list):
 				pos = row_index.get_pos(var, **indices)
 				val = data_interface.get(var, **indices)
 				ret[pos] = val
-	
+
 		return ret
 
-	
+
 	def as_data_interface(self, helper_virt):
 		schema = helper_virt.schema
 		variables = self._helper_virt_to_index_var_list(helper_virt)
 		row_index = linsmat.RowIndex.make_from_schema(schema, variables)
 		data_interface = helper_virt.env.data_interface.clone_as_dict_ram()
 		ret = linsmat.Data
-		
+
 		for var in variables:
 			for indices in schema.radix_map_iter_var_dict(var):
 				pos = row_index.get_pos(var, **indices)
@@ -60,7 +60,7 @@ class GaSimVirtOpt:
 	3. Pick n_best best candidates (n >> n_species / 2)
 	4. Generate n_species - n - n_offsprings random species (the "random
 	   group")
-	5. Cross (1) n_offsprings / 2 species from n_best and 
+	5. Cross (1) n_offsprings / 2 species from n_best and
 	   some (2) n_offsprings / 2 species from the random group
 	6. Cross (1) 1 - n_offsprings / 2 species from n_best w/ e/o
 	7. If n_iterations has been exceeded, stop. Go to 1. otherwise
