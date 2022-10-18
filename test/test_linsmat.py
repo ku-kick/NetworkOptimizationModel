@@ -167,9 +167,10 @@ class TestGaGeneVirt(unittest.TestCase):
 		helper_virt = linsmat.HelperVirt(env=self.env)
 		ga_gene = sim_opt.GaGeneVirt.new_from_helper_virt(helper_virt)
 		data_interface = ga_gene.as_data_interface(helper_virt)
-		data_interface.set(helper_virt.var_transfer_intensity_fraction, 42.0, j=0, rho=0, l=0)
-		original_val = self.env.data_interface.get(helper_virt.var_transfer_intensity_fraction, j=0, rho=0, l=0)
-		changed_val = data_interface.get(helper_virt.var_transfer_intensity_fraction, j=0, rho=0, l=0)
+		indices = {"j": 0, "rho": 0, "l": 0, "i": 1}
+		data_interface.set(helper_virt.var_transfer_intensity_fraction, 42.0, **indices)
+		original_val = self.env.data_interface.get(helper_virt.var_transfer_intensity_fraction, **indices)
+		changed_val = data_interface.get(helper_virt.var_transfer_intensity_fraction, **indices)
 		self.assertFalse(math.isclose(original_val, changed_val))
 
 
