@@ -14,6 +14,7 @@ import os
 import pathlib
 import math
 import sim_opt
+import cli
 
 log = ut.Log(file=__file__, level=ut.Log.LEVEL_VERBOSE)
 
@@ -127,8 +128,8 @@ class TestGaGeneVirt(unittest.TestCase):
 	DataInterface in particular).
 	"""
 
-	__CSV_OUTPUT_FILE = "test_linsmat_ga_gene_virt.csv"
-	__SCHEMA_FILE = "test_schema_3.json"
+	__CSV_OUTPUT_FILE = ut.file_here_to_str_path(__file__, "test_linsmat_ga_gene_virt.csv")
+	__SCHEMA_FILE = ut.file_here_to_str_path(__file__, "test_schema_3.json")
 
 	def setUp(self) -> None:
 		psi_upper = 40
