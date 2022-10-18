@@ -5,7 +5,9 @@ the virtualized environments.
 
 from dataclasses import dataclass
 import linsmat
+import ut
 
+log = ut.Log(file=__file__, level=ut.Log.LEVEL_DEBUG)
 
 class GaGeneVirt(list):
 
@@ -28,6 +30,7 @@ class GaGeneVirt(list):
 		for var in variables:
 			for indices in schema.radix_map_iter_var_dict(var):
 				pos = row_index.get_pos(var, **indices[1])
+				log.debug(GaGeneVirt, "var", var, "indices", indices[1], "pos", pos)
 				val = data_interface.get(var, **indices[1])
 				ret[pos] = val
 
@@ -35,17 +38,18 @@ class GaGeneVirt(list):
 
 
 	def as_data_interface(self, helper_virt):
-		schema = helper_virt.schema
-		variables = self._helper_virt_to_index_var_list(helper_virt)
+		schema = helper_virt.env.schema
+		variables = self._helper_virt_as_index_var_list(helper_virt)
 		row_index = linsmat.RowIndex.make_from_schema(schema, variables)
 		data_interface = helper_virt.env.data_interface.clone_as_dict_ram()
-		ret = linsmat.Data
 
 		for var in variables:
 			for indices in schema.radix_map_iter_var_dict(var):
-				pos = row_index.get_pos(var, **indices)
+				pos = row_index.get_pos(var, **indices[1])
 				val = self[pos]
-				data_interface.set(var, **indices)
+				data_interface.set(var, val, **indices[1])
+
+		return data_interface
 
 
 @dataclass
