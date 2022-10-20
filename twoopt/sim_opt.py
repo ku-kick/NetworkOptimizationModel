@@ -67,7 +67,7 @@ class GaGeneVirt(list):
 			var_indices = list(filter(lambda i: i != "rho", var_indices))  # "rho" is the index to be normalized against
 			rho_bound = self.schema.get_index_bound("rho")
 
-			for indices in self.schema.radix_map_iter_dict(*var_indices)
+			for indices in self.schema.radix_map_iter_dict(*var_indices):
 				s = 0.0
 
 				# Accumulate sum
