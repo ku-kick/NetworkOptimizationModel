@@ -116,6 +116,9 @@ class GaSimVirtOpt:
 	def __post_init__(self):
 		self._population = list()
 
+	def population(self):
+		return self._population
+
 	def _population_generate_append(self, n):
 		population_new = list(map(lambda i: GaGeneVirt.new_from_helper_virt(self.helper_virt), range(n)))
 
