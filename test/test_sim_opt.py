@@ -48,7 +48,8 @@ class TestSimOpt(unittest.TestCase):
 			)
 		self.env = linsmat.Env.make_from_file(schema_file=self.__SCHEMA_FILE, storage_file=self.__CSV_OUTPUT_FILE,
 			row_index_variables=[])
-
+		self.helper_virt = linsmat.HelperVirt(env=self.env)
+		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=None, helper_virt=self.helper_virt)
 
 if __name__ == "__main__":
 	unittest.main()
