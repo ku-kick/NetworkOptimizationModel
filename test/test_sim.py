@@ -236,6 +236,8 @@ class TestSim(unittest.TestCase):
 				"dropped", dropped)
 			self.assertTrue(math.isclose(balance, generated, abs_tol=0.001))
 
+		log.info("simulation, process quality", s.quality())
+
 
 if __name__ == "__main__":
 	unittest.main()
