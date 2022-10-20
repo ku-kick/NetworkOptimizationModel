@@ -464,6 +464,8 @@ class HelperVirt:
 	var_drop_processed: str = "z^"
 	var_generate_planned: str = "x_eq"
 	var_generate_processed: str = "x_eq^"
+	var_weight_processed: str = "alpha_0"  # alpha_g
+	var_weight_dropped: str = "alpha_1"  # alpha_z
 
 	def __post_init__(self):
 		self.indices_container = ["j", "rho", "l"]
