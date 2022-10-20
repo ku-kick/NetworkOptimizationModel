@@ -121,7 +121,7 @@ class Operation:
 		""" How much to process during this step """
 		diff_planned = self.amount_diff_planned()
 
-		if self.proc_intensity_lower == 0.0:
+		if math.isclose(self.proc_intensity_lower, 0.0):
 			amount_step_lower = 0.0
 		else:
 			amount_step_lower = (self.proc_intensity_lower * self.proc_intensity_fraction + self.noise())\
