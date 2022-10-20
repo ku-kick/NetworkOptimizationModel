@@ -107,7 +107,6 @@ class GaSimVirtOpt:
 
 	simulation_constructor: object  # Callable `fn(data_interface, schema) -> Simulation`
 	helper_virt: linsmat.HelperVirt
-	schema: object
 	conf_n_species: int = N_SPECIES_DEFAULT
 	conf_n_best: int = N_BEST_DEFAULT
 	conf_n_offsprings: int = N_OFFSPRINGS_DEFAULT
