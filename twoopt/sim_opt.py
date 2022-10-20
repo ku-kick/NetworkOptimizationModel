@@ -6,6 +6,7 @@ the virtualized environments.
 from dataclasses import dataclass
 import linsmat
 import ut
+import random
 
 log = ut.Log(file=__file__, level=ut.Log.LEVEL_DEBUG)
 
@@ -36,7 +37,6 @@ class GaGeneVirt(list):
 
 		return ret
 
-
 	def as_data_interface(self, helper_virt):
 		schema = helper_virt.env.schema
 		variables = self._helper_virt_as_index_var_list(helper_virt)
@@ -50,6 +50,10 @@ class GaGeneVirt(list):
 				data_interface.set(var, val, **indices[1])
 
 		return data_interface
+
+	def normalize(self):
+		# TODO
+		raise NotImplemented
 
 
 @dataclass
@@ -75,11 +79,23 @@ class GaSimVirtOpt:
 	N_OFFSPRINGS_DEFAULT = 5
 	N_ITERATIONS_DEFAULT = 10
 
-	simulation_constructor: object  # Callable `fn(data_interface) -> Simulation`
-	data_interface: object
+	simulation_constructor: object  # Callable `fn(data_interface, schema) -> Simulation`
+	helper_virt: linsmat.HelperVirt
+	schema: object
 	conf_n_species: int = N_SPECIES_DEFAULT
 	conf_n_best: int = N_BEST_DEFAULT
 	conf_n_offsprings: int = N_OFFSPRINGS_DEFAULT
 	conf_n_iterations: int = N_ITERATIONS_DEFAULT
 
+	def __post_init__(self):
+		self._population = list()
+
+	def _population_generate_append(self, n):
+		population_new = list(map(lambda i: GaGeneVirt.new_from_helper_virt(self.helper_virt), range(n)))
+
+		for indiv in population_new:
+			for i in range(len(indiv)):
+				indiv[i] = random.uniform(0, 1)
+
+			indiv.normalize()  # Rho-s, i.e. fractions of intensity, must sum up to 1
 
