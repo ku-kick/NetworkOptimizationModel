@@ -22,7 +22,7 @@ class GaGeneVirt(list):
 
 	def __init__(self, *args, **kwargs):
 		self.row_index = kwargs.pop("row_index", None)
-		list.__init__(*args, **kwargs)
+		list.__init__(self, *args, **kwargs)
 
 	@staticmethod
 	def new_from_helper_virt(helper_virt: linsmat.HelperVirt):
