@@ -471,6 +471,22 @@ class HelperVirt:
 		self.indices_container = ["j", "rho", "l"]
 		self.__init_duration()
 
+	def weight_processed(self):
+		try:
+			ret = self.env.data_interface.get(self.var_weight_processed)
+		except KeyError:
+			ret = 1.0 - self.env.data_interface.get(self.var_weight_dropped)
+
+		return ret
+
+	def weight_dropped(self):
+		try:
+			ret = self.env.data_interface.get(self.var_weight_dropped)
+		except KeyError:
+			ret = 1.0 - self.env.data_interface.get(self.var_weight_processed)
+
+		return ret
+
 	def indices_planned_decompose(self, var, indices_planned_plain):
 		"""
 		Decomposes indices into j, i, rho, and l. If some is not present, the returned value is none
