@@ -386,3 +386,27 @@ class Simulation:
 	def run(self):
 		while not self.sim_global.is_finished():
 			self.step()
+
+	def quality():
+		"""
+		Weighed difference of processed and dropped information
+		"""
+		alpha_g = self.env.data_interface.get(self.helper_virt.var_weight_processed)
+		alpha_z = self.env.data_interface.get(self.helper_virt.var_weight_dropped)
+		sum_processed = 0.0
+		sum_dropped = 0.0
+
+		for indices_processed in self.env.schema.radix_map_iter_var_dict(\
+				self.helper_virt.var_process_intensity_handled):
+			sum_processed += self.env.data_interface.get(
+				self.helper_virt.var_process_intensity_handled,
+				**indices_processed)
+
+		for indices_dropped in self.env.schema.radix_map_iter_var_dict(\
+				self.helper_virt.var_drop_processed):
+			sum_dropped += self.env.data_interface.get(
+					self.helper_virt.var_drop_processed, **indices_dropped)
+
+		quality = alpha_g * indices_processed - alpha_z * indices_dropped
+
+		return quality
