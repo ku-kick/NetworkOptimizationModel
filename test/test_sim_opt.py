@@ -10,6 +10,7 @@ import math
 from generic import Log
 import logging
 import ut
+import sim_opt
 
 
 log = ut.Log(file=__file__, level=ut.Log.LEVEL_VERBOSE)
@@ -49,7 +50,15 @@ class TestSimOpt(unittest.TestCase):
 		self.env = linsmat.Env.make_from_file(schema_file=self.__SCHEMA_FILE, storage_file=self.__CSV_OUTPUT_FILE,
 			row_index_variables=[])
 		self.helper_virt = linsmat.HelperVirt(env=self.env)
+
+	def test_population_generation(self):
+		"""
+		Run population generator, check whether normalization is successful
+		"""
 		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=None, helper_virt=self.helper_virt)
+		n = 2
+		ga_sim_virt_opt._population_generate_append(n=n)
+
 
 if __name__ == "__main__":
 	unittest.main()
