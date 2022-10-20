@@ -25,6 +25,14 @@ class GaGeneVirt(list):
 		list.__init__(self, *args, **kwargs)
 
 	@staticmethod
+	def make_row_index_from_helper_virt(helper_virt):
+		schema = helper_virt.env.schema
+		variables = GaGeneVirt._helper_virt_as_index_var_list(helper_virt)
+		row_index = linsmat.RowIndex.make_from_schema(schema, variables)
+
+		return row_index
+
+	@staticmethod
 	def new_from_helper_virt(helper_virt: linsmat.HelperVirt):
 		schema = helper_virt.env.schema
 		variables = GaGeneVirt._helper_virt_as_index_var_list(helper_virt)
@@ -44,7 +52,7 @@ class GaGeneVirt(list):
 	def as_data_interface(self, helper_virt):
 		schema = helper_virt.env.schema
 		variables = self._helper_virt_as_index_var_list(helper_virt)
-		row_index = linsmat.RowIndex.make_from_schema(schema, variables)
+		row_index = self.make_row_index_from_helper_virt(helper_virt)
 		data_interface = helper_virt.env.data_interface.clone_as_dict_ram()
 
 		for var in variables:
@@ -55,19 +63,19 @@ class GaGeneVirt(list):
 
 		return data_interface
 
-	def normalize(self):
+	def normalize(self, helper_virt):
 		"""
 		Normalizes fractions of intensity, so they sum up to 1.0
 		"""
-		assert self.row_index is not None  # `row_index` should be initialized
+		row_index = self.make_row_index_from_helper_virt(helper_virt)
 
-		for var in self._helper_virt_as_index_var_list(self.helper_virt):
-			assert "rho" in self.schema.get_var_indices(var)  # The fraction is associated w/ `rho` index, and it should not be changed
-			var_indices = self.schema.get_var_indices(var)  # Get list of indices
+		for var in self._helper_virt_as_index_var_list(helper_virt):
+			assert "rho" in helper_virt.env.schema.get_var_indices(var)  # The fraction is associated w/ `rho` index, and it should not be changed
+			var_indices = helper_virt.env.schema.get_var_indices(var)  # Get list of indices
 			var_indices = list(filter(lambda i: i != "rho", var_indices))  # "rho" is the index to be normalized against
-			rho_bound = self.schema.get_index_bound("rho")
+			rho_bound = helper_virt.env.schema.get_index_bound("rho")
 
-			for indices in self.schema.radix_map_iter_dict(*var_indices):
+			for indices in helper_virt.env.schema.radix_map_iter_dict(*var_indices):
 				s = 0.0
 
 				# Accumulate sum
@@ -125,5 +133,5 @@ class GaSimVirtOpt:
 			for i in range(len(indiv)):
 				indiv[i] = random.uniform(0, 1)
 
-			indiv.normalize()  # Rho-s, i.e. fractions of intensity, must sum up to 1
+			indiv.normalize(self.helper_virt)  # Rho-s, i.e. fractions of intensity, must sum up to 1
 
