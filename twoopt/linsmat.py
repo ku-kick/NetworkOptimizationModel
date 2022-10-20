@@ -410,14 +410,18 @@ class Env:
 	data_interface: DataInterface
 
 	@staticmethod
-	def make_from_file(schema_file, storage_file, row_index_variables: list):
+	def make_from_file(schema_file, storage_file, row_index_variables: list = list()):
 		storage_file = pathlib.Path(storage_file)
 		schema_file = pathlib.Path(schema_file).resolve()
 		storage_provider_type = {
 			".csv": PermissiveCsvBufferedDataProvider,
 		}
 		schema = Schema(filename=schema_file)
-		row_index = RowIndex.make_from_schema(schema, row_index_variables)
+
+		if len(row_index_variables) > 0:
+			row_index = RowIndex.make_from_schema(schema, row_index_variables)
+		else:
+			row_index = None
 
 		try:
 			storage_provider = storage_provider_type[storage_file.suffix](str(storage_file))
