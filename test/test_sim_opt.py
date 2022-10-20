@@ -58,6 +58,14 @@ class TestSimOpt(unittest.TestCase):
 		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=None, helper_virt=self.helper_virt)
 		n = 2
 		ga_sim_virt_opt._population_generate_append(n=n)
+		s = 0.0
+
+		for gene in ga_sim_virt_opt.population():
+			s += sum(gene)
+
+		log.debug("s", s)
+		self.assertTrue(s > 0.0)
+		self.assertTrue(math.isclose(s % 1.0, 0))
 
 
 if __name__ == "__main__":
