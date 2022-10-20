@@ -410,7 +410,10 @@ class Env:
 	data_interface: DataInterface
 
 	@staticmethod
-	def make_from_file(schema_file, storage_file, row_index_variables: list = list()):
+	def make_from_file(schema_file, storage_file, row_index_variables: list = list(), zeroing_data_interface=False):
+		"""
+		:param zeroing_data_interface: if true, all missing members will treated as being equal to 0
+		"""
 		storage_file = pathlib.Path(storage_file)
 		schema_file = pathlib.Path(schema_file).resolve()
 		storage_provider_type = {
@@ -429,7 +432,10 @@ class Env:
 			Log.error("Could not find an appropriate storage provider", str(e))
 			raise e
 
-		data_interface = DataInterface(provider=storage_provider, schema=schema)
+		if zeroing_data_interface:
+			data_interface = ZeroingDataInterface(provider=storage_provider, schema=schema)
+		else:
+			data_interface = DataInterface(provider=storage_provider, schema=schema)
 
 		return Env(row_index=row_index, schema=schema, data_interface=data_interface)
 
