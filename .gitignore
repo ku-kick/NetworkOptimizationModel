@@ -4,3 +4,4 @@ venv/
 *.svg
 *.vim
 tags
+test/test_linsmat_ga_gene_virt.csv
