@@ -26,6 +26,10 @@ class GaGeneVirt(list):
 
 	@staticmethod
 	def make_row_index_from_helper_virt(helper_virt):
+		"""
+		Creates RowIndex translating indices into a position in the current
+		vector
+		"""
 		schema = helper_virt.env.schema
 		variables = GaGeneVirt._helper_virt_as_index_var_list(helper_virt)
 		row_index = linsmat.RowIndex.make_from_schema(schema, variables)
@@ -34,6 +38,9 @@ class GaGeneVirt(list):
 
 	@staticmethod
 	def new_from_helper_virt(helper_virt: linsmat.HelperVirt):
+		"""
+		Creates new gene using linsmat.HelperVirt
+		"""
 		schema = helper_virt.env.schema
 		variables = GaGeneVirt._helper_virt_as_index_var_list(helper_virt)
 		row_index = linsmat.RowIndex.make_from_schema(schema, variables)
@@ -50,6 +57,10 @@ class GaGeneVirt(list):
 		return ret
 
 	def as_data_interface(self, helper_virt):
+		"""
+		Converts the instance into DataInterface. It ensures interoperability
+		of the representation w/ the rest of the project
+		"""
 		schema = helper_virt.env.schema
 		variables = self._helper_virt_as_index_var_list(helper_virt)
 		row_index = self.make_row_index_from_helper_virt(helper_virt)
@@ -128,6 +139,10 @@ class GaSimVirtOpt:
 		return self._population
 
 	def _population_generate_append(self, n):
+		"""
+		Generates species, normalizes their weights, and appends those to the
+		gene pool.
+		"""
 		population_new = list(map(lambda i: GaGeneVirt.new_from_helper_virt(self.helper_virt), range(n)))
 
 		for indiv in population_new:
