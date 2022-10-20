@@ -48,7 +48,7 @@ class TestSimOpt(unittest.TestCase):
 				output=self.__CSV_OUTPUT_FILE
 			)
 		self.env = linsmat.Env.make_from_file(schema_file=self.__SCHEMA_FILE, storage_file=self.__CSV_OUTPUT_FILE,
-			row_index_variables=[])
+			row_index_variables=[], zeroing_data_interface=True)
 		self.helper_virt = linsmat.HelperVirt(env=self.env)
 
 	def test_population_generation(self):
