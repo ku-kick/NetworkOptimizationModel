@@ -56,8 +56,30 @@ class GaGeneVirt(list):
 		return data_interface
 
 	def normalize(self):
-		# TODO
-		raise NotImplemented
+		"""
+		Normalizes fractions of intensity, so they sum up to 1.0
+		"""
+		assert self.row_index is not None  # `row_index` should be initialized
+
+		for var in self._helper_virt_as_index_var_list(self.helper_virt):
+			assert "rho" in self.schema.get_var_indices(var)  # The fraction is associated w/ `rho` index, and it should not be changed
+			var_indices = self.schema.get_var_indices(var)  # Get list of indices
+			var_indices = list(filter(lambda i: i != "rho", var_indices))  # "rho" is the index to be normalized against
+			rho_bound = self.schema.get_index_bound("rho")
+
+			for indices in self.schema.radix_map_iter_dict(*var_indices)
+				s = 0.0
+
+				# Accumulate sum
+				for rho in range(rho_bound):
+					s += row_index.get_pos(var, rho=rho, **indices)
+
+				frac = 1 / s
+
+				# Normalize members
+				for rho in range(rho_bound):
+					pos = row_index.get_pos(var, rho=rho, **indices)
+					self[pos] *= frac
 
 
 @dataclass
