@@ -8,7 +8,7 @@ import generic
 import math
 import functools
 
-log = ut.Log(file=__file__, level=ut.Log.LEVEL_VERBOSE)
+log = ut.Log(file=__file__, level=ut.Log.LEVEL_DEBUG)
 log.filter_disable = ["dropping"]
 
 # The following flags manage randomness in the model. It makes sense to disable those during debugging routines
@@ -121,7 +121,7 @@ class Operation:
 		""" How much to process during this step """
 		diff_planned = self.amount_diff_planned()
 		noise = self.noise()
-		log.debug(self.amount_proc_available, "noise", noise)
+		log.verbose(self.amount_proc_available, "noise", noise)
 
 		if math.isclose(self.proc_intensity_lower, 0.0):
 			amount_step_lower = 0.0
