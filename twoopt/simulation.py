@@ -120,14 +120,16 @@ class Operation:
 	def amount_proc_available(self):
 		""" How much to process during this step """
 		diff_planned = self.amount_diff_planned()
+		noise = self.noise()
+		log.debug(self.amount_proc_available, "noise", noise)
 
 		if math.isclose(self.proc_intensity_lower, 0.0):
 			amount_step_lower = 0.0
 		else:
-			amount_step_lower = (self.proc_intensity_lower * self.proc_intensity_fraction + self.noise())\
+			amount_step_lower = (self.proc_intensity_lower * self.proc_intensity_fraction + noise)\
 								* self.sim_global.dt
 
-		amount_step_upper = (self.proc_intensity_upper * self.proc_intensity_fraction + self.noise())\
+		amount_step_upper = (self.proc_intensity_upper * self.proc_intensity_fraction + noise)\
 							* self.sim_global.dt
 		amount_step = ut.clamp(diff_planned, amount_step_lower, amount_step_upper)  # What is available due to technical limitations
 		amount_step = ut.clamp(amount_step, -self.amount_stash(), self.amount_input())  # What is available according to the amount of stashed / received
