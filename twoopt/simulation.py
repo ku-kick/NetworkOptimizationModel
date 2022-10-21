@@ -106,6 +106,7 @@ class Operation:
 		elif self.proc_noise_type == "gauss":
 			diff_planned = self.amount_diff_planned()
 
+			# TODO consider lower values noize dividers
 			if diff_planned > 0:
 				return random.gauss(0, self.proc_intensity_upper / 4)
 			else:
