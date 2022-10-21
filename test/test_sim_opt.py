@@ -66,7 +66,7 @@ class TestSimOpt(unittest.TestCase):
 
 		log.debug("s", s)
 		self.assertTrue(s > 0.0)
-		self.assertTrue(math.isclose(s % 1.0, 0))
+		self.assertTrue(math.isclose(s % 1.0, 0, abs_tol=0.0001))
 
 	def test_population_run(self):
 		"""
