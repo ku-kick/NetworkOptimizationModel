@@ -11,6 +11,7 @@ from generic import Log
 import logging
 import ut
 import sim_opt
+import simulation
 
 
 log = ut.Log(file=__file__, level=ut.Log.LEVEL_VERBOSE)
@@ -66,6 +67,22 @@ class TestSimOpt(unittest.TestCase):
 		log.debug("s", s)
 		self.assertTrue(s > 0.0)
 		self.assertTrue(math.isclose(s % 1.0, 0))
+
+	def test_population_run(self):
+		"""
+		Initializes a population and runs a sequence of simulations each of
+		which is associated with an individual from the population.
+		"""
+		# TODO sim. c-tor
+		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis, helper_virt=self.helper_virt)
+		n = 10
+		ga_sim_virt_opt._population_generate_append(n=n)
+		ga_sim_virt_opt._population_update_sim()
+
+		for indiv in ga_sim_virt_opt.population():
+			log.debug("GA, species", str(indiv))
+		log.debug("GA output, quality functions", list(map(lambda i: i.quality, ga_sim_virt_opt.population())))
+		# TODO: similar results under different parameters
 
 
 if __name__ == "__main__":
