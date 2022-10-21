@@ -7,6 +7,7 @@ from generic import Log
 import pathlib
 import os
 import inspect
+import math
 
 
 def iter_plain(root):
@@ -19,6 +20,13 @@ def iter_plain(root):
 
 def list_pop_at(lst: list, item_id: int):
 	return list(lst[:item_id]) + list(lst[item_id + 1:])
+
+
+def list_float_isclose(lsta, lstb, **kwargs):
+	"""
+	:param kwargs: math.isclose arguments are expected (abs_tol, rel_tol)
+	"""
+	return all(map(lambda pair: math.isclose(pair[0], pair[1], **kwargs), zip(lsta, lstb)))
 
 
 def radix_cartesian_product(radix_boundaries):
