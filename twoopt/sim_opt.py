@@ -139,7 +139,10 @@ class GaSimVirtOpt:
 		return self._population
 
 	def _population_generate_append(self, n):
-	#TODO population_generate, decompose
+		population_new = self._population_generate(n)
+		self._population.extend(population_new)
+
+	def _population_generate(self, n):
 		"""
 		Generates species, normalizes their weights, and appends those to the
 		gene pool.
@@ -151,7 +154,8 @@ class GaSimVirtOpt:
 				indiv[i] = random.uniform(0, 1)
 
 			indiv.normalize(self.helper_virt)  # Rho-s, i.e. fractions of intensity, must sum up to 1
-			self._population.append(indiv)
+
+		return population_new
 
 	def _population_update_sim(self):
 		"""
