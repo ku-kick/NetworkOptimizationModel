@@ -133,7 +133,7 @@ class GaSimVirtOpt:
 		"""
 		assert(len(ind_a) == len(ind_b))
 		n_ids = int(len(ind_a) * self.conf_swap_frac_genes)
-		ids = random.sample(range(len(a)), n_ids)
+		ids = random.sample(range(len(ind_a)), n_ids)
 
 		for i in ids:
 			swap = ind_a[i]
