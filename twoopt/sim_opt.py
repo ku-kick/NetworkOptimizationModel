@@ -110,30 +110,16 @@ class GaSimVirtOpt:
 	Stops as soon as the iterations thresold has been exceeded.
 
 	GA:
-	1. Generate population of size n_species
-	2. Run simulation
-	3. Pick n_best best candidates (n >> n_species / 2)
-	4. Generate n_species - n - n_offsprings random species (the "random
-	   group")
-	5. Cross (1) n_offsprings / 2 species from n_best and
-	   some (2) n_offsprings / 2 species from the random group
-	6. Cross (1) 1 - n_offsprings / 2 species from n_best w/ e/o
-	7. If n_iterations has been exceeded, stop. Go to 1. otherwise
+	- Generate population of size n_species
+	* Cross n_cross random species
+	- Run simulation
+	- Exclude n_worst performers
+	- Generate n_worst random species
+	- if out of iteration, end, else, go to *
 	"""
-
-	N_SPECIES_DEFAULT = 50
-	N_BEST_DEFAULT = 10
-	N_OFFSPRINGS_DEFAULT = 5
-	N_ITERATIONS_DEFAULT = 10
 
 	simulation_constructor: object  # Callable `fn(data_interface, schema) -> Simulation`
 	helper_virt: linsmat.HelperVirt
-	conf_n_species: int = N_SPECIES_DEFAULT
-	conf_n_best: int = N_BEST_DEFAULT
-	conf_n_offsprings: int = N_OFFSPRINGS_DEFAULT
-	conf_n_iterations: int = N_ITERATIONS_DEFAULT
-
-	# TODO cross
 
 	def __post_init__(self):
 		self._population = list()
