@@ -17,6 +17,10 @@ def iter_plain(root):
 		yield root
 
 
+def list_pop_at(lst: list, item_id: int):
+	return list(lst[:item_id]) + list(lst[item_id + 1:])
+
+
 def radix_cartesian_product(radix_boundaries):
 	if len(list(radix_boundaries)) == 0:
 		return [[]]
