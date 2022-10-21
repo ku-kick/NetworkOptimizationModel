@@ -12,6 +12,7 @@ import logging
 import ut
 import sim_opt
 import simulation
+import copy
 
 
 log = ut.Log(file=__file__, level=ut.Log.LEVEL_VERBOSE)
@@ -81,6 +82,19 @@ class TestSimOpt(unittest.TestCase):
 		for indiv in ga_sim_virt_opt.population():
 			log.debug("GA, species", str(indiv))
 		log.debug("GA output, quality functions", list(map(lambda i: i.quality, ga_sim_virt_opt.population())))
+
+	def test_population_swap(self):
+		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis, helper_virt=self.helper_virt)
+		n = 2
+		ga_sim_virt_opt._population_generate_append(n=n)
+		ind_a = copy.copy(ga_sim_virt_opt.population()[0])
+		ind_b = copy.copy(ga_sim_virt_opt.population()[1])
+		self.assertFalse(ut.list_float_isclose(ind_a, ind_b, abs_tol=0.001))
+		ga_sim_virt_opt.indiv_cross_random_swap(ind_a, ind_b)
+		self.assertFalse(ut.list_float_isclose(ind_a, ga_sim_virt_opt.population()[0]))
+		self.assertFalse(ut.list_float_isclose(ind_a, ga_sim_virt_opt.population()[1]))
+		self.assertFalse(ut.list_float_isclose(ind_b, ga_sim_virt_opt.population()[0]))
+		self.assertFalse(ut.list_float_isclose(ind_b, ga_sim_virt_opt.population()[1]))
 
 
 if __name__ == "__main__":
