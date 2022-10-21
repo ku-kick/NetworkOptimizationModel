@@ -138,7 +138,7 @@ class GaSimVirtOpt:
 	def __post_init__(self):
 		self._population = list()
 
-	def population_range(population=None, copy_=False):
+	def population_range(self, population=None, copy_=False):
 		"""
 		:param population: if None, `self.population` is used
 		:param copy: if True, deep copy will be performed
