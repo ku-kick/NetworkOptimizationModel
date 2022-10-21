@@ -118,11 +118,29 @@ class GaSimVirtOpt:
 	- if out of iteration, end, else, go to *
 	"""
 
+	SWAP_PERC_GENES = .5  # Fraction of genes to be swapped. See `indiv_cross_random_swap`
+
 	simulation_constructor: object  # Callable `fn(data_interface, schema) -> Simulation`
 	helper_virt: linsmat.HelperVirt
+	conf_swap_frac_genes: float = SWAP_PERC_GENES
 
 	def __post_init__(self):
 		self._population = list()
+
+	def indiv_cross_random_swap(self, ind_a, ind_b):
+		"""
+		Crosses individuals through random swapping
+		"""
+		assert(len(ind_a) == len(ind_b))
+		n_ids = int(len(ind_a) * self.conf_swap_frac_genes)
+		ids = random.sample(range(len(a)), n_ids)
+
+		for i in ids:
+			swap = ind_a[i]
+			ind_a[i] = ind_b[i]
+			ind_b[i] = swap
+
+		return ind_a, ind_b
 
 	def population_range(self, population=None, copy_=False):
 		"""
