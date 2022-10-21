@@ -153,3 +153,14 @@ class GaSimVirtOpt:
 			indiv.normalize(self.helper_virt)  # Rho-s, i.e. fractions of intensity, must sum up to 1
 			self._population.append(indiv)
 
+	def _population_update_sim(self):
+		"""
+		Constructs and runs simulations consecutively, using species from the
+		population as simulation parameters.
+		"""
+		for indiv in self.population():
+			data_interface = indiv.as_data_interface(self.helper_virt)
+			schema = self.helper_virt.env.schema
+			sim = self.simulation_constructor(data_interface, schema)
+			sim.run()
+			indiv.quality = sim.quality()
