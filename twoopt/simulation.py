@@ -222,6 +222,18 @@ class Simulation:
 	env: linsmat.Env
 	helper_virt: linsmat.HelperVirt = None
 
+	@staticmethod
+	def from_dis(data_interface, schema):
+		"""
+		Constructs new Simulation instance from DataInterface and Schema
+		instances.
+		"""
+		env = linsmat.Env(row_index=None, schema=schema, data_interface=data_interface)
+		helper_virt = linsmat.HelperVirt(env=env)
+		sim = Simulation(env=env, helper_virt=helper_virt)
+
+		return sim
+
 	def containers_add_by_plain(self, indices_plain: tuple, c: Container):
 		self.containers[indices_plain] = c
 
