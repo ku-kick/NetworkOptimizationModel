@@ -139,6 +139,7 @@ class GaSimVirtOpt:
 		return self._population
 
 	def _population_generate_append(self, n):
+	#TODO population_generate, decompose
 		"""
 		Generates species, normalizes their weights, and appends those to the
 		gene pool.
