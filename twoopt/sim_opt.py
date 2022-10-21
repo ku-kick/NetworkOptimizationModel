@@ -7,6 +7,7 @@ from dataclasses import dataclass
 import linsmat
 import ut
 import random
+import copy
 
 log = ut.Log(file=__file__, level=ut.Log.LEVEL_DEBUG)
 
@@ -132,8 +133,25 @@ class GaSimVirtOpt:
 	conf_n_offsprings: int = N_OFFSPRINGS_DEFAULT
 	conf_n_iterations: int = N_ITERATIONS_DEFAULT
 
+	# TODO cross
+
 	def __post_init__(self):
 		self._population = list()
+
+	def population_range(population=None, copy_=False):
+		"""
+		:param population: if None, `self.population` is used
+		:param copy: if True, deep copy will be performed
+		"""
+		if population is None:
+			population = self._population
+
+		if copy_:
+			population = copy.deepcopy(population)
+
+		population = sorted(population, key=lambda item: item.quality)
+
+		return population
 
 	def population(self):
 		return self._population
