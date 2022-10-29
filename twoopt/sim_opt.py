@@ -140,7 +140,9 @@ class GaSimVirtOpt:
 			swap = ind_a[i]
 			ind_a[i] = ind_b[i]
 			ind_b[i] = swap
-		# TODO BUG: Normalize the results
+
+		ind_a.normalize(self.helper_virt)
+		ind_b.normalize(self.helper_virt)
 
 		return ind_a, ind_b
 
