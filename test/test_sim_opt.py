@@ -78,9 +78,13 @@ class TestSimOpt(unittest.TestCase):
 		n = 10
 		ga_sim_virt_opt._population_generate_append(n=n)
 		ga_sim_virt_opt._population_update_sim()
+		ga_sim_virt_opt.population_range()
+		quality = list(map(lambda i: round(i.quality, 4), ga_sim_virt_opt.population()))
+		self.assertTrue(all(map(lambda i: quality[i] >= quality[i - 1], range(1, len(quality)))))
 
 		for indiv in ga_sim_virt_opt.population():
 			log.debug("GA, species", str(indiv))
+
 		log.debug("GA output, quality functions", list(map(lambda i: i.quality, ga_sim_virt_opt.population())))
 
 	def test_population_swap(self):
