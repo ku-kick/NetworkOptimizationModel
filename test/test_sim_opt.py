@@ -107,6 +107,10 @@ class TestSimOpt(unittest.TestCase):
 		ga_sim_virt_opt._population_generate_append(n=n)
 		ga_sim_virt_opt._population_cross_fraction_random(fraction=.5)
 
+	def test_run_complete(self):
+		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis, helper_virt=self.helper_virt)
+		ga_sim_virt_opt.run()
+
 
 if __name__ == "__main__":
 	unittest.main()
