@@ -229,12 +229,21 @@ class GaSimVirtOpt:
 		return int(len(self._population) * fraction)
 
 	def run(self):
+		"""
+		Run N_ITERATIONS iterations, ranges the candidates, and returns the best one
+		"""
 		self._population_generate_append(self.POPULATION_SIZE)
+		assert self.N_ITERATIONS > 1
 
-		for _ in range(self.N_ITERATIONS):
+		for _ in range(self.N_ITERATIONS - 1):
 			self._population_cross_fraction_random()
 			self._population_update_sim()
 			self.population_range()
 			n_worst = self._population_fraction_to_int(self.REMOVE_PERC_POPULATION)
 			self._population_remove_n_first(n_worst)  # The population has already been sorted according to the quality measure
 			self._population_generate_append(n_worst)  # Replace the removed members of the population
+
+		self._population_update_sim()
+		self.population_range()
+
+		return self._population[-1]
