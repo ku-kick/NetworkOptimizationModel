@@ -113,12 +113,13 @@ class GaSimVirtOpt:
 	- Generate population of size n_species
 	* Cross n_cross random species
 	- Run simulation
-	- Exclude n_worst performers
-	- Generate n_worst random species
+	- Exclude ceil(fraction_worst * population_size) performers
+	- Generate ceil(fraction_worst * population_size) random species
 	- if out of iteration, end, else, go to *
 	"""
 
 	SWAP_PERC_GENES = .5  # Fraction of genes to be swapped. See `indiv_cross_random_swap`
+	SWAP_PERC_POPULATION = .3  # Fraction of individuals from the entire population that will be selected for crossing
 
 	simulation_constructor: object  # Callable `fn(data_interface, schema) -> Simulation`
 	helper_virt: linsmat.HelperVirt
@@ -139,6 +140,7 @@ class GaSimVirtOpt:
 			swap = ind_a[i]
 			ind_a[i] = ind_b[i]
 			ind_b[i] = swap
+		# TODO BUG: Normalize the results
 
 		return ind_a, ind_b
 
@@ -178,6 +180,29 @@ class GaSimVirtOpt:
 			indiv.normalize(self.helper_virt)  # Rho-s, i.e. fractions of intensity, must sum up to 1
 
 		return population_new
+
+	def _population_cross_fraction_random(self, fraction=SWAP_PERC_POPULATION):
+		"""
+		Selects int(POPULATION_SIZE * fraction) species from the population to
+		perform
+		"""
+		# Infer the number of crossed species, and
+		n = int(len(self.population()) * fraction)
+		n = n - (n % 2)
+
+		# Get a random sample (rand. uniform)
+		sample = random.sample(self._population, n)
+		group_size = len(sample) // 2
+
+		# Split the group
+		group_a = sample[:group_size]
+		group_b = sample[group_size:]
+
+		# Perform cross, normalize afterwards
+		for a, b in zip(group_a, group_b):
+			a, b = self.indiv_cross_random_swap(a, b)
+			a.normalize(self.helper_virt)
+			b.normalize(self.helper_virt)
 
 	def _population_update_sim(self):
 		"""
