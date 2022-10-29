@@ -101,6 +101,12 @@ class TestSimOpt(unittest.TestCase):
 		self.assertFalse(ut.list_float_isclose(ind_b, ga_sim_virt_opt.population()[0]))
 		self.assertFalse(ut.list_float_isclose(ind_b, ga_sim_virt_opt.population()[1]))
 
+	def test_population_swap_fraction_random(self):
+		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis, helper_virt=self.helper_virt)
+		n = 10
+		ga_sim_virt_opt._population_generate_append(n=n)
+		ga_sim_virt_opt._population_cross_fraction_random(fraction=.5)
+
 
 if __name__ == "__main__":
 	unittest.main()
