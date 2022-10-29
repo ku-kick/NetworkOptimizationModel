@@ -79,7 +79,8 @@ class TestSimOpt(unittest.TestCase):
 		ga_sim_virt_opt._population_generate_append(n=n)
 		ga_sim_virt_opt._population_update_sim()
 		ga_sim_virt_opt.population_range()
-		quality = list(map(lambda i: round(i.quality, 4), ga_sim_virt_opt.population()))
+		population = ga_sim_virt_opt.population()
+		quality = list(map(lambda i: round(i.quality, 4), population))
 		self.assertTrue(all(map(lambda i: quality[i] >= quality[i - 1], range(1, len(quality)))))
 
 		for indiv in ga_sim_virt_opt.population():
