@@ -65,7 +65,7 @@ class GaGeneVirt(list):
 		schema = helper_virt.env.schema
 		variables = self._helper_virt_as_index_var_list(helper_virt)
 		row_index = self.make_row_index_from_helper_virt(helper_virt)
-		data_interface = helper_virt.env.data_interface.clone_as_dict_ram()
+		data_interface = helper_virt.env.data_interface.clone_as_dict_ram(di_type=linsmat.ZeroingDataInterface)
 
 		for var in variables:
 			for indices in schema.radix_map_iter_var_dict(var):
