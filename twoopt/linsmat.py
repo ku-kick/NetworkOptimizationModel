@@ -329,7 +329,9 @@ class DictRamDataProvider(dict):
 		self.line_to_kv: object = lambda l: (tuple([l[0]] + list(map(int, l[1:-1]))), float(l[-1]))
 
 	def get_plain(self, *key):
-		assert key in self.keys()
+		if key not in self.keys():
+			raise AssertionError(str(key))
+
 		return self[key]
 
 	def set_plain(self, *args):
