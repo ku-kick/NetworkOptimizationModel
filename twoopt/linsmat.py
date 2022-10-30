@@ -167,6 +167,9 @@ class Schema:
 					"variableindices": dict(),
 				}
 
+	def variables(self):
+		return copy.deepcopy(list(self.data["variableindices"].keys()))
+
 	def write(self, filename="schema.json"):
 		assert self.data is not None
 		with open(filename, 'w') as f:
