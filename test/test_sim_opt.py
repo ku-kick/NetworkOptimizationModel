@@ -109,7 +109,7 @@ class TestSimOpt(unittest.TestCase):
 
 	def test_run_complete(self):
 		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis, helper_virt=self.helper_virt)
-		ga_sim_virt_opt.run()
+		ga_sim_virt_opt.run(2)
 
 
 if __name__ == "__main__":
