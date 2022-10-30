@@ -305,8 +305,8 @@ class PermissiveCsvBufferedDataProvider(dict):
 		try:
 			with open(self.csv_file_name, 'r') as f:
 				lines = f.readlines()
-				lines = list(map(lambda l: l.strip(), lines))
 				data = ''.join(map(lambda l: re.sub(r'( |\t)+', ' ', l), lines))  # Sanitize, replace spaces or tabs w/ single spaces
+				data = data.strip()
 				reader = csv.reader(io.StringIO(data), delimiter=' ')
 
 				for plain in reader:
