@@ -12,6 +12,8 @@ import sim
 from sim import sim
 import os
 
+GEN_FILTERS = ["normalize_rho"]
+
 
 @dataclass
 class RandomGenerator:
@@ -134,9 +136,49 @@ def generate_random(schema=None, psi_upper=None, phi_upper=None, v_upper=None, x
 	csv_data_provider.set_plain("alpha_0", 1 - csv_data_provider.get_plain("alpha_1"))
 	csv_data_provider.sync()
 
+def filter_normalize_rho(schema, data_interface, var, index):
+	pass
+
+def generate_random_sep_variable(schema, data_interface, range_lower, range_upper, var):
+	for index_values in schema.radix_map_iter_var(var):
+		val = random.uniform(range_lower, range_upper)
+		data_interface.set_plain(var, *index_values, val)
+
+def generate_random_sep(schema, output, range_lower, range_upper, variables, filters):
+	"""
+	Enables generation of separate variables
+
+	schema - schema file
+	output - name for the output csv file (including extension)
+	range_lower - lower range for the random numbers generator
+	range_upper - ...
+	filters - pre-defined application-specific filters
+		- normalize_rho - performs normalization of variables against `rho`
+		  index, so they sum up to 1.0 for by `rho` index
+	variables - variables for which the output should be generated
+	"""
+	available_filters = GEN_FILTERS
+	assert all(map(lambda f: f in available_filters, filters))
+	env = linsmat.Env.make_from_file(storage_file=output, schema_file=schema, row_index_variables=[], zeroing_data_interface=False)
+
+	if variables is None:
+		variables = env.schema.variables()
+
+	for var in variables:
+		generate_random_sep_variable(env.schema, env.data_interface, range_lower, range_upper, var)
+
+		for f in filters:
+			if f == "normalize_rho":
+				filter_normalize_index_var(env.schema, env.data_interface, range_lower, range_upper, var)
+
 
 def _parse_arguments():
 	parser = argparse.ArgumentParser()
+	parser.add_argument("--sep", action="store_true", help="Enables generation of certain varaibles, instead of the entire bunch")
+	parser.add_argument("--lower", type=float, help="Lower bound for variables (works only with --sep)")
+	parser.add_argument("--upper", type=float, help="Upper bound for variables (works only with --sep)")
+	parser.add_argument("--variables", type=str, nargs='+', help="List of variables for which the data should be generated (works only with --sep)")
+	parser.add_argument("--filters", type=str, choices=GEN_FILTERS, nargs='+', help="Apply filters to the generated variables. The filters will be applied in the order they are enumerated (works only with --sep)", default=[])
 	parser.add_argument("--generate-random", action="store_true", help="Gen. random constraints for the linear programming task based on a schema")
 	parser.add_argument("--schema", type=str, help="Schema JSON file")
 	parser.add_argument("--psi-upper", type=float, help="Upper bound for psi (upper bound in a le-constraint)")
@@ -211,17 +253,20 @@ def _main():
 	args = _parse_arguments()
 
 	if args.generate_random:
-		generate_random(args.schema, args.psi_upper, args.phi_upper, args.v_upper, args.output)
-		generate_random(
-			schema=args.schema,
-			psi_upper=args.psi_upper,
-			phi_upper=args.phi_upper,
-			v_upper=args.v_upper,
-			mm_psi_upper=args.mm_v_upper,
-			mm_phi_upper=args.mm_phi_upper,
-			mm_v_upper=args.mm_v_upper,
-			output=args.output
-		)
+		if not args.sep:
+			generate_random(args.schema, args.psi_upper, args.phi_upper, args.v_upper, args.output)
+			generate_random(
+				schema=args.schema,
+				psi_upper=args.psi_upper,
+				phi_upper=args.phi_upper,
+				v_upper=args.v_upper,
+				mm_psi_upper=args.mm_v_upper,
+				mm_phi_upper=args.mm_phi_upper,
+				mm_v_upper=args.mm_v_upper,
+				output=args.output
+			)
+		else:
+			generate_random_sep(args.schema, args.output, args.lower, args.upper, args.variables, args.filters)
 
 
 if __name__ == "__main__":
