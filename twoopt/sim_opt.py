@@ -228,12 +228,13 @@ class GaSimVirtOpt:
 	def _population_fraction_to_int(self, fraction):
 		return int(len(self._population) * fraction)
 
-	def run(self, n_iterations=N_ITERATIONS):
+	def run(self, n_iterations:int=N_ITERATIONS, population_size:int=POPULATION_SIZE):
 		"""
 		Runs `n_iterations` iterations, ranges the candidates, and returns the best one
 		"""
-		self._population_generate_append(self.POPULATION_SIZE)
 		assert n_iterations > 1
+		assert population_size > 1
+		self._population_generate_append(population_size)
 
 		for _ in range(n_iterations):
 			self._population_cross_fraction_random()
