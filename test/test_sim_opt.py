@@ -121,16 +121,18 @@ class TestSimOpt(unittest.TestCase):
 		# Prepare the data
 		data_file_csv = str(pathlib.Path(__file__).parent / "ushakov.csv")
 		schema_file_json = str(pathlib.Path(__file__).parent / "ushakov.json")
-		schema = linsmat.Schema(filename=schema_file_json)
-		data_provider = linsmat.PermissiveCsvBufferedDataProvider(csv_file_name=data_file_csv)
-		data_interface = linsmat.ZeroingDataInterface(data_provider, schema)
+		env = linsmat.Env.make_from_file(schema_file=schema_file_json, storage_file=data_file_csv,
+			row_index_variables=[], zeroing_data_interface=True)
+		data_interface = env.data_interface
+		schema = env.schema
+		helper_virt = linsmat.HelperVirt(env=env)
 
 		# Run the linear solver
 		ls_planner = linsolv_planner.LinsolvPlanner(data_interface, schema)
 		res = ls_planner.solve()
 
 		# Optimize the model
-		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis, helper_virt=self.helper_virt)
+		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis, helper_virt=helper_virt)
 		ga_sim_virt_opt.run(2)
 
 
