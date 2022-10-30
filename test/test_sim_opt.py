@@ -111,6 +111,28 @@ class TestSimOpt(unittest.TestCase):
 		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis, helper_virt=self.helper_virt)
 		ga_sim_virt_opt.run(2)
 
+	def test_opt_ushakov(self):
+		"""
+		Test model from V. A. Ushakov's thesis.
+
+		The solution for that model is not trivial, so it will suffice for
+		testing the GA implementation.
+		"""
+		# Prepare the data
+		data_file_csv = str(pathlib.Path(__file__).parent / "ushakov.csv")
+		schema_file_json = str(pathlib.Path(__file__).parent / "ushakov.json")
+		schema = linsmat.Schema(filename=schema_file_json)
+		data_provider = linsmat.PermissiveCsvBufferedDataProvider(csv_file_name=data_file_csv)
+		data_interface = linsmat.ZeroingDataInterface(data_provider, schema)
+
+		# Run the linear solver
+		ls_planner = linsolv_planner.LinsolvPlanner(data_interface, schema)
+		res = ls_planner.solve()
+
+		# Optimize the model
+		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis, helper_virt=self.helper_virt)
+		ga_sim_virt_opt.run(2)
+
 
 if __name__ == "__main__":
 	unittest.main()
