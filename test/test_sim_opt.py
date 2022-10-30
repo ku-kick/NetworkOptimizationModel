@@ -133,7 +133,7 @@ class TestSimOpt(unittest.TestCase):
 
 		# Optimize the model
 		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis, helper_virt=helper_virt)
-		ga_sim_virt_opt.run(2)
+		ga_sim_virt_opt.run(n_iterations=2, population_size=4)
 
 
 if __name__ == "__main__":
