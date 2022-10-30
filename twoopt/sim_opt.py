@@ -160,7 +160,7 @@ class GaSimVirtOpt:
 		if copy_:
 			population = copy.deepcopy(population)
 
-		population = sorted(population, key=lambda item: item.quality)
+		population.sort(key=lambda item: item.quality)
 
 		return population
 
