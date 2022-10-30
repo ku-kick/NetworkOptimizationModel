@@ -159,6 +159,7 @@ def generate_random_sep(schema, output, range_lower, range_upper, variables, fil
 	"""
 	available_filters = GEN_FILTERS
 	assert all(map(lambda f: f in available_filters, filters))
+	ut.file_create_if_not_exists(output)
 	env = linsmat.Env.make_from_file(storage_file=output, schema_file=schema, row_index_variables=[], zeroing_data_interface=False)
 
 	if variables is None:
