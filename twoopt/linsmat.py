@@ -359,7 +359,7 @@ class DataInterface:
 	provider: object  # Abstraction over storage medium
 	schema: Schema
 
-	def clone_as_dict_ram(self):
+	def clone_as_dict_ram(self, di_type=None):
 		"""
 		Clones data from the currently used data provider into the new one
 		based using an instance of `DictRamDataProvider`.
@@ -367,13 +367,16 @@ class DataInterface:
 		Warning: the operation is potentially memory-expensive, and it employs
 		no guardrails to prevent memory overspending.
 		"""
+		if di_type is None:
+			di_type = DataInterface
+
 		dict_ram_data_provider = DictRamDataProvider()
 
 		for item in self.provider.into_iter_plain():
 			item_copy = copy.deepcopy(item)
 			dict_ram_data_provider.set_plain(*item_copy)
 
-		data_interface = DataInterface(provider=dict_ram_data_provider, schema=copy.deepcopy(self.schema))
+		data_interface = di_type(provider=dict_ram_data_provider, schema=copy.deepcopy(self.schema))
 
 		return data_interface
 
