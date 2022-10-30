@@ -121,7 +121,7 @@ class GaSimVirtOpt:
 	SWAP_PERC_GENES = .5  # Fraction of genes to be swapped. See `indiv_cross_random_swap`
 	SWAP_PERC_POPULATION = .3  # Fraction of individuals from the entire population that will be selected for crossing
 	POPULATION_SIZE = 20
-	N_ITERATIONS = 2
+	N_ITERATIONS = 30
 	REMOVE_PERC_POPULATION = .3
 
 	simulation_constructor: object  # Callable `fn(data_interface, schema) -> Simulation`
@@ -228,14 +228,14 @@ class GaSimVirtOpt:
 	def _population_fraction_to_int(self, fraction):
 		return int(len(self._population) * fraction)
 
-	def run(self):
+	def run(self, n_iterations=N_ITERATIONS):
 		"""
-		Run N_ITERATIONS iterations, ranges the candidates, and returns the best one
+		Runs `n_iterations` iterations, ranges the candidates, and returns the best one
 		"""
 		self._population_generate_append(self.POPULATION_SIZE)
-		assert self.N_ITERATIONS > 1
+		assert n_iterations > 1
 
-		for _ in range(self.N_ITERATIONS - 1):
+		for _ in range(n_iterations):
 			self._population_cross_fraction_random()
 			self._population_update_sim()
 			self.population_range()
