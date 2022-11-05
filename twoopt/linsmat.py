@@ -380,6 +380,14 @@ class DataInterface:
 
 		return data_interface
 
+	def update(self, data_interface):
+		"""
+		Update values using another data interface
+		"""
+
+		for item in data_interface.provider.into_iter_plain():
+			self.set_plain(*item)
+
 	def get_plain(self, *args, **kwargs):
 		return self.provider.get_plain(*args, **kwargs)
 
