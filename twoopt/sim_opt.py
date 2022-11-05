@@ -253,4 +253,4 @@ class GaSimVirtOpt:
 		self._population_update_sim()
 		self.population_range()
 
-		return self._population[-1]
+		return self._population[-1].as_data_interface(self.helper_virt)
