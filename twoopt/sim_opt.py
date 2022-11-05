@@ -14,7 +14,7 @@ log = ut.Log(file=__file__, level=ut.Log.LEVEL_DEBUG)
 class GaGeneVirt(list):
 
 	@staticmethod
-	def _helper_virt_as_index_var_list(helper_virt: linsmat.HelperVirt):
+	def _helper_virt_as_index_var_list(helper_virt: linsmat.VirtHelper):
 		return [
 			helper_virt.var_transfer_intensity_fraction,
 			helper_virt.var_store_intensity_fraction,
@@ -38,9 +38,9 @@ class GaGeneVirt(list):
 		return row_index
 
 	@staticmethod
-	def new_from_helper_virt(helper_virt: linsmat.HelperVirt):
+	def new_from_helper_virt(helper_virt: linsmat.VirtHelper):
 		"""
-		Creates new gene using linsmat.HelperVirt
+		Creates new gene using linsmat.VirtHelper
 		"""
 		schema = helper_virt.env.schema
 		variables = GaGeneVirt._helper_virt_as_index_var_list(helper_virt)
@@ -125,7 +125,7 @@ class GaSimVirtOpt:
 	REMOVE_PERC_POPULATION = .3
 
 	simulation_constructor: object  # Callable `fn(data_interface, schema) -> Simulation`
-	helper_virt: linsmat.HelperVirt  # Helper object for interfacing w/ data
+	helper_virt: linsmat.VirtHelper  # Helper object for interfacing w/ data
 	conf_swap_frac_genes: float = SWAP_PERC_GENES  # % of individual genes to be swapped
 	population_size: int = POPULATION_SIZE  # Size of the "working" population
 	n_iterations: int = N_ITERATIONS  # % Number of iterations the GA should run through
