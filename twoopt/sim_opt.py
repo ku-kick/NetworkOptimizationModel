@@ -191,11 +191,12 @@ class GaSimVirtOpt:
 
 		return population_new
 
-	def _population_cross_fraction_random(self, fraction=SWAP_PERC_POPULATION):
+	def _population_cross_fraction_random(self):
 		"""
 		Selects int(POPULATION_SIZE * fraction) species from the population to
 		perform
 		"""
+		fraction = self.swap_perc_population
 		# Infer the number of crossed species, and
 		n = int(len(self.population()) * fraction)
 		n = n - (n % 2)
