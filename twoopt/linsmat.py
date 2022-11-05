@@ -451,7 +451,7 @@ class Env:
 
 
 @dataclass
-class HelperVirt:
+class VirtHelper:
 	"""
 	Enfuses data storage with subject area-related semantics. Pertains to simulation of data exchange in a
 	virtualized network (see the 2022 paper)
