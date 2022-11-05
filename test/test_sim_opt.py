@@ -51,13 +51,13 @@ class TestSimOpt(unittest.TestCase):
 			)
 		self.env = linsmat.Env.make_from_file(schema_file=self.__SCHEMA_FILE, storage_file=self.__CSV_OUTPUT_FILE,
 			row_index_variables=[], zeroing_data_interface=True)
-		self.helper_virt = linsmat.VirtHelper(env=self.env)
+		self.virt_helper = linsmat.VirtHelper(env=self.env)
 
 	def test_population_generation(self):
 		"""
 		Run population generator, check whether normalization is successful
 		"""
-		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=None, helper_virt=self.helper_virt)
+		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=None, virt_helper=self.virt_helper)
 		n = 2
 		ga_sim_virt_opt._population_generate_append(n=n)
 		s = 0.0
@@ -74,7 +74,7 @@ class TestSimOpt(unittest.TestCase):
 		Initializes a population and runs a sequence of simulations each of
 		which is associated with an individual from the population.
 		"""
-		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis, helper_virt=self.helper_virt)
+		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis, virt_helper=self.virt_helper)
 		n = 10
 		ga_sim_virt_opt._population_generate_append(n=n)
 		ga_sim_virt_opt._population_update_sim()
@@ -89,7 +89,7 @@ class TestSimOpt(unittest.TestCase):
 		log.debug("GA output, quality functions", list(map(lambda i: i.quality, ga_sim_virt_opt.population())))
 
 	def test_population_swap(self):
-		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis, helper_virt=self.helper_virt)
+		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis, virt_helper=self.virt_helper)
 		n = 2
 		ga_sim_virt_opt._population_generate_append(n=n)
 		ind_a = copy.copy(ga_sim_virt_opt.population()[0])
@@ -103,14 +103,14 @@ class TestSimOpt(unittest.TestCase):
 
 	def test_population_swap_fraction_random(self):
 		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(
-			simulation_constructor=simulation.Simulation.from_dis, helper_virt=self.helper_virt, n_iterations=2)
+			simulation_constructor=simulation.Simulation.from_dis, virt_helper=self.virt_helper, n_iterations=2)
 		n = 4
 		ga_sim_virt_opt._population_generate_append(n=n)
 		ga_sim_virt_opt._population_cross_fraction_random()
 
 	def test_run_complete(self):
 		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(
-			simulation_constructor=simulation.Simulation.from_dis, helper_virt=self.helper_virt, population_size=2)
+			simulation_constructor=simulation.Simulation.from_dis, virt_helper=self.virt_helper, population_size=2)
 		ga_sim_virt_opt.run()
 
 	def test_opt_ushakov(self):
@@ -128,14 +128,14 @@ class TestSimOpt(unittest.TestCase):
 			zeroing_data_interface=True)
 		data_interface = env.data_interface
 		schema = env.schema
-		helper_virt = linsmat.VirtHelper(env=env)
+		virt_helper = linsmat.VirtHelper(env=env)
 
 		# Run the linear solver
 		ls_planner = linsolv_planner.LinsolvPlanner(data_interface, schema)
 		res = ls_planner.solve()
 
 		# Optimize the model
-		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis, helper_virt=helper_virt,
+		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis, virt_helper=virt_helper,
 		                                       conf_swap_frac_genes=.5, population_size=6, n_iterations=2, remove_perc_population=.3, swap_perc_population=.4)
 		ga_sim_virt_opt.run()
 
