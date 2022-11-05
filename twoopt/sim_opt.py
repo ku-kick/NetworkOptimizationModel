@@ -14,11 +14,11 @@ log = ut.Log(file=__file__, level=ut.Log.LEVEL_DEBUG)
 class GaGeneVirt(list):
 
 	@staticmethod
-	def _helper_virt_as_index_var_list(helper_virt: linsmat.VirtHelper):
+	def _virt_helper_as_index_var_list(virt_helper: linsmat.VirtHelper):
 		return [
-			helper_virt.var_transfer_intensity_fraction,
-			helper_virt.var_store_intensity_fraction,
-			helper_virt.var_process_intensity_fraction,
+			virt_helper.var_transfer_intensity_fraction,
+			virt_helper.var_store_intensity_fraction,
+			virt_helper.var_process_intensity_fraction,
 		]
 
 	def __init__(self, *args, **kwargs):
@@ -26,26 +26,26 @@ class GaGeneVirt(list):
 		self.quality = None
 
 	@staticmethod
-	def make_row_index_from_helper_virt(helper_virt):
+	def make_row_index_from_virt_helper(virt_helper):
 		"""
 		Creates RowIndex translating indices into a position in the current
 		vector
 		"""
-		schema = helper_virt.env.schema
-		variables = GaGeneVirt._helper_virt_as_index_var_list(helper_virt)
+		schema = virt_helper.env.schema
+		variables = GaGeneVirt._virt_helper_as_index_var_list(virt_helper)
 		row_index = linsmat.RowIndex.make_from_schema(schema, variables)
 
 		return row_index
 
 	@staticmethod
-	def new_from_helper_virt(helper_virt: linsmat.VirtHelper):
+	def new_from_virt_helper(virt_helper: linsmat.VirtHelper):
 		"""
 		Creates new gene using linsmat.VirtHelper
 		"""
-		schema = helper_virt.env.schema
-		variables = GaGeneVirt._helper_virt_as_index_var_list(helper_virt)
+		schema = virt_helper.env.schema
+		variables = GaGeneVirt._virt_helper_as_index_var_list(virt_helper)
 		row_index = linsmat.RowIndex.make_from_schema(schema, variables)
-		data_interface = helper_virt.env.data_interface
+		data_interface = virt_helper.env.data_interface
 		ret = GaGeneVirt([0 for _ in range(row_index.get_row_len())])
 
 		for var in variables:
@@ -57,15 +57,15 @@ class GaGeneVirt(list):
 
 		return ret
 
-	def as_data_interface(self, helper_virt):
+	def as_data_interface(self, virt_helper):
 		"""
 		Converts the instance into DataInterface. It ensures interoperability
 		of the representation w/ the rest of the project
 		"""
-		schema = helper_virt.env.schema
-		variables = self._helper_virt_as_index_var_list(helper_virt)
-		row_index = self.make_row_index_from_helper_virt(helper_virt)
-		data_interface = helper_virt.env.data_interface.clone_as_dict_ram(di_type=linsmat.ZeroingDataInterface)
+		schema = virt_helper.env.schema
+		variables = self._virt_helper_as_index_var_list(virt_helper)
+		row_index = self.make_row_index_from_virt_helper(virt_helper)
+		data_interface = virt_helper.env.data_interface.clone_as_dict_ram(di_type=linsmat.ZeroingDataInterface)
 
 		for var in variables:
 			for indices in schema.radix_map_iter_var_dict(var):
@@ -75,19 +75,19 @@ class GaGeneVirt(list):
 
 		return data_interface
 
-	def normalize(self, helper_virt):
+	def normalize(self, virt_helper):
 		"""
 		Normalizes fractions of intensity, so they sum up to 1.0
 		"""
-		row_index = self.make_row_index_from_helper_virt(helper_virt)
+		row_index = self.make_row_index_from_virt_helper(virt_helper)
 
-		for var in self._helper_virt_as_index_var_list(helper_virt):
-			assert "rho" in helper_virt.env.schema.get_var_indices(var)  # The fraction is associated w/ `rho` index, and it should not be changed
-			var_indices = helper_virt.env.schema.get_var_indices(var)  # Get list of indices
+		for var in self._virt_helper_as_index_var_list(virt_helper):
+			assert "rho" in virt_helper.env.schema.get_var_indices(var)  # The fraction is associated w/ `rho` index, and it should not be changed
+			var_indices = virt_helper.env.schema.get_var_indices(var)  # Get list of indices
 			var_indices = list(filter(lambda i: i != "rho", var_indices))  # "rho" is the index to be normalized against
-			rho_bound = helper_virt.env.schema.get_index_bound("rho")
+			rho_bound = virt_helper.env.schema.get_index_bound("rho")
 
-			for indices in helper_virt.env.schema.radix_map_iter_dict(*var_indices):
+			for indices in virt_helper.env.schema.radix_map_iter_dict(*var_indices):
 				s = 0.0
 
 				# Accumulate sum
@@ -125,7 +125,7 @@ class GaSimVirtOpt:
 	REMOVE_PERC_POPULATION = .3
 
 	simulation_constructor: object  # Callable `fn(data_interface, schema) -> Simulation`
-	helper_virt: linsmat.VirtHelper  # Helper object for interfacing w/ data
+	virt_helper: linsmat.VirtHelper  # Helper object for interfacing w/ data
 	conf_swap_frac_genes: float = SWAP_PERC_GENES  # % of individual genes to be swapped
 	population_size: int = POPULATION_SIZE  # Size of the "working" population
 	n_iterations: int = N_ITERATIONS  # % Number of iterations the GA should run through
@@ -149,8 +149,8 @@ class GaSimVirtOpt:
 			ind_a[i] = ind_b[i]
 			ind_b[i] = swap
 
-		ind_a.normalize(self.helper_virt)
-		ind_b.normalize(self.helper_virt)
+		ind_a.normalize(self.virt_helper)
+		ind_b.normalize(self.virt_helper)
 
 		return ind_a, ind_b
 
@@ -181,13 +181,13 @@ class GaSimVirtOpt:
 		Generates species, normalizes their weights, and appends those to the
 		gene pool.
 		"""
-		population_new = list(map(lambda i: GaGeneVirt.new_from_helper_virt(self.helper_virt), range(n)))
+		population_new = list(map(lambda i: GaGeneVirt.new_from_virt_helper(self.virt_helper), range(n)))
 
 		for indiv in population_new:
 			for i in range(len(indiv)):
 				indiv[i] = random.uniform(0, 1)
 
-			indiv.normalize(self.helper_virt)  # Rho-s, i.e. fractions of intensity, must sum up to 1
+			indiv.normalize(self.virt_helper)  # Rho-s, i.e. fractions of intensity, must sum up to 1
 
 		return population_new
 
@@ -212,8 +212,8 @@ class GaSimVirtOpt:
 		# Perform cross, normalize afterwards
 		for a, b in zip(group_a, group_b):
 			a, b = self.indiv_cross_random_swap(a, b)
-			a.normalize(self.helper_virt)
-			b.normalize(self.helper_virt)
+			a.normalize(self.virt_helper)
+			b.normalize(self.virt_helper)
 
 	def _population_update_sim(self):
 		"""
@@ -221,8 +221,8 @@ class GaSimVirtOpt:
 		population as simulation parameters.
 		"""
 		for indiv in self.population():
-			data_interface = indiv.as_data_interface(self.helper_virt)
-			schema = self.helper_virt.env.schema
+			data_interface = indiv.as_data_interface(self.virt_helper)
+			schema = self.virt_helper.env.schema
 			sim = self.simulation_constructor(data_interface, schema)
 			sim.run()
 			indiv.quality = sim.quality()
@@ -253,4 +253,4 @@ class GaSimVirtOpt:
 		self._population_update_sim()
 		self.population_range()
 
-		return self._population[-1].as_data_interface(self.helper_virt)
+		return self._population[-1].as_data_interface(self.virt_helper)
