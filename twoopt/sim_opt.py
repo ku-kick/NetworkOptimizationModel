@@ -125,8 +125,13 @@ class GaSimVirtOpt:
 	REMOVE_PERC_POPULATION = .3
 
 	simulation_constructor: object  # Callable `fn(data_interface, schema) -> Simulation`
-	helper_virt: linsmat.HelperVirt
-	conf_swap_frac_genes: float = SWAP_PERC_GENES
+	helper_virt: linsmat.HelperVirt  # Helper object for interfacing w/ data
+	conf_swap_frac_genes: float = SWAP_PERC_GENES  # % of individual genes to be swapped
+	population_size: int = POPULATION_SIZE  # Size of the "working" population
+	n_iterations: int = N_ITERATIONS  # % Number of iterations the GA should run through
+	remove_perc_population: float = REMOVE_PERC_POPULATION  # % of population to be removed
+	swap_perc_population: float = SWAP_PERC_POPULATION  # % of population to be crossed
+
 
 	def __post_init__(self):
 		self._population = list()
@@ -228,19 +233,19 @@ class GaSimVirtOpt:
 	def _population_fraction_to_int(self, fraction):
 		return int(len(self._population) * fraction)
 
-	def run(self, n_iterations:int=N_ITERATIONS, population_size:int=POPULATION_SIZE):
+	def run(self):
 		"""
 		Runs `n_iterations` iterations, ranges the candidates, and returns the best one
 		"""
-		assert n_iterations > 1
-		assert population_size > 1
-		self._population_generate_append(population_size)
+		assert self.n_iterations > 1
+		assert self.population_size > 1
+		self._population_generate_append(self.population_size)
 
-		for _ in range(n_iterations):
+		for _ in range(self.n_iterations):
 			self._population_cross_fraction_random()
 			self._population_update_sim()
 			self.population_range()
-			n_worst = self._population_fraction_to_int(self.REMOVE_PERC_POPULATION)
+			n_worst = self._population_fraction_to_int(self.remove_perc_population)
 			self._population_remove_n_first(n_worst)  # The population has already been sorted according to the quality measure
 			self._population_generate_append(n_worst)  # Replace the removed members of the population
 
