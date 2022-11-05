@@ -164,13 +164,13 @@ class TestGaGeneVirt(unittest.TestCase):
 		Construct a gene from a DataInterface instance and backwards. Make sure
 		that the instances of DataInterface do not share the same mem.
 		"""
-		helper_virt = linsmat.VirtHelper(env=self.env)
-		ga_gene = sim_opt.GaGeneVirt.new_from_helper_virt(helper_virt)
-		data_interface = ga_gene.as_data_interface(helper_virt)
+		virt_helper = linsmat.VirtHelper(env=self.env)
+		ga_gene = sim_opt.GaGeneVirt.new_from_virt_helper(virt_helper)
+		data_interface = ga_gene.as_data_interface(virt_helper)
 		indices = {"j": 0, "rho": 0, "l": 0, "i": 1}
-		data_interface.set(helper_virt.var_transfer_intensity_fraction, 42.0, **indices)
-		original_val = self.env.data_interface.get(helper_virt.var_transfer_intensity_fraction, **indices)
-		changed_val = data_interface.get(helper_virt.var_transfer_intensity_fraction, **indices)
+		data_interface.set(virt_helper.var_transfer_intensity_fraction, 42.0, **indices)
+		original_val = self.env.data_interface.get(virt_helper.var_transfer_intensity_fraction, **indices)
+		changed_val = data_interface.get(virt_helper.var_transfer_intensity_fraction, **indices)
 		self.assertFalse(math.isclose(original_val, changed_val))
 
 
