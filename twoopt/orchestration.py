@@ -23,7 +23,7 @@ class VirtOpt:
 	- Minimize loss (z)
 	- Maximize processing (g)
 	"""
-	N_ITERATIONS = 20
+	CONF_STOP_N_ITERATIONS = 20
 	CONF_GA_GENE_SWAP_PERCENTAGE = .3
 	CONF_GA_POPULATION_SIZE = 30
 	CONF_GA_N_ITERATIONS = 10
@@ -32,7 +32,7 @@ class VirtOpt:
 
 	schema_path: str  # Path to .json schema file
 	storage_path: str  # Path to .csv storage file
-	conf_n_iterations = N_ITERATIONS
+	conf_stop_n_iterations = CONF_STOP_N_ITERATIONS
 
 	def __post_init__(self):
 		# Construct ETL entities
