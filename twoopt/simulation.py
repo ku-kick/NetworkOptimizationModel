@@ -18,7 +18,7 @@ _SIM_SHUFFLE_OPS = True
 
 @dataclass
 class SimGlobal:
-	helper_virt: linsmat.HelperVirt = None
+	helper_virt: linsmat.VirtHelper = None
 	dt: float = 1.0
 	t: float = 0.0
 	l: int = 0
@@ -221,7 +221,7 @@ class GenerateOp(Operation):
 @dataclass
 class Simulation:
 	env: linsmat.Env
-	helper_virt: linsmat.HelperVirt = None
+	helper_virt: linsmat.VirtHelper = None
 
 	@staticmethod
 	def from_dis(data_interface, schema):
@@ -230,7 +230,7 @@ class Simulation:
 		instances.
 		"""
 		env = linsmat.Env(row_index=None, schema=schema, data_interface=data_interface)
-		helper_virt = linsmat.HelperVirt(env=env)
+		helper_virt = linsmat.VirtHelper(env=env)
 		sim = Simulation(env=env, helper_virt=helper_virt)
 
 		return sim
@@ -332,7 +332,7 @@ class Simulation:
 
 	def __post_init__(self):
 		if self.helper_virt is None:
-			self.helper_virt = linsmat.HelperVirt(env=self.env)
+			self.helper_virt = linsmat.VirtHelper(env=self.env)
 
 		self.sim_global = SimGlobal(self.helper_virt)
 		self.containers = dict()
