@@ -108,8 +108,9 @@ class TestSimOpt(unittest.TestCase):
 		ga_sim_virt_opt._population_cross_fraction_random(fraction=.5)
 
 	def test_run_complete(self):
-		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis, helper_virt=self.helper_virt)
-		ga_sim_virt_opt.run(2)
+		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(
+			simulation_constructor=simulation.Simulation.from_dis, helper_virt=self.helper_virt, population_size=2)
+		ga_sim_virt_opt.run()
 
 	def test_opt_ushakov(self):
 		"""
@@ -121,8 +122,9 @@ class TestSimOpt(unittest.TestCase):
 		# Prepare the data
 		data_file_csv = str(pathlib.Path(__file__).parent / "ushakov.csv")
 		schema_file_json = str(pathlib.Path(__file__).parent / "ushakov.json")
-		env = linsmat.Env.make_from_file(schema_file=schema_file_json, storage_file=data_file_csv,
-			row_index_variables=[], zeroing_data_interface=True)
+		env = linsmat.Env.make_from_file(
+			schema_file=schema_file_json, storage_file=data_file_csv, row_index_variables=[],
+			zeroing_data_interface=True)
 		data_interface = env.data_interface
 		schema = env.schema
 		helper_virt = linsmat.HelperVirt(env=env)
@@ -132,8 +134,9 @@ class TestSimOpt(unittest.TestCase):
 		res = ls_planner.solve()
 
 		# Optimize the model
-		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis, helper_virt=helper_virt)
-		ga_sim_virt_opt.run(n_iterations=2, population_size=4)
+		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis, helper_virt=helper_virt,
+		                                       conf_swap_frac_genes=.5, population_size=6, n_iterations=2, remove_perc_population=.3, swap_perc_population=.4)
+		ga_sim_virt_opt.run()
 
 
 if __name__ == "__main__":
