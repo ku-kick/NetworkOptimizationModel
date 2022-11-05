@@ -200,7 +200,7 @@ class TestSim(unittest.TestCase):
 			self.assertTrue(s.containers[ind] is s.drop_ops[ind].container_input)
 
 			for i in range(self.env.schema.get_index_bound("i")):
-				if s.helper_virt.indices_transfer_is_connected((j, i, rho, l,)):
+				if s.virt_helper.indices_transfer_is_connected((j, i, rho, l,)):
 					self.assertTrue(s.containers[ind] is s.transfer_ops[(j, i, rho, l)].container_input)
 					self.assertTrue(s.containers[(i, rho, l,)] is s.transfer_ops[(j, i, rho, l)].container_output)
 
@@ -226,7 +226,7 @@ class TestSim(unittest.TestCase):
 				stored_prev = s.store_ops[(j, rho, l - 1,)].amount_processed
 
 			for i in range(self.env.schema.get_index_bound("i")):
-				if s.helper_virt.indices_transfer_is_connected((j, i, rho, l,)):
+				if s.virt_helper.indices_transfer_is_connected((j, i, rho, l,)):
 					output += s.transfer_ops[(j, i, rho, l)].amount_processed
 					input += s.transfer_ops[(i, j, rho, l)].amount_processed
 
