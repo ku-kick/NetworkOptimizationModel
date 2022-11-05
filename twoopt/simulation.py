@@ -18,15 +18,15 @@ _SIM_SHUFFLE_OPS = True
 
 @dataclass
 class SimGlobal:
-	helper_virt: linsmat.VirtHelper = None
+	virt_helper: linsmat.VirtHelper = None
 	dt: float = 1.0
 	t: float = 0.0
 	l: int = 0
 	__new_l: bool = False
 
 	def __post_init__(self):
-		if self.helper_virt is not None:
-			self.__duration = self.helper_virt.duration()
+		if self.virt_helper is not None:
+			self.__duration = self.virt_helper.duration()
 
 	def t_inc(self):
 		self.__new_l = False
@@ -36,7 +36,7 @@ class SimGlobal:
 			log.info(SimGlobal, "simulation finished. Current time", self.t)
 			return
 
-		l = self.helper_virt.t_to_l(self.t)
+		l = self.virt_helper.t_to_l(self.t)
 
 		if l != self.l:
 			self.__new_l = True
@@ -221,7 +221,7 @@ class GenerateOp(Operation):
 @dataclass
 class Simulation:
 	env: linsmat.Env
-	helper_virt: linsmat.VirtHelper = None
+	virt_helper: linsmat.VirtHelper = None
 
 	@staticmethod
 	def from_dis(data_interface, schema):
@@ -230,8 +230,8 @@ class Simulation:
 		instances.
 		"""
 		env = linsmat.Env(row_index=None, schema=schema, data_interface=data_interface)
-		helper_virt = linsmat.VirtHelper(env=env)
-		sim = Simulation(env=env, helper_virt=helper_virt)
+		virt_helper = linsmat.VirtHelper(env=env)
+		sim = Simulation(env=env, virt_helper=virt_helper)
 
 		return sim
 
@@ -242,7 +242,7 @@ class Simulation:
 		return self.containers[indices_plain]
 
 	def _init_make_containers(self):
-		for indices in self.helper_virt.indices_container_iter_plain():
+		for indices in self.virt_helper.indices_container_iter_plain():
 			log.verbose("creating container with indices", indices)
 			self.containers_add_by_plain(indices, Container())
 
@@ -250,20 +250,20 @@ class Simulation:
 		self.transfer_ops[op.indices_planned_plain] = op
 
 	def _init_make_transfer_ops(self):
-		for indices in self.helper_virt.indices_transfer_iter_plain():
-			if self.helper_virt.indices_transfer_is_connected(indices):
+		for indices in self.virt_helper.indices_transfer_iter_plain():
+			if self.virt_helper.indices_transfer_is_connected(indices):
 				# Ensure connectedness by picking the correct input and output containers
 				#TODO indices: missing variable str
-				indices_container_input = self.helper_virt.indices_transfer_to_indices_container_sender(indices)
+				indices_container_input = self.virt_helper.indices_transfer_to_indices_container_sender(indices)
 				container_input = self.container_by_plain(indices_container_input)
-				indices_container_output = self.helper_virt.indices_transfer_to_indices_container_receiver(indices)
+				indices_container_output = self.virt_helper.indices_transfer_to_indices_container_receiver(indices)
 				container_output = self.container_by_plain(indices_container_output)
 				# Create the op itself
 				op = TransferOp(sim_global=self.sim_global, indices_planned_plain=indices,
-					val_l = self.helper_virt.indices_transfer_l(indices),
-					amount_planned=self.helper_virt.amount_planned_transfer(indices),
-					proc_intensity_fraction=self.helper_virt.intensity_fraction_transfer(indices),
-					proc_intensity_upper=self.helper_virt.intensity_upper_transfer(indices),
+					val_l = self.virt_helper.indices_transfer_l(indices),
+					amount_planned=self.virt_helper.amount_planned_transfer(indices),
+					proc_intensity_fraction=self.virt_helper.intensity_fraction_transfer(indices),
+					proc_intensity_upper=self.virt_helper.intensity_upper_transfer(indices),
 					container_input=container_input, container_output=container_output, proc_noise_type="gauss")
 				# Register the op
 				self.transfer_ops_add(op)
@@ -273,68 +273,68 @@ class Simulation:
 		self.store_ops[op.indices_planned_plain] = op
 
 	def _init_make_containers_processed(self):
-		for indices in self.helper_virt.indices_container_processed_iter_plain():
+		for indices in self.virt_helper.indices_container_processed_iter_plain():
 			log.verbose("containers processed index", indices)
 			self.containers_processed[indices] = Container()
 
 	def _init_make_store_ops(self):
-		for indices in self.helper_virt.indices_store_iter_plain():
+		for indices in self.virt_helper.indices_store_iter_plain():
 			op = StoreOp(sim_global=self.sim_global, indices_planned_plain=indices,
-				val_l=self.helper_virt.indices_store_l(indices),
-				amount_planned=self.helper_virt.amount_planned_store(indices),
-				proc_intensity_fraction=self.helper_virt.intensity_fraction_store(indices),
-				proc_intensity_upper=self.helper_virt.intensity_upper_store(indices),
-				proc_intensity_lower=-self.helper_virt.intensity_upper_store(indices),
+				val_l=self.virt_helper.indices_store_l(indices),
+				amount_planned=self.virt_helper.amount_planned_store(indices),
+				proc_intensity_fraction=self.virt_helper.intensity_fraction_store(indices),
+				proc_intensity_upper=self.virt_helper.intensity_upper_store(indices),
+				proc_intensity_lower=-self.virt_helper.intensity_upper_store(indices),
 				container_input=self.container_by_plain(
-					self.helper_virt.indices_store_to_indices_container(indices)),
+					self.virt_helper.indices_store_to_indices_container(indices)),
 				container_processed=self.containers_processed[
-					self.helper_virt.indices_store_to_indices_container_processed(indices)])
+					self.virt_helper.indices_store_to_indices_container_processed(indices)])
 			self.store_ops_add(op)
 
 	def process_ops_add(self, op):
 		self.process_ops[op.indices_planned_plain] = op
 
 	def _init_make_process_ops(self):
-		for indices in self.helper_virt.indices_process_iter_plain():
+		for indices in self.virt_helper.indices_process_iter_plain():
 			op = ProcessOp(sim_global=self.sim_global, indices_planned_plain=indices,
-				val_l=self.helper_virt.indices_process_l(indices),
-				amount_planned=self.helper_virt.amount_planned_process(indices),
-				proc_intensity_fraction=self.helper_virt.intensity_fraction_process(indices),
-				proc_intensity_upper=self.helper_virt.intensity_upper_process(indices),
-				container_input=self.container_by_plain(self.helper_virt.indices_process_to_indices_container(indices)))
+				val_l=self.virt_helper.indices_process_l(indices),
+				amount_planned=self.virt_helper.amount_planned_process(indices),
+				proc_intensity_fraction=self.virt_helper.intensity_fraction_process(indices),
+				proc_intensity_upper=self.virt_helper.intensity_upper_process(indices),
+				container_input=self.container_by_plain(self.virt_helper.indices_process_to_indices_container(indices)))
 			self.process_ops_add(op)
 
 	def drop_ops_add(self, op):
 		self.drop_ops[op.indices_planned_plain] = op
 
 	def _init_make_drop_ops(self):
-		for indices in self.helper_virt.indices_drop_iter_plain():
+		for indices in self.virt_helper.indices_drop_iter_plain():
 			op = DropOp(sim_global=self.sim_global, indices_planned_plain=indices,
-				val_l=self.helper_virt.indices_drop_l(indices),
-				amount_planned=self.helper_virt.amount_planned_drop(indices),
-				proc_intensity_fraction=self.helper_virt.intensity_fraction_drop(indices),
-				proc_intensity_upper=self.helper_virt.intensity_upper_drop(indices),
-				container_input=self.container_by_plain(self.helper_virt.indices_drop_to_indices_container(indices)))
+				val_l=self.virt_helper.indices_drop_l(indices),
+				amount_planned=self.virt_helper.amount_planned_drop(indices),
+				proc_intensity_fraction=self.virt_helper.intensity_fraction_drop(indices),
+				proc_intensity_upper=self.virt_helper.intensity_upper_drop(indices),
+				container_input=self.container_by_plain(self.virt_helper.indices_drop_to_indices_container(indices)))
 			self.drop_ops_add(op)
 
 	def generate_ops_add(self, op):
 		self.generate_ops[op.indices_planned_plain] = op
 
 	def _init_generate_ops(self):
-		for indices in self.helper_virt.indices_generate_iter_plain():
+		for indices in self.virt_helper.indices_generate_iter_plain():
 			op = GenerateOp(sim_global=self.sim_global, indices_planned_plain=indices,
-				val_l=self.helper_virt.indices_generate_l(indices),
-				amount_planned=self.helper_virt.amount_planned_generate(indices), proc_intensity_fraction=1.0,
-				proc_intensity_upper=self.helper_virt.intensity_upper_generate(indices),
+				val_l=self.virt_helper.indices_generate_l(indices),
+				amount_planned=self.virt_helper.amount_planned_generate(indices), proc_intensity_fraction=1.0,
+				proc_intensity_upper=self.virt_helper.intensity_upper_generate(indices),
 				container_input=self.container_by_plain(
-				self.helper_virt.indices_generate_to_indices_container(indices)))
+				self.virt_helper.indices_generate_to_indices_container(indices)))
 			self.generate_ops_add(op)
 
 	def __post_init__(self):
-		if self.helper_virt is None:
-			self.helper_virt = linsmat.VirtHelper(env=self.env)
+		if self.virt_helper is None:
+			self.virt_helper = linsmat.VirtHelper(env=self.env)
 
-		self.sim_global = SimGlobal(self.helper_virt)
+		self.sim_global = SimGlobal(self.virt_helper)
 		self.containers = dict()
 		self._init_make_containers()
 		self.containers_processed = dict()
@@ -406,8 +406,8 @@ class Simulation:
 		"""
 		Weighed difference of processed and dropped information
 		"""
-		alpha_g = self.helper_virt.weight_processed()
-		alpha_z = self.helper_virt.weight_dropped()
+		alpha_g = self.virt_helper.weight_processed()
+		alpha_z = self.virt_helper.weight_dropped()
 		assert(math.isclose(alpha_g + alpha_z, 1.0))
 		sum_processed = 0.0
 		sum_dropped = 0.0
