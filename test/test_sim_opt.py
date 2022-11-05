@@ -51,7 +51,7 @@ class TestSimOpt(unittest.TestCase):
 			)
 		self.env = linsmat.Env.make_from_file(schema_file=self.__SCHEMA_FILE, storage_file=self.__CSV_OUTPUT_FILE,
 			row_index_variables=[], zeroing_data_interface=True)
-		self.helper_virt = linsmat.HelperVirt(env=self.env)
+		self.helper_virt = linsmat.VirtHelper(env=self.env)
 
 	def test_population_generation(self):
 		"""
@@ -128,7 +128,7 @@ class TestSimOpt(unittest.TestCase):
 			zeroing_data_interface=True)
 		data_interface = env.data_interface
 		schema = env.schema
-		helper_virt = linsmat.HelperVirt(env=env)
+		helper_virt = linsmat.VirtHelper(env=env)
 
 		# Run the linear solver
 		ls_planner = linsolv_planner.LinsolvPlanner(data_interface, schema)
