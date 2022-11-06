@@ -30,6 +30,7 @@ class _TestGeneric(_Default):
 	"""
 	OPT_VIRT_GA_POPULATION_SIZE = 6
 	OPT_VIRT_GA_N_ITERATIONS = 2
+	OPT_VIRT_GA_N_ITERATIONS = 2
 
 
 cfg = _Default()
