@@ -15,6 +15,7 @@ import linsmat
 import linsolv_planner
 from dataclasses import dataclass
 import simulation
+import config
 
 @dataclass
 class VirtOpt:
@@ -23,11 +24,8 @@ class VirtOpt:
 	- Minimize loss (z)
 	- Maximize processing (g)
 	"""
-
-	CONF_STOP_N_ITERATIONS = 20
 	schema_path: str  # Path to .json schema file
 	storage_path: str  # Path to .csv storage file
-	conf_stop_n_iterations = CONF_STOP_N_ITERATIONS
 
 	def __post_init__(self):
 		# Construct ETL entities
@@ -45,7 +43,7 @@ class VirtOpt:
 		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis,
 		                                       virt_helper=virt_helper)
 
-		for _ in range(self.conf_stop_n_iterations):
+		for _ in range(config.cfg.OPT_VIRT_ORCHESTRATION_N_ITERATIONS):
 			ls_planner.solve()
 			best_performer_config = ga_sim_virt_opt.run()
 			self.ram_data_interface.update(best_performer_config)  # TODO XXX Make sure that the `ls_planner`'s instance gets updated as well
