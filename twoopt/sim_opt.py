@@ -124,7 +124,7 @@ class GaSimVirtOpt:
 	OPT_VIRT_GA_SWAP_PERC_POPULATION = .3  # Fraction of individuals from the entire population that will be selected for crossing
 	OPT_VIRT_GA_POPULATION_SIZE = 20
 	OPT_VIRT_GA_N_ITERATIONS = 30
-	OPT_VIRT_GA_REMOVE_PERC_POPULATION = .3
+	OPT_VIRT_GA_REMOVE_PERC_POPULATION = .3  # % of population to be removed
 
 	# TODO Naming. use prefixes
 	simulation_constructor: object  # Callable `fn(data_interface, schema) -> Simulation`
