@@ -37,3 +37,17 @@ class VirtOpt:
 		self.ram_provider = linsmat.DictRamDataProvider()
 		self.ram_data_interface = linsmat.DataInterface(provider=self.ram_provider, schema=self.schema)
 		self.ram_data_interface.update(self.csv_data_interface)  # Ensure consistency
+
+	def run(self):
+		env = linsmat.Env(row_index=None, schema=self.schema, data_interface=self.ram_data_interface)
+		virt_helper = linsmat.VirtHelper(env=env)
+		ls_planner = linsolv_planner.LinsolvPlanner(data_interface=self.ram_data_interface, schema=self.schema)
+		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis,
+		                                       virt_helper=virt_helper)
+
+		for _ in range(self, self.conf_n_stop_iterations):
+			ls_planner.solve()
+			best_performer_config = ga_sim_virt_opt.run()
+			self.ram_data_interface.update(best_performer_config())  # TODO XXX Make sure that the `ls_planner`'s instance gets updated as well
+
+		self.csv_data_interface.update(self.ram_data_interface)  # Save into CSV
