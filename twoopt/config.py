@@ -2,6 +2,13 @@
 For various cases, different sets of configs may be required. This module
 provides useful shortcuts for overriding configurations globally, for the entire
 project.
+
+Naming conventions by example:
+- OPT_VIRT_GA_SWAP_PERC_GENES = .5
+	- OPT - optimization
+	- VIRT - virtualized network (there may be other variants)
+	- GA - genetic algorithm
+	- SWAP_PERC_GENES - domain specific configs
 """
 import copy
 
