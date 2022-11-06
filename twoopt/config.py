@@ -3,12 +3,14 @@ For various cases, different sets of configs may be required. This module
 provides useful shortcuts for overriding configurations globally, for the entire
 project.
 
-Naming conventions by example:
+Naming practices by example:
 - OPT_VIRT_GA_SWAP_PERC_GENES = .5
 	- OPT - optimization
 	- VIRT - virtualized network (there may be other variants)
 	- GA - genetic algorithm
 	- SWAP_PERC_GENES - domain specific configs
+- OPT_VIRT_ORCHESTRATION_N_ITERATIONS = 2
+	- ORCHESTRATION - the API glue that ensures data flow between the optimizers
 """
 
 
@@ -21,6 +23,7 @@ class _DefaultCfg:
 	OPT_VIRT_GA_POPULATION_SIZE = 20
 	OPT_VIRT_GA_N_ITERATIONS = 30
 	OPT_VIRT_GA_REMOVE_PERC_POPULATION = .3  # % of population to be removed
+	OPT_VIRT_ORCHESTRATION_N_ITERATIONS = 20
 	_CONFIGS = [k for k, v in locals().items() if not k.startswith('_')]
 
 
@@ -31,6 +34,7 @@ class _TestGenericCfg(_DefaultCfg):
 	OPT_VIRT_GA_POPULATION_SIZE = 6
 	OPT_VIRT_GA_N_ITERATIONS = 2
 	OPT_VIRT_GA_N_ITERATIONS = 2
+	OPT_VIRT_ORCHESTRATION_N_ITERATIONS = 2
 
 
 cfg = _DefaultCfg()
