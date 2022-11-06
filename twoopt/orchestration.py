@@ -33,9 +33,9 @@ class VirtOpt:
 		# Construct ETL entities
 		self.schema = linsmat.Schema(filename=self.schema_path)
 		self.csv_provider = linsmat.PermissiveCsvBufferedDataProvider(csv_file_name=self.storage_path)
-		self.csv_data_interface = linsmat.DataInterface(provider=self.csv_provider, schema=self.schema)
+		self.csv_data_interface = linsmat.ZeroingDataInterface(provider=self.csv_provider, schema=self.schema)
 		self.ram_provider = linsmat.DictRamDataProvider()
-		self.ram_data_interface = linsmat.DataInterface(provider=self.ram_provider, schema=self.schema)
+		self.ram_data_interface = linsmat.ZeroingDataInterface(provider=self.ram_provider, schema=self.schema)
 		self.ram_data_interface.update(self.csv_data_interface)  # Ensure consistency
 
 	def run(self):
