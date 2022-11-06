@@ -40,22 +40,22 @@ class _TestGenericCfg(_DefaultCfg):
 cfg = _DefaultCfg()
 
 
-def cfg_switch(inst):
+def cfg_set(inst):
 	global cfg
 
 	for key in _DefaultCfg._CONFIGS:
 		setattr(cfg, key, getattr(inst, key))
 
 
-def cfg_switch_default():
+def cfg_set_default():
 	"""
 	Apply default cfgs
 	"""
-	cfg_switch(_DefaultCfg)
+	cfg_set(_DefaultCfg)
 
 
-def cfg_switch_test():
+def cfg_set_test():
 	"""
 	Set testing cfg.
 	"""
-	cfg_switch(_TestGenericCfg)
+	cfg_set(_TestGenericCfg)
