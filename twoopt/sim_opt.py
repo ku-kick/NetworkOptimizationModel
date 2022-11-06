@@ -8,7 +8,7 @@ import linsmat
 import ut
 import random
 import copy
-from config import cfg
+import config
 
 log = ut.Log(file=__file__, level=ut.Log.LEVEL_DEBUG)
 
@@ -136,7 +136,7 @@ class GaSimVirtOpt:
 		Crosses individuals through random swapping
 		"""
 		assert(len(ind_a) == len(ind_b))
-		n_ids = int(len(ind_a) * self.conf_swap_frac_genes)
+		n_ids = int(len(ind_a) * config.cfg.OPT_VIRT_GA_SWAP_PERC_GENES)
 		ids = random.sample(range(len(ind_a)), n_ids)
 
 		for i in ids:
@@ -191,7 +191,7 @@ class GaSimVirtOpt:
 		Selects int(OPT_VIRT_GA_POPULATION_SIZE * fraction) species from the population to
 		perform
 		"""
-		fraction = self.swap_perc_population
+		fraction = config.cfg.OPT_VIRT_GA_SWAP_PERC_POPULATION
 		# Infer the number of crossed species, and
 		n = int(len(self.population()) * fraction)
 		n = n - (n % 2)
@@ -233,15 +233,15 @@ class GaSimVirtOpt:
 		"""
 		Runs `n_iterations` iterations, ranges the candidates, and returns the best one
 		"""
-		assert self.n_iterations > 1
-		assert self.population_size > 1
-		self._population_generate_append(self.population_size)
+		assert config.cfg.OPT_VIRT_GA_N_ITERATIONS > 1
+		assert config.cfg.OPT_VIRT_GA_POPULATION_SIZE > 1
+		self._population_generate_append(config.cfg.OPT_VIRT_GA_POPULATION_SIZE)
 
-		for _ in range(self.n_iterations):
+		for _ in range(config.cfg.OPT_VIRT_GA_N_ITERATIONS):
 			self._population_cross_fraction_random()
 			self._population_update_sim()
 			self.population_range()
-			n_worst = self._population_fraction_to_int(self.remove_perc_population)
+			n_worst = self._population_fraction_to_int(config.cfg.OPT_VIRT_GA_REMOVE_PERC_POPULATION)
 			self._population_remove_n_first(n_worst)  # The population has already been sorted according to the quality measure
 			self._population_generate_append(n_worst)  # Replace the removed members of the population
 
