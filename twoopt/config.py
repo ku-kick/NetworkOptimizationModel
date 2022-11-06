@@ -23,8 +23,8 @@ class _DefaultCfg:
 	OPT_VIRT_GA_POPULATION_SIZE = 20
 	OPT_VIRT_GA_N_ITERATIONS = 30
 	OPT_VIRT_GA_REMOVE_PERC_POPULATION = .3  # % of population to be removed
-	OPT_VIRT_ORCHESTRATION_N_ITERATIONS = 20
-	_CONFIGS = [k for k, v in locals().items() if not k.startswith('_')]
+	OPT_VIRT_ORCHESTRATION_N_ITERATIONS = 20  # Number of network optimizing iterations
+	_CONFIGS = [k for k, v in locals().items() if not k.startswith('_')]  # A complete list of configs
 
 
 class _TestGenericCfg(_DefaultCfg):
