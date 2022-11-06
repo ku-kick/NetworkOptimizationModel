@@ -45,7 +45,7 @@ class VirtOpt:
 		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis,
 		                                       virt_helper=virt_helper)
 
-		for _ in range(self, self.conf_n_stop_iterations):
+		for _ in range(self.conf_stop_n_iterations):
 			ls_planner.solve()
 			best_performer_config = ga_sim_virt_opt.run()
 			self.ram_data_interface.update(best_performer_config())  # TODO XXX Make sure that the `ls_planner`'s instance gets updated as well
