@@ -21,6 +21,7 @@ class _DefaultCfg:
 	OPT_VIRT_GA_POPULATION_SIZE = 20
 	OPT_VIRT_GA_N_ITERATIONS = 30
 	OPT_VIRT_GA_REMOVE_PERC_POPULATION = .3  # % of population to be removed
+	_CONFIGS = [k for k, v in locals().items() if not k.startswith('_')]
 
 
 class _TestGenericCfg(_DefaultCfg):
@@ -35,19 +36,22 @@ class _TestGenericCfg(_DefaultCfg):
 cfg = _DefaultCfg()
 
 
+def cfg_switch(inst):
+	global cfg
+
+	for key in _DefaultCfg._CONFIGS:
+		setattr(cfg, key, getattr(inst, key))
+
+
 def cfg_switch_default():
 	"""
 	Apply default cfgs
 	"""
-	global cfg
-
-	cfg = _DefaultCfg()
+	cfg_switch(_DefaultCfg)
 
 
 def cfg_switch_test():
 	"""
 	Set testing cfg.
 	"""
-	global cfg
-
-	cfg = _TestGenericCfg()
+	cfg_switch(_TestGenericCfg)
