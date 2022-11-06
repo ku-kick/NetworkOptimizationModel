@@ -4,6 +4,7 @@ import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / 'twoopt'))
 from twoopt import cli, linsmat, ut, linsolv_planner
+import config
 import functools
 import os
 import math
@@ -24,6 +25,7 @@ class TestSimOpt(unittest.TestCase):
 	__CSV_OUTPUT_FILE = str((__HERE / "test_sim_output.csv").resolve())
 
 	def setUp(self) -> None:
+		config.cfg_switch_test()
 		psi_upper = 40
 		phi_upper = 30
 		v_upper = 70
@@ -103,14 +105,14 @@ class TestSimOpt(unittest.TestCase):
 
 	def test_population_swap_fraction_random(self):
 		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(
-			simulation_constructor=simulation.Simulation.from_dis, virt_helper=self.virt_helper, n_iterations=2)
+			simulation_constructor=simulation.Simulation.from_dis, virt_helper=self.virt_helper)
 		n = 4
 		ga_sim_virt_opt._population_generate_append(n=n)
 		ga_sim_virt_opt._population_cross_fraction_random()
 
 	def test_run_complete(self):
 		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(
-			simulation_constructor=simulation.Simulation.from_dis, virt_helper=self.virt_helper, population_size=2)
+			simulation_constructor=simulation.Simulation.from_dis, virt_helper=self.virt_helper)
 		ga_sim_virt_opt.run()
 
 	def test_opt_ushakov(self):
@@ -135,8 +137,7 @@ class TestSimOpt(unittest.TestCase):
 		res = ls_planner.solve()
 
 		# Optimize the model
-		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis, virt_helper=virt_helper,
-		                                       conf_swap_frac_genes=.5, population_size=6, n_iterations=2, remove_perc_population=.3, swap_perc_population=.4)
+		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis, virt_helper=virt_helper)
 		ga_sim_virt_opt.run()
 
 
