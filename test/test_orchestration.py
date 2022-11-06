@@ -4,7 +4,7 @@ import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / 'twoopt'))
 import config
-config.cfg_switch_test()
+config.cfg_set_test()
 from twoopt import cli, linsmat, ut, linsolv_planner
 import functools
 import os
@@ -30,7 +30,7 @@ class TestSimOpt(unittest.TestCase):
 		virt_opt = orchestration.VirtOpt(schema_path=schema_file_json, storage_path=data_file_csv)
 
 	def test_optimization(self):
-		config.cfg_switch_test()
+		config.cfg_set_test()
 		data_file_csv = str(pathlib.Path(__file__).parent / "ushakov.csv")
 		schema_file_json = str(pathlib.Path(__file__).parent / "ushakov.json")
 		virt_opt = orchestration.VirtOpt(schema_path=schema_file_json, storage_path=data_file_csv)
