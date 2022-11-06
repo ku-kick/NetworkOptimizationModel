@@ -8,6 +8,7 @@ import linsmat
 import ut
 import random
 import copy
+from config import cfg
 
 log = ut.Log(file=__file__, level=ut.Log.LEVEL_DEBUG)
 
@@ -118,22 +119,13 @@ class GaSimVirtOpt:
 	- if out of iteration, end, else, go to *
 	"""
 
-	# TODO Move in a separate config file
-	# TODO Naming. use prefixes
-	OPT_VIRT_GA_SWAP_PERC_GENES = .5  # Fraction of genes to be swapped. See `indiv_cross_random_swap`
-	OPT_VIRT_GA_SWAP_PERC_POPULATION = .3  # Fraction of individuals from the entire population that will be selected for crossing
-	OPT_VIRT_GA_POPULATION_SIZE = 20
-	OPT_VIRT_GA_N_ITERATIONS = 30
-	OPT_VIRT_GA_REMOVE_PERC_POPULATION = .3  # % of population to be removed
-
-	# TODO Naming. use prefixes
 	simulation_constructor: object  # Callable `fn(data_interface, schema) -> Simulation`
 	virt_helper: linsmat.VirtHelper  # Helper object for interfacing w/ data
-	conf_swap_frac_genes: float = OPT_VIRT_GA_SWAP_PERC_GENES  # % of individual genes to be swapped
-	population_size: int = OPT_VIRT_GA_POPULATION_SIZE  # Size of the "working" population
-	n_iterations: int = OPT_VIRT_GA_N_ITERATIONS  # % Number of iterations the GA should run through
-	remove_perc_population: float = OPT_VIRT_GA_REMOVE_PERC_POPULATION  # % of population to be removed
-	swap_perc_population: float = OPT_VIRT_GA_SWAP_PERC_POPULATION  # % of population to be crossed
+	conf_swap_frac_genes: float = cfg.OPT_VIRT_GA_SWAP_PERC_GENES  # % of individual genes to be swapped
+	population_size: int = cfg.OPT_VIRT_GA_POPULATION_SIZE  # Size of the "working" population
+	n_iterations: int = cfg.OPT_VIRT_GA_N_ITERATIONS  # % Number of iterations the GA should run through
+	remove_perc_population: float = cfg.OPT_VIRT_GA_REMOVE_PERC_POPULATION  # % of population to be removed
+	swap_perc_population: float = cfg.OPT_VIRT_GA_SWAP_PERC_POPULATION  # % of population to be crossed
 
 
 	def __post_init__(self):
