@@ -120,20 +120,20 @@ class GaSimVirtOpt:
 
 	# TODO Move in a separate config file
 	# TODO Naming. use prefixes
-	SWAP_PERC_GENES = .5  # Fraction of genes to be swapped. See `indiv_cross_random_swap`
-	SWAP_PERC_POPULATION = .3  # Fraction of individuals from the entire population that will be selected for crossing
-	POPULATION_SIZE = 20
-	N_ITERATIONS = 30
-	REMOVE_PERC_POPULATION = .3
+	OPT_VIRT_GA_SWAP_PERC_GENES = .5  # Fraction of genes to be swapped. See `indiv_cross_random_swap`
+	OPT_VIRT_GA_SWAP_PERC_POPULATION = .3  # Fraction of individuals from the entire population that will be selected for crossing
+	OPT_VIRT_GA_POPULATION_SIZE = 20
+	OPT_VIRT_GA_N_ITERATIONS = 30
+	OPT_VIRT_GA_REMOVE_PERC_POPULATION = .3
 
 	# TODO Naming. use prefixes
 	simulation_constructor: object  # Callable `fn(data_interface, schema) -> Simulation`
 	virt_helper: linsmat.VirtHelper  # Helper object for interfacing w/ data
-	conf_swap_frac_genes: float = SWAP_PERC_GENES  # % of individual genes to be swapped
-	population_size: int = POPULATION_SIZE  # Size of the "working" population
-	n_iterations: int = N_ITERATIONS  # % Number of iterations the GA should run through
-	remove_perc_population: float = REMOVE_PERC_POPULATION  # % of population to be removed
-	swap_perc_population: float = SWAP_PERC_POPULATION  # % of population to be crossed
+	conf_swap_frac_genes: float = OPT_VIRT_GA_SWAP_PERC_GENES  # % of individual genes to be swapped
+	population_size: int = OPT_VIRT_GA_POPULATION_SIZE  # Size of the "working" population
+	n_iterations: int = OPT_VIRT_GA_N_ITERATIONS  # % Number of iterations the GA should run through
+	remove_perc_population: float = OPT_VIRT_GA_REMOVE_PERC_POPULATION  # % of population to be removed
+	swap_perc_population: float = OPT_VIRT_GA_SWAP_PERC_POPULATION  # % of population to be crossed
 
 
 	def __post_init__(self):
@@ -196,7 +196,7 @@ class GaSimVirtOpt:
 
 	def _population_cross_fraction_random(self):
 		"""
-		Selects int(POPULATION_SIZE * fraction) species from the population to
+		Selects int(OPT_VIRT_GA_POPULATION_SIZE * fraction) species from the population to
 		perform
 		"""
 		fraction = self.swap_perc_population
