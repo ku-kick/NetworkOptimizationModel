@@ -121,12 +121,6 @@ class GaSimVirtOpt:
 
 	simulation_constructor: object  # Callable `fn(data_interface, schema) -> Simulation`
 	virt_helper: linsmat.VirtHelper  # Helper object for interfacing w/ data
-	conf_swap_frac_genes: float = cfg.OPT_VIRT_GA_SWAP_PERC_GENES  # % of individual genes to be swapped
-	population_size: int = cfg.OPT_VIRT_GA_POPULATION_SIZE  # Size of the "working" population
-	n_iterations: int = cfg.OPT_VIRT_GA_N_ITERATIONS  # % Number of iterations the GA should run through
-	remove_perc_population: float = cfg.OPT_VIRT_GA_REMOVE_PERC_POPULATION  # % of population to be removed
-	swap_perc_population: float = cfg.OPT_VIRT_GA_SWAP_PERC_POPULATION  # % of population to be crossed
-
 
 	def __post_init__(self):
 		self._population = list()
