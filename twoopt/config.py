@@ -31,7 +31,9 @@ class _TestGenericCfg(_DefaultCfg):
 	"""
 	Optimized for performance.
 	"""
-	OPT_VIRT_GA_POPULATION_SIZE = 6
+	OPT_VIRT_GA_POPULATION_SIZE = 3
+	OPT_VIRT_GA_SWAP_PERC_POPULATION = 1.0  # Fraction of individuals from the entire population that will be selected for crossing
+	OPT_VIRT_GA_REMOVE_PERC_POPULATION = .6  # % of population to be removed
 	OPT_VIRT_GA_N_ITERATIONS = 2
 	OPT_VIRT_GA_N_ITERATIONS = 2
 	OPT_VIRT_ORCHESTRATION_N_ITERATIONS = 2
