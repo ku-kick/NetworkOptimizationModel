@@ -118,13 +118,15 @@ class GaSimVirtOpt:
 	- if out of iteration, end, else, go to *
 	"""
 
-	# TODO: move in a separate config file
+	# TODO Move in a separate config file
+	# TODO Naming. use prefixes
 	SWAP_PERC_GENES = .5  # Fraction of genes to be swapped. See `indiv_cross_random_swap`
 	SWAP_PERC_POPULATION = .3  # Fraction of individuals from the entire population that will be selected for crossing
 	POPULATION_SIZE = 20
 	N_ITERATIONS = 30
 	REMOVE_PERC_POPULATION = .3
 
+	# TODO Naming. use prefixes
 	simulation_constructor: object  # Callable `fn(data_interface, schema) -> Simulation`
 	virt_helper: linsmat.VirtHelper  # Helper object for interfacing w/ data
 	conf_swap_frac_genes: float = SWAP_PERC_GENES  # % of individual genes to be swapped
