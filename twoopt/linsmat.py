@@ -339,6 +339,11 @@ class DictRamDataProvider(dict):
 
 		return self[key]
 
+	def into_iter_plain(self):
+		stitch = lambda kv: kv[0] + (kv[1],)
+
+		return map(stitch, self.items())
+
 	def set_plain(self, *args):
 		"""
 		Adds a sequence of format (VAR, INDEX1, INDEX2, ..., VALUE) into the dictionary
