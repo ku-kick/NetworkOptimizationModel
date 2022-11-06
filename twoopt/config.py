@@ -10,10 +10,9 @@ Naming conventions by example:
 	- GA - genetic algorithm
 	- SWAP_PERC_GENES - domain specific configs
 """
-import copy
 
 
-class _Default:
+class _DefaultCfg:
 	"""
 	"Production-grade".
 	"""
@@ -24,7 +23,7 @@ class _Default:
 	OPT_VIRT_GA_REMOVE_PERC_POPULATION = .3  # % of population to be removed
 
 
-class _TestGeneric(_Default):
+class _TestGenericCfg(_DefaultCfg):
 	"""
 	Optimized for performance.
 	"""
@@ -33,7 +32,7 @@ class _TestGeneric(_Default):
 	OPT_VIRT_GA_N_ITERATIONS = 2
 
 
-cfg = _Default()
+cfg = _DefaultCfg()
 
 
 def cfg_switch_default():
@@ -42,7 +41,7 @@ def cfg_switch_default():
 	"""
 	global cfg
 
-	cfg = _Default()
+	cfg = _DefaultCfg()
 
 
 def cfg_switch_test():
@@ -51,4 +50,4 @@ def cfg_switch_test():
 	"""
 	global cfg
 
-	cfg = _TestGeneric()
+	cfg = _TestGenericCfg()
