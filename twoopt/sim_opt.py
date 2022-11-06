@@ -118,6 +118,7 @@ class GaSimVirtOpt:
 	- if out of iteration, end, else, go to *
 	"""
 
+	# TODO: move in a separate config file
 	SWAP_PERC_GENES = .5  # Fraction of genes to be swapped. See `indiv_cross_random_swap`
 	SWAP_PERC_POPULATION = .3  # Fraction of individuals from the entire population that will be selected for crossing
 	POPULATION_SIZE = 20
