@@ -48,6 +48,6 @@ class VirtOpt:
 		for _ in range(self.conf_stop_n_iterations):
 			ls_planner.solve()
 			best_performer_config = ga_sim_virt_opt.run()
-			self.ram_data_interface.update(best_performer_config())  # TODO XXX Make sure that the `ls_planner`'s instance gets updated as well
+			self.ram_data_interface.update(best_performer_config)  # TODO XXX Make sure that the `ls_planner`'s instance gets updated as well
 
 		self.csv_data_interface.update(self.ram_data_interface)  # Save into CSV
