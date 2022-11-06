@@ -25,7 +25,7 @@ class TestSimOpt(unittest.TestCase):
 	__CSV_OUTPUT_FILE = str((__HERE / "test_sim_output.csv").resolve())
 
 	def setUp(self) -> None:
-		config.cfg_switch_test()
+		config.cfg_set_test()
 		psi_upper = 40
 		phi_upper = 30
 		v_upper = 70
