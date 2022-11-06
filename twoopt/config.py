@@ -1,0 +1,46 @@
+"""
+For various cases, different sets of configs may be required. This module
+provides useful shortcuts for overriding configurations globally, for the entire
+project.
+"""
+import copy
+
+
+class _Default:
+	"""
+	"Production-grade".
+	"""
+	OPT_VIRT_GA_SWAP_PERC_GENES = .5  # Fraction of genes to be swapped. See `indiv_cross_random_swap`
+	OPT_VIRT_GA_SWAP_PERC_POPULATION = .3  # Fraction of individuals from the entire population that will be selected for crossing
+	OPT_VIRT_GA_POPULATION_SIZE = 20
+	OPT_VIRT_GA_N_ITERATIONS = 30
+	OPT_VIRT_GA_REMOVE_PERC_POPULATION = .3  # % of population to be removed
+
+
+class _TestGeneric(_Default):
+	"""
+	Optimized for performance.
+	"""
+	OPT_VIRT_GA_POPULATION_SIZE = 6
+	OPT_VIRT_GA_N_ITERATIONS = 2
+
+
+cfg = _Default()
+
+
+def cfg_switch_default():
+	"""
+	Apply default cfgs
+	"""
+	global cfg
+
+	cfg = _Default()
+
+
+def cfg_switch_test():
+	"""
+	Set testing cfg.
+	"""
+	global cfg
+
+	cfg = _TestGeneric()
