@@ -23,13 +23,8 @@ class VirtOpt:
 	- Minimize loss (z)
 	- Maximize processing (g)
 	"""
-	CONF_STOP_N_ITERATIONS = 20
-	CONF_GA_GENE_SWAP_PERCENTAGE = .3
-	CONF_GA_POPULATION_SIZE = 30
-	CONF_GA_N_ITERATIONS = 10
-	CONF_GA_WORST_PERCENTAGE = .2  # Worst performers will be removed and replaced on each iteration
-	CONF_GA_SWAP_POPULATION_PERCENTAGE = .4  # Random individuals will be subjected to crossing
 
+	CONF_STOP_N_ITERATIONS = 20
 	schema_path: str  # Path to .json schema file
 	storage_path: str  # Path to .csv storage file
 	conf_stop_n_iterations = CONF_STOP_N_ITERATIONS
