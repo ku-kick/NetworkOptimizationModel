@@ -26,6 +26,11 @@ class TestSimOpt(unittest.TestCase):
 		schema_file_json = str(pathlib.Path(__file__).parent / "ushakov.json")
 		virt_opt = orchestration.VirtOpt(schema_path=schema_file_json, storage_path=data_file_csv)
 
+	def test_optimization(self):
+		data_file_csv = str(pathlib.Path(__file__).parent / "ushakov.csv")
+		schema_file_json = str(pathlib.Path(__file__).parent / "ushakov.json")
+		virt_opt = orchestration.VirtOpt(schema_path=schema_file_json, storage_path=data_file_csv)
+		virt_opt.run()
 
 if __name__ == "__main__":
 	unittest.main()
