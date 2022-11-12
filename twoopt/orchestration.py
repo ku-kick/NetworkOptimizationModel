@@ -16,6 +16,11 @@ import linsolv_planner
 from dataclasses import dataclass
 import simulation
 import config
+import ut
+
+
+log = ut.Log(file=__file__, level=ut.Log.LEVEL_DEBUG)
+
 
 @dataclass
 class VirtOpt:
