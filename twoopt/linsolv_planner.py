@@ -128,6 +128,7 @@ class LinsolvPlanner:
 
 	def solve(self):
 		solution = scipy.optimize.linprog(c=self.obj, bounds=self.bnd, A_eq=self.eq_lhs, b_eq=self.eq_rhs)
+		assert 0 == solution.status
 
 		if 0 == solution.status:
 			Log.info(LinsolvPlanner.solve, "registering solution results in data interface")
