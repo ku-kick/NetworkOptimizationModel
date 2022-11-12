@@ -1,5 +1,11 @@
-psi 0 1 0 0 10000.0
-phi 1 0 0 1000
-x_eq 0 0 0 1000.0
+psi 0 1 0 0 10
+phi 1 0 0 10
+x_eq 0 0 0 10
+mm_psi 0 1 0 0 1.0
+m_psi 0 1 0 0 0.0
+mm_phi 0 1 1.0
+m_phi 0 1 0 0.0
 alpha_1 0.5
 alpha_0 0.5
+tl 0 5
+tl 1 5
