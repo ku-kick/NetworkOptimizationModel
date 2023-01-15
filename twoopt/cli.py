@@ -11,6 +11,8 @@ import pygal
 import sim
 from sim import sim
 import os
+import orchestration
+import config
 
 GEN_FILTERS = ["normalize_rho"]
 
@@ -191,6 +193,8 @@ def _parse_arguments():
 	parser.add_argument("--mm-v-upper", type=float, help="Upper bound for memory read/write speed")
 	parser.add_argument("--tl-upper", type=float, help="Max duration of structural stability interval")
 	parser.add_argument("--output", type=str, default=ut.Datetime.format_time(ut.Datetime.today()) + ".csv")
+	parser.add_argument("--solve", action="store_true", help="Solve an optimization problem based on CSV data and JSON schema")
+	parser.add_argument("--data", type=str, help="Works with --solve and --schema, specifies path to data file")
 
 	return parser.parse_args()
 
@@ -254,7 +258,11 @@ def _main():
 	args = _parse_arguments()
 
 	if args.generate_random:
-		if not args.sep:
+		if args.sep:
+			print("sep")
+			generate_random_sep(args.schema, args.output, args.lower, args.upper, args.variables, args.filters)
+		else:
+			print("generate random")
 			generate_random(args.schema, args.psi_upper, args.phi_upper, args.v_upper, args.output)
 			generate_random(
 				schema=args.schema,
@@ -266,8 +274,13 @@ def _main():
 				mm_v_upper=args.mm_v_upper,
 				output=args.output
 			)
-		else:
-			generate_random_sep(args.schema, args.output, args.lower, args.upper, args.variables, args.filters)
+	elif args.solve:
+		print("solving")
+		assert args.data is not None
+		assert args.schema is not None
+		config.cfg_set_test()
+		virt_opt = orchestration.VirtOpt(schema_path=args.schema, storage_path=args.data)
+		virt_opt.run()
 
 
 if __name__ == "__main__":
