@@ -14,6 +14,8 @@ class DataInterfaceBase:
 @dataclasses.dataclass
 class DefaultingDataInterface(DataInterfaceBase):
     """
+    "No-value" exception-handling decorator.
+
     Returns default value for KeyError-producing variables
     """
 
@@ -57,7 +59,7 @@ class DefaultingDataInterface(DataInterfaceBase):
 @dataclasses.dataclass
 class ConstrainedDataInterface(DataInterfaceBase):
     """
-    Format-checking decorator.
+    Format-checking filter.
 
     Each model in this package requires data to operate on. This class is an
     encapsulation of a model's "expectations" regarding data structure it was
