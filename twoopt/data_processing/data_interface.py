@@ -1,14 +1,59 @@
 import dataclasses
 
+
+class NoDataError(Exception):
+
+    def __init__(self, variable, **index_map) -> None:
+        self._variable = variable
+
+    def __str__(self):
+        return f"Can not retrieve {self._variable} where {self._index_map}"
+
+
 class DataInterfaceBase:
     """
-    Acquires data from an underlying data storage
+    Acquires data from an underlying data storage.
     """
     def data(self, variable, **index_map):
-        raise KeyError(f"Can not retrieve {variable} where {index_map}")
+        """
+        Expected to raise "NoDataError", if no data can be acquired
+        """
+        raise NoDataError(f"Can not retrieve {variable} where {index_map}")
 
-    def set_data(self, varaible, **index_map):
+    def set_data(self, value, varaible, **index_map):
         raise NotImplemented
+
+
+@dataclasses.dataclass
+class GetattrDataInterface(DataInterfaceBase):
+    """
+    Tries to invoke named getter methods.
+
+    Converts `data(VARIABLE, indices)` call into `VARIABLE(indices)`, and
+    `set_data(VARIABLE, indices)` into `set_VARIABLE(indices)`.
+    """
+
+    _data_interface_implementor: DataInterfaceBase
+
+    def data(self, variable, **index_map):
+        try:
+            return getattr(self._data_interface_implementor, variable)(
+                **index_map)
+        except AttributeError as e:  # Cannot find member
+            return self._data_interface_implementor.data(variable, **index_map)
+        except TypeError as e:  # Not callable, or wrong argument list
+            return self._data_interface_implementor.data(variable, **index_map)
+
+    def set_data(self, value, variable, **index_map):
+        try:
+            return getattr(self._data_interface_implementor,
+                           "set_" + variable)(value, **index_map)
+        except AttributeError as e:  # Cannot find member
+            return self._data_interface_implementor.set_data(value,
+                variable, **index_map)
+        except TypeError as e:  # Not callable, or wrong argument list
+            return self._data_interface_implementor.set_data(value,
+                variable, **index_map)
 
 
 @dataclasses.dataclass
@@ -43,8 +88,8 @@ class DefaultingDataInterface(DataInterfaceBase):
 
     def data(self, variable, **index_map):
         try:
-            self._data_interface_implementor.data(variable, **index_map)
-        except KeyError as k:
+            return self._data_interface_implementor.data(variable, **index_map)
+        except NoDataError as k:
             if variable in self._nodefault_variables:
                 raise k
             elif variable in self._default_value_override.keys():
@@ -52,8 +97,9 @@ class DefaultingDataInterface(DataInterfaceBase):
             else:
                 return self._common_default_value
 
-    def set_data(self, variable, **index_map):
-        return self._data_interface_implementor.set_data(variable, **index_map)
+    def set_data(self, value, variable, **index_map):
+        return self._data_interface_implementor.set_data(value, variable,
+                                                         **index_map)
 
 
 @dataclasses.dataclass
@@ -107,12 +153,13 @@ class ConstrainedDataInterface(DataInterfaceBase):
         if variable_name in self._data_format.keys():
             return set(self._data_format[variable_name]) == indices
 
-    def set_data(self, variable_name, **index_map):
+    def set_data(self, value, variable_name, **index_map):
         if not self._data_request_is_valid(variable_name, **index_map):
             raise ValueError("Data format does not comply DataInterface data \
                              definition")
 
-        return self._data_interface_implementor.data(variable_name, **index_map)
+        return self._data_interface_implementor.set_data(value, variable_name,
+                                                         **index_map)
 
     def data(self, variable_name, **index_map):
         if not self._data_request_is_valid(variable_name, **index_map):
