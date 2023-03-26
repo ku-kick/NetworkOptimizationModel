@@ -1,7 +1,8 @@
 import dataclasses
 import math
 import numpy as np
-import twoopt.data_processing
+import twoopt.data_processing.vector_index
+import twoopt.data_processing.data_interface
 import scipy
 
 
