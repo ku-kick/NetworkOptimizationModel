@@ -16,6 +16,13 @@ class DataInterfaceBase:
     """
     def data(self, variable, **index_map):
         """
+        `variable` and `index_map` uniquely identify a piece of data. E.g.,
+        for $$alpha_1$$ `data` call will look something like this:
+
+        ```
+        data("alpha", subject_area_dependent_named_subscription_index_value=1)
+        ```
+
         Expected to raise "NoDataError", if no data can be acquired
         """
         raise NoDataError(f"Can not retrieve {variable} where {index_map}")
