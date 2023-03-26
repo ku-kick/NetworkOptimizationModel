@@ -132,130 +132,121 @@ def radix_cartesian_product(radix_boundaries):
 
 @dataclass
 class Schema:
-	"""
-	Wrapper over a dictionary containing schema information: indices, variables, boundaries
-	Format example:
-	{
-		"indexbound": {
-			"j": 3,
-			"i": 2,
-			"m": 4
-		},
-		"variableindices": {
-			"x": ["j", "i"],
-			"y": ["i", "j", "m"],
-			"z": ["i", "m"]
-		}
-	}
+    """
+    Wrapper over a dictionary containing schema information: indices, variables, boundaries
+    Format example:
+    {
+        "indexbound": {
+            "j": 3,
+            "i": 2,
+            "m": 4
+        },
+        "variableindices": {
+            "x": ["j", "i"],
+            "y": ["i", "j", "m"],
+            "z": ["i", "m"]
+        }
+    }
 
-	Bounds are counted from 0 to N: [0; N)
-	"""
-	data: dict = None
-	filename: str = None
+    Bounds are counted from 0 to N: [0; N)
+    """
+    data: dict = None
+    filename: str = None
 
-	def __post_init__(self):
-		if self.filename is not None:
-			self.read(self.filename)
+    def __post_init__(self):
+        if self.filename is not None:
+            self.read(self.filename)
 
-	def read(self, filename="schema.json"):
-		with open(filename, 'r') as f:
-			try:
-				self.data = json.loads(f.read())
-			except FileNotFoundError as e:
-				Log.error(Schema, "got exception", e)
-				self.data = {
-					"indexbound": dict(),
-					"variableindices": dict(),
-				}
+    def read(self, filename="schema.json"):
+        with open(filename, 'r') as f:
+            try:
+                self.data = json.loads(f.read())
+            except FileNotFoundError as e:
+                Log.error(Schema, "got exception", e)
+                self.data = {
+                    "indexbound": dict(),
+                    "variableindices": dict(),
+                }
 
-	def variables(self):
-		return copy.deepcopy(list(self.data["variableindices"].keys()))
+    def variables(self):
+        return copy.deepcopy(list(self.data["variableindices"].keys()))
 
-	def write(self, filename="schema.json"):
-		assert self.data is not None
-		with open(filename, 'w') as f:
-			f.write(self.data)
+    def write(self, filename="schema.json"):
+        assert self.data is not None
+        with open(filename, 'w') as f:
+            f.write(self.data)
 
-	def set_index_bound(self, index, bound):
-		assert self.data is not None
-		self.data["indexbound"][index] = bound
+    def set_index_bound(self, index, bound):
+        assert self.data is not None
+        self.data["indexbound"][index] = bound
 
-	def get_index_bound(self, index):
-		assert self.data is not None
-		assert index in self.data["indexbound"]
-		return self.data["indexbound"][index]
+    def get_index_bound(self, index):
+        assert self.data is not None
+        assert index in self.data["indexbound"]
+        return self.data["indexbound"][index]
 
-	def make_radix_map(self, *indices):
-		"""
-		Makes an array of upper bounds using the indices provided
-		"""
-		return list(self.get_index_bound(i) for i in indices)
+    def make_radix_map(self, *indices):
+        """
+        Makes an array of upper bounds using the indices provided
+        """
+        return list(self.get_index_bound(i) for i in indices)
 
-	def get_max_dec_from_indices(self, *indices):
-		"""
-		Returns a maxiumum possible decimal number encoded by a radix map produces from the provided indices' upper
-		bounds
-		"""
-		mult = lambda a, b: a * b
+    def set_var_indices(self, var, *indices):
+        assert self.data is not None
+        assert len(indices) > 0
+        self.data["variableindices"][var] = list(indices)
 
-		return functools.reduce(mult, self.make_radix_map(*indices), 1)
+    def get_var_indices(self, var):
+        assert self.data is not None
+        assert var in self.data["variableindices"]
+        return self.data["variableindices"][var]
 
-	def set_var_indices(self, var, *indices):
-		assert self.data is not None
-		assert len(indices) > 0
-		self.data["variableindices"][var] = list(indices)
+    def get_var_radix(self, var):
+        """
+        A tuple of variable indices can be represented as a mixed-radix number. Returns base of that number
+        """
+        assert var in self.data["variableindices"]
 
-	def get_var_indices(self, var):
-		assert self.data is not None
-		assert var in self.data["variableindices"]
-		return self.data["variableindices"][var]
+        return list(map(lambda i: self.data["indexbound"][i], self.data["variableindices"][var]))
 
-	def get_var_radix(self, var):
-		"""
-		A tuple of variable indices can be represented as a mixed-radix number. Returns base of that number
-		"""
-		assert var in self.data["variableindices"]
+    get_radix_map = get_var_radix
 
-		return list(map(lambda i: self.data["indexbound"][i], self.data["variableindices"][var]))
+    def radix_map_iter(self, *indices):
+        radix_map = self.make_radix_map(*indices)
 
-	get_radix_map = get_var_radix
+        for ind in radix_cartesian_product(radix_map):
+            yield ind
 
-	def radix_map_iter(self, *indices):
-		radix_map = self.make_radix_map(*indices)
+    def radix_map_iter_dict(self, *indices):
+        for ind in self.radix_map_iter(*indices):
+            yield {k: v for k, v in zip(indices, ind)}
 
-		for ind in radix_cartesian_product(radix_map):
-			yield ind
+    def radix_map_iter_var(self, var):
+        indices = self.get_var_indices(var)
+        yield from self.radix_map_iter(*indices)
 
-	def radix_map_iter_dict(self, *indices):
-		for ind in self.radix_map_iter(*indices):
-			yield {k: v for k, v in zip(indices, ind)}
+    def radix_map_iter_var_dict(self, var):
+        for ind in self.radix_map_iter_var(var):
+            yield self.indices_plain_to_dict(var, *ind)
 
-	def radix_map_iter_var(self, var):
-		indices = self.get_var_indices(var)
-		yield from self.radix_map_iter(*indices)
+    def indices_dict_to_plain(self, variable, **indices):
+        """
+        [VARAIBLE, {"index1": INDEX1, "index2": INDEX2}] -> [VARIABLE, INDEX1, INDEX2]
+        """
+        assert type(variable) is str
+        assert set(self.data["variableindices"][variable]) == set(indices.keys())
+        indices_plain = tuple(map(lambda i: indices[i], self.data["variableindices"][variable]))
 
-	def radix_map_iter_var_dict(self, var):
-		for ind in self.radix_map_iter_var(var):
-			yield self.indices_plain_to_dict(var, *ind)
+        return (variable,) + indices_plain
 
-	def indices_dict_to_plain(self, variable, **indices):
-		"""
-		[VARAIBLE, {"index1": INDEX1, "index2": INDEX2}] -> [VARIABLE, INDEX1, INDEX2]
-		"""
-		assert type(variable) is str
-		assert set(self.data["variableindices"][variable]) == set(indices.keys())
-		indices_plain = tuple(map(lambda i: indices[i], self.data["variableindices"][variable]))
+    def indices_plain_to_dict(self, variable, *indices):
+        """
+        [VARIABLE, INDEX1, INDEX2] -> [VARAIBLE, {"index1": INDEX1, "index2": INDEX2}]
+        """
+        assert type(variable) is str
+        check_type_int = lambda i: type(i) is int
+        assert all(map(check_type_int, indices))
+        assert len(indices) == len(self.data["variableindices"][variable])
+        indices_dict = dict(zip(self.data["variableindices"][variable], indices))
 
-		return (variable,) + indices_plain
-
-	def indices_plain_to_dict(self, variable, *indices):
-		"""
-		[VARIABLE, INDEX1, INDEX2] -> [VARAIBLE, {"index1": INDEX1, "index2": INDEX2}]
-		"""
-		assert type(variable) is str
-		check_type_int = lambda i: type(i) is int
-		assert all(map(check_type_int, indices))
-		assert len(indices) == len(self.data["variableindices"][variable])
-		indices_dict = dict(zip(self.data["variableindices"][variable], indices))
-
-		return (variable, indices_dict)
+        return (variable, indices_dict)
