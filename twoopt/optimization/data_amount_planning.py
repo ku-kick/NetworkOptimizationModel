@@ -28,7 +28,7 @@ class LinsolvPlanner:
 	schedule, problem statement and solving approaches"
 	"""
 	data_interface: object
-	schema: twoopt.data_processing.vector_index.Schema
+	schema: object
 
 	# Mapping b/w a network config. characteristic, and the name of the variable representing its upper bound (lower
 	# bounds are always 0)
@@ -73,7 +73,7 @@ class LinsolvPlanner:
 		lhs = []
 		rhs = []
 
-		for indices in self.schema.index_permutations_as_dict("x_eq"):
+		for indices in self.schema.radix_map_iter_var_dict("x_eq"):
 			j = indices[1].pop("j")
 			rho = indices[1].pop("rho")
 			l = indices[1].pop("l")
@@ -89,11 +89,11 @@ class LinsolvPlanner:
 		Ensures input data correctness
 		"""
 		assert self.schema.get_index_bound("i") == self.schema.get_index_bound("j")
-		assert list(self.schema.variable_indices("x")) == ["j", "i", "rho", "l"]
+		assert list(self.schema.get_var_indices("x")) == ["j", "i", "rho", "l"]
 
 		for var in ["x_eq", "y", "g", "z"]:
-			log.debug(LinsolvPlanner, LinsolvPlanner.validate, "var", var, self.schema.variable_indices(var))
-			assert list(self.schema.variable_indices(var)) == ["j", "rho", "l"]
+			log.debug(LinsolvPlanner, LinsolvPlanner.validate, "var", var, self.schema.get_var_indices(var))
+			assert list(self.schema.get_var_indices(var)) == ["j", "rho", "l"]
 
 	def __init_bnd_matrix(self):
 		bnd = [[0, float("inf")] for _ in range(self.row_index.get_row_len())]
@@ -101,9 +101,9 @@ class LinsolvPlanner:
 		for var, bnd_var in zip(LinsolvPlanner._NEQ_VAR_ORDER, LinsolvPlanner._NEQ_VAR_ORDER_RHS):
 			# "z" upper limit is always "inf". It is not expected in input data
 			if var != "z":
-				assert list(self.schema.variable_indices(var)) == list(self.schema.variable_indices(bnd_var))
+				assert list(self.schema.get_var_indices(var)) == list(self.schema.get_var_indices(bnd_var))
 
-			for indices in ut.radix_cartesian_product(self.schema.variable_radix_base(var)):
+			for indices in twoopt.data_processing.vector_index.radix_cartesian_product(self.schema.get_var_radix(var)):
 				_, indices_dict = self.schema.indices_plain_to_dict(var, *indices)  # ETL
 				pos = self.row_index.get_pos(var, **indices_dict)
 				upper_bound = self.data_interface.get_plain(bnd_var, *indices)
@@ -135,9 +135,9 @@ class LinsolvPlanner:
 		assert 0 == solution.status
 
 		if 0 == solution.status:
-			log.info(LinsolvPlanner.solve, "registering solution results in data interface")
+			# Log.info(LinsolvPlanner.solve, "registering solution results in data interface")
 			for variable in self.row_index.variables.keys():
-				for indices in self.schema.index_permutations_as_dict(variable):
+				for indices in self.schema.radix_map_iter_var_dict(variable):
 					log.debug(LinsolvPlanner.solve, indices)
 					pos = self.row_index.get_pos(variable, **indices[1])
 					self.data_interface.set(variable, solution.x[pos], **indices[1])
