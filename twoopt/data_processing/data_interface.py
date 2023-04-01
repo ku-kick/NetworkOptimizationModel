@@ -278,3 +278,12 @@ class ConcreteDataInterface:
 
         return self._data_provider.set_data(value, variable_name,
             *plain_indices)
+
+
+def make_data_interface_wrap_chain(root, *data_interface_types):
+    out = root
+
+    for data_interface_type in data_interface_types:
+        out = data_interface_type(out)
+
+    return out
