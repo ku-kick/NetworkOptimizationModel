@@ -8,7 +8,7 @@ Some handled problems:
 - Get permutations of variable's indices, and iterate through them
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import copy
 import functools
 import itertools
@@ -150,7 +150,7 @@ class Schema:
 
     Bounds are counted from 0 to N: [0; N)
     """
-    data: dict = None
+    data: dict = field(default_factory=dict)
     filename: str = None
 
     def set_index_bounds(self, **index_to_bounds):
