@@ -211,6 +211,13 @@ class ConstrainedDataInterface(DataInterfaceBase):
     This enables models interoperability
     """
 
+    _data_interface_implementor: DataInterfaceBase \
+        = dataclasses.field(default_factory=DataInterfaceBase)
+    """
+    Retrieves data from the underlying data storage (such as database).
+    May also be another intermediate step
+    """
+
     _data_format: dict = dataclasses.field(default_factory=dict)
     """
     Stores format description.
@@ -220,13 +227,6 @@ class ConstrainedDataInterface(DataInterfaceBase):
         variable_name_2: {index_set_2},
         ...
     }
-    """
-
-    _data_interface_implementor: DataInterfaceBase \
-        = dataclasses.field(default_factory=DataInterfaceBase)
-    """
-    Retrieves data from the underlying data storage (such as database).
-    May also be another intermediate step
     """
 
     def _data_request_is_valid(self, variable_name: str, **index_map):
