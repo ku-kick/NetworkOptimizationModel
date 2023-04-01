@@ -1,4 +1,6 @@
 import dataclasses
+import twoopt.data_processing.vector_index
+import twoopt.data_processing.data_provider
 
 
 class NoDataError(Exception):
@@ -223,3 +225,30 @@ class ConstrainedDataInterface(DataInterfaceBase):
             raise ValueError("Data ")
 
         return self._data_interface_implementor.data(variable_name, **index_map)
+
+
+@dataclasses.dataclass
+class ConcreteDataInterface:
+
+    _data_provider: twoopt.data_processing.data_provider.DataProviderBase
+    """
+    The storage
+    """
+
+    _schema: twoopt.data_processing.vector_index.Schema
+    """
+    Describes data format used by "_data_provider"
+    """
+
+    def data(self, variable_name, **index_map):
+        plain_indices = self._schema.indices_dict_to_plain(variable_name,
+            **index_map)
+
+        return self._data_provider.data(variable_name, *plain_indices)
+
+    def set_data(self, value, variable_name, **index_map):
+        plain_indices = self._schema.indices_dict_to_plain(variable_name,
+            **index_map)
+
+        return self._data_provider.set_data(value, variable_name,
+            *plain_indices)
