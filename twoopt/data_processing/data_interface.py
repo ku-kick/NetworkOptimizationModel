@@ -33,6 +33,18 @@ class DataInterfaceBase:
         raise NotImplemented
 
 
+class WrappingDataInterface(DataInterfaceBase):
+
+    def __init__(self, data_interface_implementor):
+        self._data_interface_implementor = data_interface_implementor
+
+    def data(self, *args, **kwargs):
+        return self._data_interface_implementor.data(*args, **kwargs)
+
+    def set_data(self, *args, **kwargs):
+        return self._data_interface_implementor(*args, kwargs)
+
+
 @dataclasses.dataclass
 class GetattrDataInterface(DataInterfaceBase):
     """
