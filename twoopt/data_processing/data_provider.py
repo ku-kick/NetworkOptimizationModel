@@ -15,3 +15,6 @@ class DataProviderBase:
 
 	def set_data(self, value, *composite_tuple_identifier):
 		pass
+
+	def into_iter(self):
+		pass
