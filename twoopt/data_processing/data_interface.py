@@ -144,21 +144,35 @@ class IdentifierTranslatingDataInterface(DataInterfaceBase):
 
         return key, value
 
-    def data(self, variable, **index_map):
+    def _try_translate_index_map(self, **index_map):
         translated_index_map = dict(map(self._try_translate_kv_pair,
             index_map.items()))
-        translated_variable = self._try_translate(variable)
 
-        return self._data_interface_implementor.data(translated_variable,
-            **translated_index_map)
+        return translated_index_map
+
+    def data(self, variable, **index_map):
+
+        try:
+            return self._data_interface_implementor.data(variable, **index_map)
+        except NoDataError:
+            translated_index_map = self._try_translate_index_map(**index_map)
+            translated_variable = self._try_translate(variable)
+
+            return self._data_interface_implementor.data(
+                translated_variable,
+                **translated_index_map
+            )
 
     def set_data(self, value, variable, **index_map):
-        translated_index_map = dict(map(self._try_translate_kv_pair,
-            index_map.items()))
-        translated_variable = self._try_translate(variable)
+        try:
+            return self._data_interface_implementor.set_data(variable,
+                **index_map)
+        except ValueError:
+            translated_index_map = self._try_translate_index_map(index_map)
+            translated_variable = self._try_translate(variable)
 
-        return self._data_interface_implementor.set_data(value,
-            translated_variable, **translated_index_map)
+            return self._data_interface_implementor.set_data(value,
+                translated_variable, **translated_index_map)
 
 
 @dataclasses.dataclass
