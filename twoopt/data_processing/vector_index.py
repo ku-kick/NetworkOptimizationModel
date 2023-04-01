@@ -153,6 +153,14 @@ class Schema:
     data: dict = None
     filename: str = None
 
+    def set_index_bounds(self, **index_to_bounds):
+        for k, v in index_to_bounds.items():
+            self.data["indexbound"][k] = v
+
+    def set_variable_indices(self, **variable_to_ordered_index_list):
+        for k, v in variable_to_ordered_index_list.items():
+            self.data["variableindices"][k] = list(v)
+
     def __post_init__(self):
         if self.filename is not None:
             self.read(self.filename)
