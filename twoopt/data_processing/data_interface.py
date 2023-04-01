@@ -146,7 +146,7 @@ class IdentifierTranslatingDataInterface(DataInterfaceBase):
         if identifier in self._translation_table.keys():
             return self._translation_table[identifier]
         elif identifier in self._backward_translation_table.keys():
-            return self._backward_translation_table[identifier]:
+            return self._backward_translation_table[identifier]
         else:
             return identifier
 
