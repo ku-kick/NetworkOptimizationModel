@@ -189,6 +189,7 @@ class IdentifierTranslatingDataInterface(DataInterfaceBase):
 
 @dataclasses.dataclass
 class ConstrainedDataInterface(DataInterfaceBase):
+    # TODO: apply translation table
     """
     Format-checking filter.
 
