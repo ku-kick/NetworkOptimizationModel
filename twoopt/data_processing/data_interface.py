@@ -110,6 +110,56 @@ class DefaultingDataInterface(DataInterfaceBase):
 
 
 @dataclasses.dataclass
+class IdentifierTranslatingDataInterface(DataInterfaceBase):
+    """
+    Just translates index and variable names into another set.
+    Useful when it is required to use 2 thesauruses: one for external,
+    and one for internal use (with raw, non human-readable notation)
+    """
+
+    _data_interface_implementor: DataInterfaceBase
+    _translation_table: dict
+
+
+    def __post_init__(self):
+        self._backward_translation_table = None
+        kv_pairs = list(self.translation_table.items())
+        kv_pairs = list(map(lambda item_pair: tuple(reversed(item_pair)),
+            kv_pairs))
+        self._backward_translation_table = dict(kv_pairs)
+
+    def _try_translate(self, identifier):
+        if identifier in self._translation_table.keys():
+            return self._translation_table[identifier]
+        elif identifier in self._backward_translation_table.keys():
+            return self._backward_translation_table[identifier]:
+        else:
+            return identifier
+
+    def _try_translate_kv_pair(self, kv_pair):
+        key, value = kv_pair
+        key = self._try_translate(key)
+
+        return key, value
+
+    def data(self, variable, **index_map):
+        translated_index_map = dict(map(self._try_translate_kv_pair,
+            index_map.items()))
+        translated_variable = self._try_translate(variable)
+
+        return self._data_interface_implementor.data(translated_variable,
+            **translated_index_map)
+
+    def set_data(self, value, variable, **index_map):
+        translated_index_map = dict(map(self._try_translate_kv_pair,
+            index_map.items()))
+        translated_variable = self._try_translate(variable)
+
+        return self._data_interface_implementor.set_data(value,
+            translated_variable, **translated_index_map)
+
+
+@dataclasses.dataclass
 class ConstrainedDataInterface(DataInterfaceBase):
     """
     Format-checking filter.
