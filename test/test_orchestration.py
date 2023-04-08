@@ -13,7 +13,7 @@ from generic import Log
 import logging
 import ut
 import sim_opt
-import simulation
+import legacy_simulation as simulation
 import copy
 import orchestration
 import config
