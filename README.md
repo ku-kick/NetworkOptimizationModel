@@ -11,11 +11,6 @@
 		- Custom drawer
 		- Yed + format parsing
 
-2023-04-01
-
-- [x] Finish implementing the refactored solver
-- Try to run some tests on the refactored version of the solver;
-
 # Roadmap
 
 - [x] Refactoring: comprehensive data-centric solver API
@@ -24,3 +19,13 @@
 - [ ] Refactor orchestration
 - Refactoring or reimplementing the simulation
 - UI, user input, simple graph drawer
+
+2023-04-01
+
+- [x] Finish implementing the refactored solver
+- [ ] Try to run some tests on the refactored version of the solver;
+
+2023-04-08
+
+- [ ] Finish refactoring the simulation (look across files for `# TODO:` marks)
+- [ ] Reimplement orchestration as a special kind of solver
