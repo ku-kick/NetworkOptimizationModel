@@ -14,7 +14,7 @@ import sim_opt
 import linsmat
 import linsolv_planner
 from dataclasses import dataclass
-import simulation
+import legacy_simulation as simulation
 import config
 import ut
 
