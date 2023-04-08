@@ -12,7 +12,7 @@ import os
 import pathlib
 import math
 import pygal
-import simulation as sml
+import legacy_simulation as sml
 import ut
 
 log = ut.Log(file=__file__, level=ut.Log.LEVEL_VERBOSE)
