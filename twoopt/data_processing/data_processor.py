@@ -6,7 +6,7 @@ class DataProcessor:
     """
     Operates on input data, produces an output
     """
-    def __call__(
+    def __init__(
             self,
             data_interface: \
                 twoopt.data_processing.data_interface.DataInterfaceBase):
@@ -18,7 +18,7 @@ class DataProcessor:
     def run(self):
         raise NotImplemented
 
-    def data_interface(self):
+    def get_data_interface(self):
         return self._data_interface
 
 
@@ -32,5 +32,5 @@ class Solver(DataProcessor):
         DataProcessor.__init__(self, data_interface)
         self._schema = schema
 
-    def schema(self):
+    def get_schema(self):
         return self._schema
