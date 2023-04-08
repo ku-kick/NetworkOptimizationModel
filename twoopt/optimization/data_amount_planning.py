@@ -3,6 +3,7 @@ import math
 import numpy as np
 import scipy
 import twoopt.data_processing.data_interface
+import twoopt.data_processing.data_processor
 import twoopt.data_processing.data_provider
 import twoopt.data_processing.vector_index
 
@@ -46,7 +47,7 @@ class _DataInterfaceLegacyAdapter(twoopt.data_processing.data_interface.Concrete
 
 
 @dataclasses.dataclass
-class LinsolvPlanner:
+class LinsolvPlanner(twoopt.data_processing.data_processor.Solver):
     """
     Domain-aware linear equation solver.
 
@@ -58,12 +59,13 @@ class LinsolvPlanner:
     data_interface: object
     schema: object
 
-    # Mapping b/w a network config. characteristic, and the name of the variable representing its upper bound (lower
-    # bounds are always 0)
+    # Mapping b/w a network config. characteristic, and the name of the variable
+    # representing its upper bound (lower bounds are always 0)
     _NEQ_VAR_ORDER = ['x', 'y', 'g', 'z']
     _NEQ_VAR_ORDER_RHS = ["psi", "v", "phi"]
 
     def __post_init__(self):
+        twoopt.data_processing.data_processor.Solver.__init__(self, self.data_interface, self.schema)
         self.row_index = twoopt.data_processing.vector_index.RowIndex \
             .make_from_schema(self.schema, ["y", "x", "z", "g"])
         self.validate()
@@ -158,6 +160,9 @@ class LinsolvPlanner:
             stub[pos_z] = alpha_z
 
         return stub
+
+    def run(self):
+        return self.solve()
 
     def solve(self):
         solution = scipy.optimize.linprog(c=self.obj, bounds=self.bnd, A_eq=self.eq_lhs, b_eq=self.eq_rhs)
