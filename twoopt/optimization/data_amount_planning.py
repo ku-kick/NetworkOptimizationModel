@@ -355,7 +355,8 @@ class _ConstrainedDataInterface(
             data_interface, data_format)
 
 
-class ProcessedDataAmountMaximization:
+class ProcessedDataAmountMaximization(
+        twoopt.data_processing.data_processor.Solver):
     """
     Case:
 
@@ -388,6 +389,11 @@ class ProcessedDataAmountMaximization:
             .DataProviderBase):
         self._data_interface, self._schema \
             = _make_data_interface_schema_helper(data_provider)
+        twoopt.data_processing.data_processor.Solver.__init__(
+            self,
+            data_interface=self._data_interface,
+            schema=self._schema
+        )
         self._legacy_data_interface = _DataInterfaceLegacyAdapter(
             self._data_interface, self._schema)
         self._legacy_solver = LinsolvPlanner(
