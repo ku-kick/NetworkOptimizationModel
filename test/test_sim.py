@@ -238,6 +238,8 @@ class TestSim(unittest.TestCase):
 
 		log.info("simulation, process quality", s.quality())
 
+	# TODO: write simulation tests w/ the new simulation class
+
 
 if __name__ == "__main__":
 	unittest.main()
