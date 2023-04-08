@@ -13,12 +13,14 @@
 
 2023-04-01
 
-- Finish implementing the refactored solver
+- [x] Finish implementing the refactored solver
 - Try to run some tests on the refactored version of the solver;
 
 # Roadmap
 
-- Refactoring: comprehensive data-centric solver API
-- Refactoring solver
+- [x] Refactoring: comprehensive data-centric solver API
+- [x] Refactor solver
+- [ ] Refactor simulation
+- [ ] Refactor orchestration
 - Refactoring or reimplementing the simulation
 - UI, user input, simple graph drawer
