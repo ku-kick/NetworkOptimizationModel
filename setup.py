@@ -6,6 +6,7 @@ setup(
         "twoopt",
         "twoopt.data_processing",
         "twoopt.optimization",
+        "twoopt.simulation",
     ],
     include_package_data=True,
     license="MIT",
