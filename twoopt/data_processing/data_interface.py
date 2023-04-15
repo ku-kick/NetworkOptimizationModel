@@ -137,7 +137,7 @@ class IdentifierTranslatingDataInterface(DataInterfaceBase):
 
     def __post_init__(self):
         self._backward_translation_table = None
-        kv_pairs = list(self.translation_table.items())
+        kv_pairs = list(self._translation_table.items())
         kv_pairs = list(map(lambda item_pair: tuple(reversed(item_pair)),
             kv_pairs))
         self._backward_translation_table = dict(kv_pairs)
