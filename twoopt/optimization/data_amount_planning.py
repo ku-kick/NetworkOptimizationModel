@@ -8,6 +8,48 @@ import twoopt.data_processing.data_provider
 import twoopt.data_processing.vector_index
 
 
+SCHEMA_VARAIBLEINDICES = {
+    "x": ["j", "i", "rho", "l"],
+    "y": ["j", "rho", "l"],
+    "g": ["j", "rho", "l"],
+    "z": ["j", "rho", "l"],
+    "psi": ["j", "i", "rho", "l"],
+    "phi": ["j", "rho", "l"],
+    "v": ["j", "rho", "l"],
+    "x_eq": ["j", "rho", "l"],
+    "mm_psi": ["j", "i", "l"],
+    "m_psi": ["j", "i", "rho", "l"],
+    "mm_v": ["j", "l"],
+    "m_v": ["j", "rho", "l"],
+    "mm_phi": ["j", "l"],
+    "m_phi": ["j", "rho", "l"],
+    "x^": ["j", "i", "rho", "l"],
+    "y^": ["j", "rho", "l"],
+    "g^": ["j", "rho", "l"],
+    "z^": ["j", "rho", "l"],
+    "x_eq^": ["j", "rho", "l"],
+    "alpha_1": [],
+    "dt": [],
+    "tl": ["l"]
+}
+
+
+def make_schema(max_nodes, max_virtualized_environments,
+        max_structural_stability_intervals):
+    schema = twoopt.data_processing.vector_index.Schema(dict(
+        indexbound={
+            "j": max_nodes,
+            "i": max_nodes,
+            "rho": max_virtualized_environments,
+            "l": max_structural_stability_intervals,
+        },
+        variableindices\
+            =twoopt.optimization.data_amount_planning.SCHEMA_VARIABLEINDICES,
+    ))
+
+    return schema
+
+
 class StubLog:
 
     def info(self, *args, **kwargs):
@@ -355,7 +397,7 @@ class _ConstrainedDataInterface(
             data_interface, data_format)
 
 
-class ProcessedDataAmountMaximization(
+class ProcessedDataAmountMaximizationSolver(
         twoopt.data_processing.data_processor.Solver):
     """
     Case:
