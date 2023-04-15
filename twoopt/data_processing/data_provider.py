@@ -2,7 +2,7 @@ import csv
 import dataclasses
 import io
 import os
-import twoopt.data_processing.data_interface
+
 
 class DataProviderBase:
     """
@@ -14,6 +14,9 @@ class DataProviderBase:
         (VARIABLE_NAME, COMPLEX_IDENTIFIER_PART_1, ..., COMPLEX_IDENTIFIER_PART_N, VALUE),
         ...
     ]
+
+    If the implementor cannot satisfy the request due to lack of data, it
+    must raise `twoopt.data_processing.data_interface.NoDataError(...)`
     """
 
     def data(self, *composite_tuple_identifier):
@@ -24,6 +27,36 @@ class DataProviderBase:
 
     def into_iter(self):
         pass
+
+    def set_data_from_rows(self, iterable_rows):
+        """
+        Rows must have the following format: `(VARIABLE, ID1, ID2, ..., VALUE)`
+        """
+        for row in iterable_rows:
+            assert len(row) >= 2
+            value = row[-1]
+            composite_key = row[1:]
+            self.set_data(value, *composite_key)
+
+
+class RamDataProvider(dict, DataProviderBase):
+
+    def __init__(self, *args, **kwargs):
+        dict.__init__(self, *args, **kwargs)
+        DataProviderBase.__init__(self)
+
+    def data(self, *composite_tuple_identifier):
+        import twoopt.data_processing.data_interface
+
+        if composite_tuple_identifier not in self:
+            raise twoopt.data_processing.data_interface.NoDataError(composite_tuple_identifier)
+
+    def set_data(self, value, *composite_tuple_identifier):
+        self[composite_tuple_identifier] = value
+
+    def into_iter(self):
+        for k, v in self.items():
+            yield *k, v
 
 
 @dataclasses.dataclass
@@ -37,6 +70,8 @@ class PermissiveCsvBufferedDataProvider(dict, DataProviderBase):
     csv_file_name: str
 
     def data(self, *composite_tuple_identifier):
+        import twoopt.data_processing.data_interface
+
         try:
             return self.get_plain(*composite_tuple_identifier)
         except:
