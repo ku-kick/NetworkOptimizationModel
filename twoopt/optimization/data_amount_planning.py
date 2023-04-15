@@ -303,7 +303,10 @@ class _IdentifierTranslatingDataInterface(
 
     def __init__(self, data_interface_implementor:
                 twoopt.data_processing.data_interface.DataInterfaceBase):
-            super().__init__(self, data_interface_implementor,
+            twoopt.data_processing.data_interface \
+                .IdentifierTranslatingDataInterface.__init__(
+                self,
+                data_interface_implementor,
                 _IdentifierTranslatingDataInterface.TRANSLATION_TABLE)
 
 
