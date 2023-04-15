@@ -154,10 +154,16 @@ class Schema:
     filename: str = None
 
     def set_index_bounds(self, **index_to_bounds):
+        if "indexbound" not in self.data.keys():
+            self.data["indexbound"] = dict()
+
         for k, v in index_to_bounds.items():
             self.data["indexbound"][k] = v
 
     def set_variable_indices(self, **variable_to_ordered_index_list):
+        if "variableindices" not in self.data.keys():
+            self.data["variableindices"] = dict()
+
         for k, v in variable_to_ordered_index_list.items():
             self.data["variableindices"][k] = list(v)
 
