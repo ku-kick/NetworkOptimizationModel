@@ -1,6 +1,6 @@
 import dataclasses
-import twoopt.data_processing.vector_index
 import twoopt.data_processing.data_provider
+import twoopt.data_processing.vector_index
 
 
 class NoDataError(Exception):
