@@ -3,7 +3,7 @@ class DataProcessor:
     """
     Operates on input data, produces an output
     """
-    def __init__(self, data_interface)
+    def __init__(self, data_interface):
         """
         `data_interface` is expected to come pre-initialized
         """
