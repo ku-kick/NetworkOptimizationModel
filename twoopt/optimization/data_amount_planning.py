@@ -29,9 +29,13 @@ SCHEMA_VARIABLEINDICES = {
     "g^": ["j", "rho", "l"],
     "z^": ["j", "rho", "l"],
     "x_eq^": ["j", "rho", "l"],
+    "alpha_0": [],
     "alpha_1": [],
     "dt": [],
-    "tl": ["l"]
+    "tl": ["l"],
+    "nodes": [],
+    "structural_stability_intervals": [],
+    "virtualized_environments": [],
 }
 
 
