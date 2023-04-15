@@ -8,7 +8,8 @@ import twoopt.data_processing.data_provider
 import twoopt.data_processing.vector_index
 
 
-SCHEMA_VARAIBLEINDICES = {
+
+SCHEMA_VARIABLEINDICES = {
     "x": ["j", "i", "rho", "l"],
     "y": ["j", "rho", "l"],
     "g": ["j", "rho", "l"],
@@ -43,8 +44,7 @@ def make_schema(max_nodes, max_virtualized_environments,
             "rho": max_virtualized_environments,
             "l": max_structural_stability_intervals,
         },
-        variableindices\
-            =twoopt.optimization.data_amount_planning.SCHEMA_VARIABLEINDICES,
+        variableindices=SCHEMA_VARIABLEINDICES,
     ))
 
     return schema
@@ -226,19 +226,7 @@ class _Schema(twoopt.data_processing.vector_index.Schema):
     def __init__(self):
         twoopt.data_processing.vector_index.Schema.__init__(self)
         self.set_index_bounds(j=0, i=0, rho=0, l=0)
-        self.set_variable_indices(
-            x_eq=["j", "rho", "l"],
-            mm_psi=["j", "i", "l"],
-            m_psi=["j", "i", "rho", "l"],
-            mm_phi=["j", "l"],
-            m_phi=["j", "rho", "l"],
-            mm_v=["j", "l"],
-            m_v=["j", "rho", "l"],
-            x=["j", "i", "rho", "l"],
-            y=["j", "rho", "l"],
-            z=["j", "rho", "l"],
-            g=["j", "rho", "l"],
-        )
+        self.set_variable_indices(**SCHEMA_VARIABLEINDICES)
 
     def init_index_bounds(
             self,
