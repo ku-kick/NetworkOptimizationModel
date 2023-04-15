@@ -301,9 +301,9 @@ class _IdentifierTranslatingDataInterface(
         "maximize_processing_importance": "alpha_0",
     }
 
-    def __init__(data_interface_implementor:
+    def __init__(self, data_interface_implementor:
                 twoopt.data_processing.data_interface.DataInterfaceBase):
-            super().__init__(data_interface_implementor,
+            super().__init__(self, data_interface_implementor,
                 _IdentifierTranslatingDataInterface.TRANSLATION_TABLE)
 
 
@@ -311,6 +311,7 @@ class _DefaultingDataInterface(
         twoopt.data_processing.data_interface.DefaultingDataInterface):
     def __init__(self, data_interface_implementor):
         twoopt.data_processing.data_interface.DefaultingDataInterface.__init__(
+            self,
             _data_interface_implementor=data_interface_implementor)
 
 
