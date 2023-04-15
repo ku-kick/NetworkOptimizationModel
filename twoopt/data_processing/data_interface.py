@@ -91,7 +91,7 @@ class DefaultingDataInterface(DataInterfaceBase):
     architectural approach
     """
 
-    _common_default_value: object = 0.0
+    _common_default_value: object = 0
     """
     This value will be assigned to an instance, if
     `self._data_interface_implementor` raises an exception.
