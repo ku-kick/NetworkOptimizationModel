@@ -1,15 +1,9 @@
-import twoopt.data_processing.data_interface
-import twoopt.data_processing.vector_index
-
 
 class DataProcessor:
     """
     Operates on input data, produces an output
     """
-    def __init__(
-            self,
-            data_interface: \
-                twoopt.data_processing.data_interface.DataInterfaceBase):
+    def __init__(self, data_interface)
         """
         `data_interface` is expected to come pre-initialized
         """
@@ -24,11 +18,7 @@ class DataProcessor:
 
 class Solver(DataProcessor):
 
-    def __init__(
-            self,
-            data_interface: \
-                twoopt.data_processing.data_interface.DataInterfaceBase,
-            schema: twoopt.data_processing.vector_index.Schema):
+    def __init__(self, data_interface, schema):
         # TODO: does a solver really need a schema instance? Remove it
         DataProcessor.__init__(self, data_interface)
         self._schema = schema
