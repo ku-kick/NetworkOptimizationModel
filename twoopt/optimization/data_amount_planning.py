@@ -263,15 +263,20 @@ class _InferencingDataInferface(
         try:
             return self._data_interface_implementor.data(variable, **index_map)
         except (twoopt.data_processing.data_interface.NoDataError, ValueError):
+            rho = index_map.get("rho")
+            i = index_map.get("j")
+            j = index_map.get("j")
+            l = index_map.get("l")
+
             if variable == "phi":
-                return self._data_interface_implementor.data("mm_phi", **index_map) \
-                    * self._data_interface_implementor.data("m_phi", **index_map)
+                return self._data_interface_implementor.data("mm_phi", j=j, l=l) \
+                    * self._data_interface_implementor.data("m_phi", j=j, rho=rho, l=l)
             elif variable == "psi":
-                return self._data_interface_implementor.data("mm_psi", **index_map) \
-                    * self._data_interface_implementor.data("m_psi", **index_map)
+                return self._data_interface_implementor.data("mm_psi", j=j, i=i, l=l) \
+                    * self._data_interface_implementor.data("m_psi", j=j, i=i, l=l, rho=rho)
             elif variable == "v":
-                return self._data_interface_implementor.data("mm_v", **index_map) \
-                    * self._data_interface_implementor.data("m_v", **index_map)
+                return self._data_interface_implementor.data("mm_v", j=j, l=l) \
+                    * self._data_interface_implementor.data("m_v", j=j, rho=rho, l=l)
             else:
                 return self._data_interface_implementor.data(variable, **index_map)
 
