@@ -1,7 +1,12 @@
 import twoopt.data_processing.data_provider
 import twoopt.data_processing.vector_index
 import twoopt.optimization.data_amount_planning
+import twoopt.utility.logging
 import unittest
+
+
+twoopt.utility.logging.Log.LEVEL = twoopt.utility.logging.Log.LEVEL_DEBUG
+log = twoopt.utility.logging.Log(file=__file__, level=5)
 
 
 _SIMPLE_AB_TRANSFER_DATA = (
@@ -29,7 +34,13 @@ class Test(unittest.TestCase):
         data_provider.set_data_from_rows(_SIMPLE_AB_TRANSFER_DATA)
         solver = twoopt.optimization.data_amount_planning\
             .ProcessedDataAmountMaximizationSolver(data_provider=data_provider)
+        log.debug("test_simple_transfer", "alpha_0", solver._data_interface.data("alpha_0"))
         solver.run()
+
+        for data in data_provider.into_iter():
+            log.debug("test_simple_transfer", data)
+
+        self.assertAlmostEqual(data_provider.data("x", 0, 1, 0, 0), 10.0)
 
 
 if __name__ == "__main__":
