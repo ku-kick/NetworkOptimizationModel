@@ -239,6 +239,8 @@ class ConstrainedDataInterface(DataInterfaceBase):
         if variable_name in self._data_format.keys():
             return set(self._data_format[variable_name]) == indices
 
+        return False
+
     def set_data(self, value, variable_name, **index_map):
         if not self._data_request_is_valid(variable_name, **index_map):
             raise ValueError("Data format does not comply DataInterface data \
