@@ -10,7 +10,7 @@ class DataProcessor:
         self._data_interface = data_interface
 
     def run(self):
-        raise NotImplemented
+        raise NotImplementedError()
 
     def get_data_interface(self):
         return self._data_interface
@@ -33,4 +33,4 @@ class Simulation(DataProcessor):
         DataProcessor.__init__(self, data_interface=data_interface)
 
     def run(self):
-        raise NotImplemented
+        raise NotImplemented()
