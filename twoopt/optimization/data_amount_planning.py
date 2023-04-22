@@ -337,8 +337,7 @@ def _make_data_interface_schema_helper(data_provider):
         .make_data_interface_wrap_chain(
             concrete_data_interface,
             _InferencingDataInferface,
-            _DefaultingDataInterface,
-            _IdentifierTranslatingDataInterface
+            _DefaultingDataInterface
         )
     schema.init_index_bounds(output_data_interface)
 
