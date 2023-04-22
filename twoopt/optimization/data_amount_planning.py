@@ -442,3 +442,6 @@ class ProcessedDataAmountMaximizationSolver(
         self._legacy_solver = LinsolvPlanner(
             self._legacy_data_interface,
             self._schema)
+
+    def run(self):
+        self._legacy_solver.solve()
