@@ -88,6 +88,7 @@ class _DataInterfaceLegacyAdapter(twoopt.data_processing.data_interface.Concrete
 
     def get_plain(self, variable, *indices):
         index_map = self._schema.indices_plain_to_dict(variable, *indices)
+        index_map = index_map[1]  # index_map has `(VARIABLE, {INDICES: INDICES})` structure
 
         return self._data_interface.data(variable, **index_map)
 
