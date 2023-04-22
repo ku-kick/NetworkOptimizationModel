@@ -51,6 +51,11 @@ class RamDataProvider(dict, DataProviderBase):
         if composite_tuple_identifier not in self:
             raise twoopt.data_processing.data_interface.NoDataError(composite_tuple_identifier)
 
+        try:
+            return self[composite_tuple_identifier]
+        except KeyError:
+            raise twoopt.data_processing.data_interface.NoDataError(str(composite_tuple_identifier))
+
     def set_data(self, value, *composite_tuple_identifier):
         self[composite_tuple_identifier] = value
 
