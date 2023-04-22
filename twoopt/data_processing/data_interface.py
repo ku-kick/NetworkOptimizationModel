@@ -43,7 +43,7 @@ class WrappingDataInterface(DataInterfaceBase):
         return self._data_interface_implementor.data(*args, **kwargs)
 
     def set_data(self, *args, **kwargs):
-        return self._data_interface_implementor(*args, kwargs)
+        return self._data_interface_implementor.set_data(*args, **kwargs)
 
 
 @dataclasses.dataclass
