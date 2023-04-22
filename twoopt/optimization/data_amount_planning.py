@@ -434,8 +434,7 @@ class ProcessedDataAmountMaximizationSolver(
             = _make_data_interface_schema_helper(data_provider)
         twoopt.data_processing.data_processor.Solver.__init__(
             self,
-            data_interface=self._data_interface,
-            schema=self._schema
+            data_interface=self._data_interface
         )
         self._legacy_data_interface = _DataInterfaceLegacyAdapter(
             self._data_interface, self._schema)
