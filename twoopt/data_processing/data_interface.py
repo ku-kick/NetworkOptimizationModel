@@ -10,10 +10,7 @@ log = twoopt.utility.logging.Log(file=__file__)
 class NoDataError(Exception):
 
     def __init__(self, variable, **index_map) -> None:
-        self._variable = variable
-
-    def __str__(self):
-        return f"Can not retrieve {self._variable} where {self._index_map}"
+        Exception.__init__(self, f"Can not retrieve {variable} where {index_map}")
 
 
 class DataInterfaceBase:
