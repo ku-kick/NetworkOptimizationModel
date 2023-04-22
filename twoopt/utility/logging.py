@@ -1,4 +1,7 @@
 import dataclasses
+import inspect
+import os
+import pathlib
 
 
 @dataclasses.dataclass
@@ -6,7 +9,7 @@ class Log:
 	filter_allow: set = None
 	filter_disable: set = None
 	file: str = None
-	level: int = Log.LEVEL
+	level: int = 4
 
 	def check_filter(self, out):
 		res = self.filter_allow is None
