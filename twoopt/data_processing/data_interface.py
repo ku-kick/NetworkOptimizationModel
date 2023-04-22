@@ -1,6 +1,10 @@
 import dataclasses
 import twoopt.data_processing.data_provider
 import twoopt.data_processing.vector_index
+import twoopt.utility.logging
+
+
+log = twoopt.utility.logging.Log(file=__file__)
 
 
 class NoDataError(Exception):
@@ -126,65 +130,66 @@ class DefaultingDataInterface(DataInterfaceBase):
 @dataclasses.dataclass
 class IdentifierTranslatingDataInterface(DataInterfaceBase):
     """
-    Just translates index and variable names into another set.
-    Useful when it is required to use 2 thesauruses: one for external,
-    and one for internal use (with raw, non human-readable notation)
+    Stems aliases to one identifier.
     """
 
     _data_interface_implementor: DataInterfaceBase
-    _translation_table: dict
+    # `_translation_table` and `_aliases_list` are interchangeable
+    _translation_table: dict = None
+    """
+    Contains entries of the following format:
 
+    {
+        STEM1: ALIAS1,  # string alias
+        STEM2: [ALIAS21, ALIAS22, ...],  # list of aliases
+        STEM3: (ALIAS31, ALIAS32, ...),  # tuple of aliases
+    }
+
+    Then, invoking it with, let's say, the following code:
+
+    `object.data(ALIAS1, STEM2=2, ALAIS32=4)`
+
+    Will be equivalent to:
+
+    `object.data(STEM1, STEM2=2, STEM3=4)`
+    """
 
     def __post_init__(self):
-        self._backward_translation_table = None
-        kv_pairs = list(self._translation_table.items())
-        kv_pairs = list(map(lambda item_pair: tuple(reversed(item_pair)),
-            kv_pairs))
-        self._backward_translation_table = dict(kv_pairs)
+        self.__init_index()
 
-    def _try_translate(self, identifier):
-        if identifier in self._translation_table.keys():
-            return self._translation_table[identifier]
-        elif identifier in self._backward_translation_table.keys():
-            return self._backward_translation_table[identifier]
-        else:
-            return identifier
+    def __init_index(self):
+        """
+        Index table for aliases
+        """
+        self._index = dict()
 
-    def _try_translate_kv_pair(self, kv_pair):
-        key, value = kv_pair
-        key = self._try_translate(key)
+        for k, v in self._translation_table:
+            assert type(v) in [list, tuple, str]
 
-        return key, value
+            if type(v) in [list, tuple]:
+                for vv in v:
+                    self._index[vv] = k
+            else:
+                self._index[v] = k
 
-    def _try_translate_index_map(self, **index_map):
-        translated_index_map = dict(map(self._try_translate_kv_pair,
-            index_map.items()))
+    def _translate(self, identifier):
+        if identifier in self._index.keys():
+            return self._index[identifier]
 
-        return translated_index_map
+        return identifier
 
     def data(self, variable, **index_map):
+        variable = self._translate[variable]
+        index_map = {self._translate(k): v for k, v in index_map.items()}
 
-        try:
-            return self._data_interface_implementor.data(variable, **index_map)
-        except NoDataError:
-            translated_index_map = self._try_translate_index_map(**index_map)
-            translated_variable = self._try_translate(variable)
-
-            return self._data_interface_implementor.data(
-                translated_variable,
-                **translated_index_map
-            )
+        return self._data_interface_implementor.data(variable, **index_map)
 
     def set_data(self, value, variable, **index_map):
-        try:
-            return self._data_interface_implementor.set_data(variable,
-                **index_map)
-        except ValueError:
-            translated_index_map = self._try_translate_index_map(index_map)
-            translated_variable = self._try_translate(variable)
+        variable = self._translate[variable]
+        index_map = {self._translate(k): v for k, v in index_map.items()}
 
-            return self._data_interface_implementor.set_data(value,
-                translated_variable, **translated_index_map)
+        return self._data_interface_implementor.set_data(value,
+            variable, **index_map)
 
 
 @dataclasses.dataclass
