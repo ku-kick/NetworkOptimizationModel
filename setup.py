@@ -20,8 +20,6 @@ setup(
         "numpy==1.23.2",
         "scipy",
         "simpy",
-        "pygal",
-        "CairoSVG",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
