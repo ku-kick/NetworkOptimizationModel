@@ -269,13 +269,13 @@ class ConcreteDataInterface:
 
     def data(self, variable_name, **index_map):
         plain_indices = self._schema.indices_dict_to_plain(variable_name,
-            **index_map)
+            **index_map)[1:]
 
         return self._data_provider.data(variable_name, *plain_indices)
 
     def set_data(self, value, variable_name, **index_map):
         plain_indices = self._schema.indices_dict_to_plain(variable_name,
-            **index_map)
+            **index_map)[1:]
 
         return self._data_provider.set_data(value, variable_name,
             *plain_indices)
