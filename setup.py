@@ -16,10 +16,9 @@ setup(
     author="Dmitry Murashov",
     setup_requires=["wheel"],
     install_requires=[
-        "pandas",
         "numpy==1.23.2",
-        "scipy",
-        "simpy",
+        "pandas==1.5.2",
+        "scipy==1.10.0",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
