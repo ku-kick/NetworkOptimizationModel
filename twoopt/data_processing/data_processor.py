@@ -18,13 +18,8 @@ class DataProcessor:
 
 class Solver(DataProcessor):
 
-    def __init__(self, data_interface, schema):
-        # TODO: does a solver really need a schema instance? Remove it
+    def __init__(self, data_interface):
         DataProcessor.__init__(self, data_interface)
-        self._schema = schema
-
-    def get_schema(self):
-        return self._schema
 
 
 class Simulation(DataProcessor):
