@@ -35,7 +35,7 @@ class DataProviderBase:
         for row in iterable_rows:
             assert len(row) >= 2
             value = row[-1]
-            composite_key = row[1:]
+            composite_key = row[0:]
             self.set_data(value, *composite_key)
 
 
