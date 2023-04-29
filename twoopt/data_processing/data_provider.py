@@ -94,7 +94,9 @@ class PermissiveCsvBufferedDataProvider(dict, DataProviderBase):
         """
         Adds a sequence of format (VAR, INDEX1, INDEX2, ..., VALUE) into the dictionary
         """
-        assert len(args) >= 2
+        if not (len(args) >= 2):
+            raise ValueError(f"Data format has been violated: (VAR, [INDICES, ] VALUE). Got: `{args}`")
+
         line_to_kv: object = lambda l: (tuple([l[0]] + list(map(int, l[1:-1]))), float(l[-1]))
         k, v = line_to_kv(args)
         self[k] = v
