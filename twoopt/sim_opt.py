@@ -4,8 +4,8 @@ the virtualized environments.
 """
 
 from dataclasses import dataclass
-import linsmat
-import ut
+import twoopt.linsmat as linsmat
+import twoopt.ut as ut
 import random
 import copy
 import config
