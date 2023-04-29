@@ -1144,3 +1144,5 @@ g 6 0 2 0.0
 g 6 1 0 28.0
 g 6 1 1 14.0
 g 6 1 2 5.0
+nodes 6
+structural_stability_intervals 2
