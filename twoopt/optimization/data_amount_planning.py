@@ -112,7 +112,7 @@ class LinsolvPlanner(twoopt.data_processing.data_processor.Solver):
     _NEQ_VAR_ORDER_RHS = ["psi", "v", "phi"]
 
     def __post_init__(self):
-        twoopt.data_processing.data_processor.Solver.__init__(self, self.data_interface, self.schema)
+        twoopt.data_processing.data_processor.Solver.__init__(self, self.data_interface)
         self.row_index = twoopt.data_processing.vector_index.RowIndex \
             .make_from_schema(self.schema, ["y", "x", "z", "g"])
         self.validate()
