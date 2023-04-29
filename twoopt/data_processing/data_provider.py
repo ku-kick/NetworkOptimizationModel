@@ -74,6 +74,11 @@ class PermissiveCsvBufferedDataProvider(dict, DataProviderBase):
     `int`, and VALUE has type `float`
     """
     csv_file_name: str
+    sync_on_object_destruction = True
+
+    def __del__(self):
+        if self.sync_on_object_destruction:
+            self.sync()
 
     def data(self, *composite_tuple_identifier):
         import twoopt.data_processing.data_interface
