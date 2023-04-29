@@ -210,9 +210,6 @@ class Schema:
         assert len(indices) > 0
         self.data["variableindices"][var] = list(indices)
 
-    def variables():
-        return self.data["indexbound"].keys()
-
     def get_var_indices(self, var):
         assert self.data is not None
         assert var in self.data["variableindices"]
