@@ -1,10 +1,10 @@
 from dataclasses import dataclass, field
 from math import log
 
-import linsmat
-import ut
+import twoopt.linsmat as linsmat
+import twoopt.ut as ut
 import random
-import generic
+import twoopt.generic as generic
 import math
 import functools
 
