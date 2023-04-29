@@ -5,7 +5,7 @@ import twoopt.legacy_simulation
 import twoopt.linsmat
 import twoopt.optimization.data_amount_planning
 
-from twoopt.optimization.data_amount_planning import _DataInterfaceLegacyAdapter
+from twoopt.optimization.data_amount_planning import _DataInterfaceLegacyAdapter, _make_data_interface_schema_helper
 
 
 class _LegacyEnv(twoopt.linsmat.Env):
@@ -27,10 +27,12 @@ class NetworkDataFlow(
         twoopt.legacy_simulation.Simulation,
         twoopt.data_processing.data_processor.Simulation):
 
-    def __init__(self, data_interface_implementor, schema):
+    def __init__(self, data_provider):
+        data_interface_implementor, schema = _make_data_interface_schema_helper(
+            data_provider)
         legacy_env = _LegacyEnv(
             data_interface_implementor=data_interface_implementor,
             schema=schema)
         twoopt.data_processing.data_processor.Simulation.__init__(self,
             data_interface=data_interface_implementor)
-        twoopt.legacy_simulation.Simulation.__init__(env=legacy_env)
+        twoopt.legacy_simulation.Simulation.__init__(self, env=legacy_env)
