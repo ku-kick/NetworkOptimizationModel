@@ -325,7 +325,9 @@ class _DefaultingDataInterface(
     def __init__(self, data_interface_implementor):
         twoopt.data_processing.data_interface.DefaultingDataInterface.__init__(
             self,
-            _data_interface_implementor=data_interface_implementor)
+            _data_interface_implementor=data_interface_implementor,
+            _prohibited_default_variables={"alpha_0", "alpha_1", "nodes",
+                "structural_stability_intervals", "tl", "dt"})
 
 
 def _make_data_interface_schema_helper(data_provider):
