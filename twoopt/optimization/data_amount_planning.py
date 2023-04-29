@@ -237,16 +237,14 @@ class _Schema(twoopt.data_processing.vector_index.Schema):
             self,
             data_interface: twoopt.data_processing.data_interface \
                 .DataInterfaceBase):
-        for human_readable_identifier, internal_identifier in zip(
-                [
-                    "nodes",
-                    "nodes",
-                    "virtualized_environments",
-                    "structural_stability_intervals"
-                ],
-                ["j", "i", "rho", "l"]):
-            bound = data_interface.data(human_readable_identifier)
-            self.set_index_bound(internal_identifier, bound)
+        j_bound = data_interface.data("nodes")
+        self.set_index_bound("j", j_bound)
+        i_bound = data_interface.data("nodes")
+        self.set_index_bound("i", i_bound)
+        l_bound = data_interface.data("structural_stability_intervals")
+        self.set_index_bound("l", l_bound)
+        rho_bound = data_interface.data("virtualized_environments")
+        self.set_index_bound("rho", rho_bound)
 
 
 class _InferencingDataInferface(
