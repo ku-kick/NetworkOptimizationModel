@@ -9,8 +9,12 @@ log = twoopt.utility.logging.Log(file=__file__)
 
 class NoDataError(Exception):
 
-    def __init__(self, variable, **index_map) -> None:
-        Exception.__init__(self, f"Can not retrieve {variable} where {index_map}")
+    def __init__(self, variable=None, **index_map) -> None:
+        message = index_map.pop("message", None)
+        if message:
+            Exception.__init__(self, message)
+        else:
+            Exception.__init__(self, f"Can not retrieve {variable}{index_map}.")
 
 
 class DataInterfaceBase:
@@ -122,9 +126,7 @@ class DefaultingDataInterface(DataInterfaceBase):
         # respective lists (sets)
         if len(self._allowed_default_variables) != 0 \
                 and len(self._prohibited_default_variables) != 0:
-            raise Exception("Conflicting filters. Either \
-                `_allowed_default_variables` or `_prohibited_default_variables` \
-                may have none-zero length")
+            raise Exception("Conflicting filters. Either `_allowed_default_variables` or `_prohibited_default_variables` may have none-zero length")
 
     def data(self, variable, **index_map):
         try:
@@ -133,13 +135,10 @@ class DefaultingDataInterface(DataInterfaceBase):
             # Check whether the variable is allowed to be overridden
             if len(self._allowed_default_variables) != 0 and variable \
                     not in self._allowed_default_variables:
-                raise NoDataError(f"DefaultingDataInterface: missing variable \
-                    {variable} cannot be defaulted, as it is not in the list of overridable variables")
+                raise NoDataError(message=f"DefaultingDataInterface: missing variable `{variable}` cannot be defaulted, as it is not in the list of overridable variables")
             elif len(self._prohibited_default_variables) != 0\
                     and variable in self._prohibited_default_variables:
-                raise NoDataError(f"DefaultingDataInterface: missing variable \
-                    {variable} cannot be defaulted, as it is in the list of \
-                    non-overridable variables")
+                raise NoDataError(message=f"DefaultingDataInterface: missing variable `{variable}` cannot be defaulted, as it is in the list of non-overridable variables")
 
             # Infer the variable's override value
             if variable in self._default_value_override.keys():
