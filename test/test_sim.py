@@ -11,7 +11,6 @@ from sim import sim
 import os
 import pathlib
 import math
-import pygal
 import legacy_simulation as sml
 import ut
 
