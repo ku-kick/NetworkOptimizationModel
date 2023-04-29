@@ -103,18 +103,46 @@ class DefaultingDataInterface(DataInterfaceBase):
     Overrides `self._common_default_value`.
     """
 
-    _nodefault_variables: set = dataclasses.field(default_factory=set)
+    _prohibited_default_variables: set = dataclasses.field(default_factory=set)
     """
-    Cancels `self._common_default_value` for specific variables
+    Cancels `self._common_default_value` for specific variables. If not empty,
+    all variables will be considered defaultable except those specified in this
+    set. Cannot be used if `_allowed_default_variables` is not empty.
     """
+
+    _allowed_default_variables: set = dataclasses.field(default_factory=set)
+    """
+    If not empty, only this set of variables will be considered overridable.
+    Cannot be used while `_prohibited_default_variables` is not empty.
+    """
+
+    def __post_init__(self):
+        # Sanity check: either all variables are subject to override by
+        # default, or none of those are, with the expeptions specified in the
+        # respective lists (sets)
+        if len(self._allowed_default_variables) != 0 \
+                and len(self._prohibited_default_variables) != 0:
+            raise Exception("Conflicting filters. Either \
+                `_allowed_default_variables` or `_prohibited_default_variables` \
+                may have none-zero length")
 
     def data(self, variable, **index_map):
         try:
             return self._data_interface_implementor.data(variable, **index_map)
         except NoDataError as k:
-            if variable in self._nodefault_variables:
-                raise k
-            elif variable in self._default_value_override.keys():
+            # Check whether the variable is allowed to be overridden
+            if len(self._allowed_default_variables) != 0 and variable \
+                    not in self._allowed_default_variables:
+                raise NoDataError(f"DefaultingDataInterface: missing variable \
+                    {variable} cannot be defaulted, as it is not in the list of overridable variables")
+            elif len(self._prohibited_default_variables) != 0\
+                    and variable in self._prohibited_default_variables:
+                raise NoDataError(f"DefaultingDataInterface: missing variable \
+                    {variable} cannot be defaulted, as it is in the list of \
+                    non-overridable variables")
+
+            # Infer the variable's override value
+            if variable in self._default_value_override.keys():
                 return self._default_value_override[variable]
             else:
                 return self._common_default_value
