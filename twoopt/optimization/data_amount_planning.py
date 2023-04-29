@@ -330,6 +330,18 @@ class _DefaultingDataInterface(
                 "structural_stability_intervals", "tl", "dt"})
 
 
+def make_constrained_data_interface_constructor(schema):
+    """
+    Creates format-checking interface constructor using a schema.
+    See also `make_data_interface_wrap_chain(...)`
+    """
+    def constructor(wrapped_data_interface):
+        return twoopt.data_processing.data_interface.ConstrainedDataInterface(
+            wrapped_data_interface, schema)
+
+    return constructor
+
+
 def _make_data_interface_schema_helper(data_provider):
     """
     Schema depends on data interface, because it needs to initialize its index
@@ -343,61 +355,13 @@ def _make_data_interface_schema_helper(data_provider):
     output_data_interface = twoopt.data_processing.data_interface\
         .make_data_interface_wrap_chain(
             concrete_data_interface,
+            make_constrained_data_interface_constructor(schema),
             _InferencingDataInferface,
             _DefaultingDataInterface
         )
     schema.init_index_bounds(output_data_interface)
 
     return output_data_interface, schema
-
-
-class _ConstrainedDataInterface(
-        twoopt.data_processing.data_interface.ConstrainedDataInterface):
-    def __init__(self, data_interface: \
-                 twoopt.data_processing.data_interface.DataInterfaceBase):
-        data_format = {
-            # Max. available data to transfer
-            "max_transferred_per_virtualized_environment": [
-                "source_node"
-                "destination_node"
-                "virtualized_environment",
-                "structural_stability_interval",
-            ],
-            "max_stored_per_virtualized_environment": [
-                "node",
-                "virtualized_environment",
-                "structural_stability_interval",
-            ],
-            "input": [
-                "node",
-                "virtualized_environment"
-                "structural_stability_interval",
-            ]
-        }
-        data_format["max_processed"] = [
-            "node",
-            "structural_stability_interval"
-        ]
-        data_format["max_stored"] = ["node", "structural_stability_interval"]
-        data_format["max_stored"] = [
-            "source_node",
-            "destination_node",
-            "structural_stability_interval"
-        ]
-        data_format["transferred"] \
-            = data_format["max_transferred"]  # Amount of data transferred
-        data_format["max_processed_per_virtualized_environment"] \
-            = data_format["max_stored"]
-        data_format["processed"] = data_format["max_stored"]
-        data_format["stored"] = data_format["max_stored"]
-        data_format["dropped"] = data_format["max_stored"]
-        data_format["minimize_drop_importance"] = []  # alpha_1, alpha_z, or alpha_2, depending on whether it is counted from 0
-        data_format["maximize_processing_importance"] = []  # alpha_0, alpha_g, or alpha_1, depending on whether it is counted from 0
-        data_format["nodes"] = []  # Number of nodes
-        data_format["virtualized_environments"] = []  # Number of virtualized environments
-        data_format["structural_stability_intervals"] = []  # Number of virtualized environments
-        twoopt.data_processing.data_interface.ConstrainedDataInterface(
-            data_interface, data_format)
 
 
 class ProcessedDataAmountMaximizationSolver(
