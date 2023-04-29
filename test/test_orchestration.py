@@ -4,7 +4,6 @@ import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / 'twoopt'))
 import config
-config.cfg_set_test()
 from twoopt import cli, linsmat, ut, linsolv_planner
 import functools
 import os
@@ -16,9 +15,9 @@ import sim_opt
 import legacy_simulation as simulation
 import copy
 import orchestration
-import config
 
 
+config.cfg_set_test()
 log = ut.Log(file=__file__, level=ut.Log.LEVEL_VERBOSE)
 
 
