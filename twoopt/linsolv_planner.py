@@ -4,12 +4,12 @@ module will extend with other versions of linear programming solvers.
 """
 
 import math
-import linsmat
+import twoopt.linsmat as linsmat
 from dataclasses import dataclass
 import numpy as np
-import ut
-from generic import Log
+import twoopt.ut as ut
+from twoopt.generic import Log
 import scipy
-from optimization.data_amount_planning import LinsolvPlanner
+from twoopt.optimization.data_amount_planning import LinsolvPlanner
 
 log = ut.Log(file=__file__, level=ut.Log.LEVEL_INFO)
