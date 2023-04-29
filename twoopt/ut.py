@@ -3,12 +3,12 @@ import datetime
 from dateutil import parser as date_parser
 import os
 from dataclasses import dataclass, field
-from generic import Log
+from twoopt.generic import Log
 import pathlib
 import os
 import inspect
 import math
-import utility.logging
+import twoopt.utility.logging as logging
 
 
 def iter_plain(root):
@@ -198,7 +198,7 @@ class Trace:
 		# Log.debug(__file__, self.add_point, "bounds", self.vert_bound, self.hor_bound)
 
 
-Log = utility.logging.Log
+Log = logging.Log
 
 
 def module_file_get_abspath(module_file, other_file):
