@@ -192,7 +192,7 @@ class Schema:
 
     def set_index_bound(self, index, bound):
         assert self.data is not None
-        self.data["indexbound"][index] = bound
+        self.data["indexbound"][index] = int(bound)
 
     def get_index_bound(self, index):
         assert self.data is not None
