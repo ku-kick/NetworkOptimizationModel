@@ -2,6 +2,7 @@ import csv
 import dataclasses
 import io
 import os
+import re
 
 
 class DataProviderBase:
