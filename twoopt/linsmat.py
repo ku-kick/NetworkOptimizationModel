@@ -8,16 +8,16 @@ decouple data formatting from domain specificities as much as possible.
 
 from dataclasses import dataclass
 import functools
-import ut
+import twoopt.ut as ut
 import json
 import re
 import io
 import os
 import csv
 import pathlib
-from generic import Log
+from twoopt.generic import Log
 import copy
-from data_processing.vector_index import Schema, RowIndex
+from twoopt.data_processing.vector_index import Schema, RowIndex
 
 log = ut.Log(file=__file__, level=ut.Log.LEVEL_VERBOSE)
 
