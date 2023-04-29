@@ -3,6 +3,10 @@ import dataclasses
 import io
 import os
 import re
+import twoopt.utility.logging
+
+
+log = twoopt.utility.logging.Log(file=__file__)
 
 
 class DataProviderBase:
@@ -78,6 +82,7 @@ class PermissiveCsvBufferedDataProvider(dict, DataProviderBase):
 
     def __del__(self):
         if self.sync_on_object_destruction:
+            log.info(PermissiveCsvBufferedDataProvider, "Dumping changes into CSV")
             self.sync()
 
     def data(self, *composite_tuple_identifier):
