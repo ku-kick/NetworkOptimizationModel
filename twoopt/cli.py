@@ -7,7 +7,6 @@ from dataclasses import dataclass, field
 import ut
 import random
 from generic import Log
-import pygal
 import sim
 from sim import sim
 import os
@@ -241,7 +240,7 @@ class Format:
 
 				for k, series in self.trace:
 					title = '_'.join(list(map(str, k)))
-					chart = pygal.XY(stroke=True, title=title)
+                    #chart = pygal.XY(stroke=True, title=title)
 
 					for s in series:
 						chart.add(title=s.title, values=s.as_line_x1y1())
