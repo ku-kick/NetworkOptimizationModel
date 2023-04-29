@@ -10,13 +10,13 @@ This module contains entities that fullfill 2 purposes.
 optimizers, and checking for stop conditions.
 """
 
-import sim_opt
-import linsmat
-import linsolv_planner
+import twoopt.sim_opt as sim_opt
+import twoopt.linsmat as linsmat
+import twoopt.linsolv_planner as linsolv_planner
 from dataclasses import dataclass
-import legacy_simulation as simulation
+import twoopt.legacy_simulation as simulation
 import config
-import ut
+import twoopt.ut as ut
 
 
 log = ut.Log(file=__file__, level=ut.Log.LEVEL_DEBUG)
