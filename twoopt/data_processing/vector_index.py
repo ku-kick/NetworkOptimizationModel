@@ -158,7 +158,7 @@ class Schema:
             self.data["indexbound"] = dict()
 
         for k, v in index_to_bounds.items():
-            self.data["indexbound"][k] = v
+            self.data["indexbound"][k] = int(v)
 
     def set_variable_indices(self, **variable_to_ordered_index_list):
         if "variableindices" not in self.data.keys():
@@ -209,6 +209,9 @@ class Schema:
         assert self.data is not None
         assert len(indices) > 0
         self.data["variableindices"][var] = list(indices)
+
+    def variables():
+        return self.data["indexbound"].keys()
 
     def get_var_indices(self, var):
         assert self.data is not None
