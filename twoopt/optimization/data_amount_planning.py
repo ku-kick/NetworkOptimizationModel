@@ -325,7 +325,8 @@ class _DefaultingDataInterface(
             self,
             _data_interface_implementor=data_interface_implementor,
             _prohibited_default_variables={"alpha_0", "alpha_1", "nodes",
-                "structural_stability_intervals", "tl", "dt"})
+                "structural_stability_intervals", "tl", "dt",
+                "virtualized_environments"})
 
 
 def make_constrained_data_interface_constructor(schema):
