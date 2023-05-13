@@ -41,11 +41,11 @@ class GaNetworkOptimizationSolver(
             simulation_constructor=self._simulation_constructor_legacy,
             virt_helper=virt_helper)
 
-    def run(self):
-        from twoopt.data_processing.legacy_etl import \
-            data_interface_initialize_from_legacy_data_interface
+        self._data_provider = data_provider
 
+    def run(self):
         legacy_data_interface = twoopt.sim_opt.GaSimVirtOpt.run(self)
-        data_interface_initialize_from_legacy_data_interface(
-            data_interface=self.get_data_interface(),
-            legacy_data_interface=legacy_data_interface)
+
+        # Dump the results into the storage
+        self._data_provider.set_data_from_data_provider(
+            legacy_data_interface.data_provider())
