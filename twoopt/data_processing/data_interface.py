@@ -265,6 +265,9 @@ class ConcreteDataInterface:
     Describes data format used by "_data_provider"
     """
 
+    def data_provider(self):
+        return self._data_provider
+
     def data(self, variable_name, **index_map):
         plain_indices = self._schema.indices_dict_to_plain(variable_name,
             **index_map)[1:]
