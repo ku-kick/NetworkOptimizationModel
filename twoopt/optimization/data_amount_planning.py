@@ -76,9 +76,12 @@ class _DataInterfaceLegacyAdapter(twoopt.data_processing.data_interface.Concrete
             self,
             data_interface_implementor:
                 twoopt.data_processing.data_interface.DataInterfaceBase,
-            schema: twoopt.data_processing.vector_index.Schema):
+            schema: twoopt.data_processing.vector_index.Schema,
+            data_provider: twoopt.data_processing.data_provider.DataProviderBase):
         self._data_interface = data_interface_implementor
         self._schema = schema
+        twoopt.data_processing.data_interface.ConcreteDataInterface.__init__(
+            self, data_provider, schema)
 
     def get(self, variable, **indices):
         return self._data_interface.data(variable, **indices)
@@ -91,6 +94,23 @@ class _DataInterfaceLegacyAdapter(twoopt.data_processing.data_interface.Concrete
         index_map = index_map[1]  # index_map has `(VARIABLE, {INDICES: INDICES})` structure
 
         return self._data_interface.data(variable, **index_map)
+
+    def clone_as_dict_ram(self, *args, **kwargs):
+        # Perform the actual cloning
+        ram_data_provider = \
+            twoopt.data_processing.data_provider.RamDataProvider()
+        ram_data_provider.set_data_from_data_provider(self.data_provider())
+
+        # Construct the new legacy adapter
+        data_interface, schema = make_data_interface_schema_helper(
+            ram_data_provider)
+        data_interface_legacy_adapter = _DataInterfaceLegacyAdapter(
+            data_interface_implementor=data_interface,
+            schema=schema,
+            data_provider=ram_data_provider
+        )
+
+        return data_interface_legacy_adapter
 
 
 @dataclasses.dataclass
@@ -415,7 +435,7 @@ class ProcessedDataAmountMaximizationSolver(
             data_interface=self._data_interface
         )
         self._legacy_data_interface = _DataInterfaceLegacyAdapter(
-            self._data_interface, self._schema)
+            self._data_interface, self._schema, data_provider)
         self._legacy_solver = LinsolvPlanner(
             self._legacy_data_interface,
             self._schema)
