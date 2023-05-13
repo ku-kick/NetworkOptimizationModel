@@ -54,8 +54,7 @@ class DataProviderBase:
             composite_key = row[0:-1]
             self.set_data(value, *composite_key)
 
-    def set_data_from_data_provider(self,
-            other: twoopt.data_processing.data_provider.DataProviderBase):
+    def set_data_from_data_provider(self, other):
         for data in other.into_iter():
             composite_tuple_identifier = data[:-1]
             value = data[-1]
