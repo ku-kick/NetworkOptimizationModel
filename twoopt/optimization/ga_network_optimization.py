@@ -25,6 +25,7 @@ class GaNetworkOptimizationSolver(
         from twoopt.optimization.data_amount_planning import \
             make_data_interface_schema_helper
         from twoopt.simulation.network_data_flow import NetworkDataFlow
+        from twoopt.data_processing.data_interface import GetattrDataInterface
 
         # Initialize `SimulationBasedSolver`
         data_interface, _ = make_data_interface_schema_helper(
@@ -39,7 +40,8 @@ class GaNetworkOptimizationSolver(
         twoopt.sim_opt.GaSimVirtOpt.__init__(
             self,
             simulation_constructor=self._simulation_constructor_legacy,
-            virt_helper=virt_helper)
+            virt_helper=virt_helper,
+            config=GetattrDataInterface(data_interface))
 
         self._data_provider = data_provider
 
