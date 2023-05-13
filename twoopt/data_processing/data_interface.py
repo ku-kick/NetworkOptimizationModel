@@ -1,3 +1,10 @@
+"""
+
+`DataInterface` instances perform high-level data operations, such as data
+validation, boundary checks, etc.
+
+"""
+
 import dataclasses
 import twoopt.data_processing.data_provider
 import twoopt.data_processing.vector_index
