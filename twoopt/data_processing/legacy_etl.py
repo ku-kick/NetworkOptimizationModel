@@ -6,8 +6,6 @@ representation-related entities.
 
 """
 
-import twoopt.optimization.data_amount_planning
-
 
 def data_amount_planning_make_legacy_env(data_provider):
     from twoopt.simulation.network_data_flow import _LegacyEnv
@@ -43,3 +41,21 @@ def data_amount_planning_make_simulation_constructor(data_provider):
         return NetworkDataFlow(data_provider=data_provider)
 
     return simulation_constructor
+
+
+class StaticVariablesConfigWrapper:
+    """
+
+    At the time, storing configs in a set of global variables, and changing
+    those variables before starting an optimization seemed like a good
+    idea... Don't do that. It's bad.
+
+    """
+
+    def __getattr__(self, item):
+        try:
+            from config import cfg
+        except:
+            from twoopt.config import cfg
+
+        return getattr(cfg, item)
