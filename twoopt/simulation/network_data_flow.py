@@ -13,12 +13,14 @@ class _LegacyEnv(twoopt.linsmat.Env):
             self,
             data_interface_implementor: \
                 twoopt.data_processing.data_interface.DataInterfaceBase,
-            schema: twoopt.data_processing.vector_index.Schema):
+            schema: twoopt.data_processing.vector_index.Schema,
+            data_provider):
         row_index = twoopt.data_processing.vector_index.RowIndex\
             .make_from_schema(schema=schema, variables=list())
         data_interface_legacy_adapter = _DataInterfaceLegacyAdapter(
             data_interface_implementor=data_interface_implementor,
-            schema=schema)
+            schema=schema,
+            data_provider=data_provider)
         twoopt.linsmat.Env.__init__(self, row_index=row_index, schema=schema,
             data_interface=data_interface_legacy_adapter)
 
@@ -32,7 +34,8 @@ class NetworkDataFlow(
             data_provider)
         legacy_env = _LegacyEnv(
             data_interface_implementor=data_interface_implementor,
-            schema=schema)
+            schema=schema,
+            data_provider=data_provider)
         twoopt.data_processing.data_processor.Simulation.__init__(self,
             data_interface=data_interface_implementor)
         twoopt.legacy_simulation.Simulation.__init__(self, env=legacy_env)
