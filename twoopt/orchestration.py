@@ -13,10 +13,10 @@ optimizers, and checking for stop conditions.
 import twoopt.sim_opt as sim_opt
 import twoopt.linsmat as linsmat
 import twoopt.linsolv_planner as linsolv_planner
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import twoopt.legacy_simulation as simulation
-import config
 import twoopt.ut as ut
+import twoopt.data_processing.legacy_etl
 
 
 log = ut.Log(file=__file__, level=ut.Log.LEVEL_DEBUG)
@@ -31,6 +31,9 @@ class VirtOpt:
 	"""
 	schema_path: str  # Path to .json schema file
 	storage_path: str  # Path to .csv storage file
+	config: object = field(
+		default_factory=twoopt.data_processing.legacy_etl\
+		.StaticVariablesConfigWrapper)
 
 	def __post_init__(self):
 		# Construct ETL entities
@@ -48,7 +51,7 @@ class VirtOpt:
 		ga_sim_virt_opt = sim_opt.GaSimVirtOpt(simulation_constructor=simulation.Simulation.from_dis,
 		                                       virt_helper=virt_helper)
 
-		for _ in range(config.cfg.OPT_VIRT_ORCHESTRATION_N_ITERATIONS):
+		for _ in range(self.config.OPT_VIRT_ORCHESTRATION_N_ITERATIONS):
 			ls_planner.solve()
 			best_performer_config = ga_sim_virt_opt.run()
 			self.ram_data_interface.update(best_performer_config)  # TODO XXX Make sure that the `ls_planner`'s instance gets updated as well
