@@ -41,7 +41,7 @@ class DataInterfaceBase:
         """
         raise NoDataError(f"Can not retrieve {variable} where {index_map}")
 
-    def set_data(self, value, varaible, **index_map):
+    def set_data(self, value, variable, **index_map):
         raise NotImplemented
 
 
@@ -58,7 +58,7 @@ class WrappingDataInterface(DataInterfaceBase):
 
 
 @dataclasses.dataclass
-class GetattrDataInterface(DataInterfaceBase):
+class GetattrDataInterface(WrappingDataInterface):
     """
     Tries to invoke named getter methods.
 
@@ -68,25 +68,11 @@ class GetattrDataInterface(DataInterfaceBase):
 
     _data_interface_implementor: DataInterfaceBase
 
-    def data(self, variable, **index_map):
-        try:
-            return getattr(self._data_interface_implementor, variable)(
-                **index_map)
-        except AttributeError as e:  # Cannot find member
-            return self._data_interface_implementor.data(variable, **index_map)
-        except TypeError as e:  # Not callable, or wrong argument list
-            return self._data_interface_implementor.data(variable, **index_map)
+    def __getattr__(self, item):
+        return self.data(item)
 
-    def set_data(self, value, variable, **index_map):
-        try:
-            return getattr(self._data_interface_implementor,
-                           "set_" + variable)(value, **index_map)
-        except AttributeError as e:  # Cannot find member
-            return self._data_interface_implementor.set_data(value,
-                variable, **index_map)
-        except TypeError as e:  # Not callable, or wrong argument list
-            return self._data_interface_implementor.set_data(value,
-                variable, **index_map)
+    def __setattr__(self, key, value):
+        return self.set_data(value=value, variable=key)
 
 
 @dataclasses.dataclass
