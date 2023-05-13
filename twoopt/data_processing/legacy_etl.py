@@ -43,14 +43,3 @@ def data_amount_planning_make_simulation_constructor(data_provider):
         return NetworkDataFlow(data_provider=data_provider)
 
     return simulation_constructor
-
-
-def data_interface_initialize_from_legacy_data_interface(data_interface,
-        legacy_data_interface):
-    # TODO
-    pass
-
-
-def make_data_interface_from_legacy_data_interface(legacy_data_interface):
-    # TODO
-    pass
