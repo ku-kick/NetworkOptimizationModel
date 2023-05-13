@@ -4,11 +4,17 @@ the virtualized environments.
 """
 
 from dataclasses import dataclass
+import copy
+import random
+
+# Legacy-compatible import
+try:
+	import config
+except:
+	import twoopt.config as config
+
 import twoopt.linsmat as linsmat
 import twoopt.ut as ut
-import random
-import copy
-import config
 
 log = ut.Log(file=__file__, level=ut.Log.LEVEL_DEBUG)
 
