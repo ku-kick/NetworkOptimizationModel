@@ -15,7 +15,7 @@ def data_amount_planning_make_legacy_env(data_provider):
         make_data_interface_schema_helper
 
     data_interface, schema = make_data_interface_schema_helper(data_provider)
-    legacy_env = _LegacyEnv(data_interface, schema)
+    legacy_env = _LegacyEnv(data_interface, schema, data_provider)
 
     return legacy_env
 
