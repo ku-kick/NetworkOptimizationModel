@@ -31,6 +31,17 @@ class DataProviderBase:
         pass
 
     def into_iter(self):
+        """
+        Iterates over stored values employing the following format:
+
+        ```
+        [
+            (VARIABLE_NAME, COMPLEX_IDENTIFIER_PART_1, ..., COMPLEX_IDENTIFIER_PART_N, VALUE),
+            (VARIABLE_NAME, COMPLEX_IDENTIFIER_PART_1, ..., COMPLEX_IDENTIFIER_PART_N, VALUE),
+            ...
+        ]
+        ```
+        """
         pass
 
     def set_data_from_rows(self, iterable_rows):
@@ -42,6 +53,13 @@ class DataProviderBase:
             value = row[-1]
             composite_key = row[0:-1]
             self.set_data(value, *composite_key)
+
+    def set_data_from_data_provider(self,
+            other: twoopt.data_processing.data_provider.DataProviderBase):
+        for data in other.into_iter():
+            composite_tuple_identifier = data[:-1]
+            value = data[-1]
+            self.set_data(value, *composite_tuple_identifier)
 
 
 class RamDataProvider(dict, DataProviderBase):
