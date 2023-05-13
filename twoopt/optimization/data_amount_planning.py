@@ -363,6 +363,19 @@ def _make_data_interface_schema_helper(data_provider):
     return output_data_interface, schema
 
 
+make_data_interface_schema_helper = _make_data_interface_schema_helper
+"""
+Makes `_make_data_interface_schema_helper(...)` public.
+
+Helps constructing `DataInterface` and `Schema` instances. Think of it as 
+data model, or legacy `Env` (linsmat.py). It is used by entities that rely on 
+the same underlying model. The reason this function is not extracted into a 
+separate module is that it is probably an ad-hoc, and would cause unnecessary 
+file clutter. 
+
+"""
+
+
 class ProcessedDataAmountMaximizationSolver(
         twoopt.data_processing.data_processor.Solver):
     """
