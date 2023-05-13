@@ -17,6 +17,7 @@ class GaNetworkOptimizationTest(unittest.TestCase):
             .ga_network_optimization.GaNetworkOptimizationSolver(
             data_provider=data_provider)
         ga_network_optimization_solver.run()
+        data_provider.sync()
 
 
 if __name__ == "__main__":
