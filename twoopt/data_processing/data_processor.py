@@ -29,3 +29,12 @@ class Simulation(DataProcessor):
 
     def run(self):
         raise NotImplemented()
+
+
+class SimulationBasedSolver(Solver):
+    def __init__(self, data_interface, simulation: Simulation):
+        Solver.__init__(self, data_interface)
+        self._simulation = simulation
+
+    def simulation(self):
+        return self._simulation
