@@ -5,14 +5,9 @@ the virtualized environments.
 
 from dataclasses import dataclass
 import copy
+import dataclasses
 import random
-
-# Legacy-compatible import
-try:
-	import config
-except:
-	import twoopt.config as config
-
+import twoopt.data_processing.legacy_etl
 import twoopt.linsmat as linsmat
 import twoopt.ut as ut
 
@@ -127,6 +122,9 @@ class GaSimVirtOpt:
 
 	simulation_constructor: object  # Callable `fn(data_interface, schema) -> Simulation`
 	virt_helper: linsmat.VirtHelper  # Helper object for interfacing w/ data
+	config: object = dataclasses.field(
+		default_factory=twoopt.data_processing.legacy_etl\
+		.StaticVariablesConfigWrapper)
 
 	def __post_init__(self):
 		self._population = list()
@@ -136,7 +134,7 @@ class GaSimVirtOpt:
 		Crosses individuals through random swapping
 		"""
 		assert(len(ind_a) == len(ind_b))
-		n_ids = int(len(ind_a) * config.cfg.OPT_VIRT_GA_SWAP_PERC_GENES)
+		n_ids = int(len(ind_a) * self.config.OPT_VIRT_GA_SWAP_PERC_GENES)
 		ids = random.sample(range(len(ind_a)), n_ids)
 
 		for i in ids:
@@ -191,7 +189,7 @@ class GaSimVirtOpt:
 		Selects int(OPT_VIRT_GA_POPULATION_SIZE * fraction) species from the population to
 		perform
 		"""
-		fraction = config.cfg.OPT_VIRT_GA_SWAP_PERC_POPULATION
+		fraction = self.config.OPT_VIRT_GA_SWAP_PERC_POPULATION
 		# Infer the number of crossed species, and
 		n = int(len(self.population()) * fraction)
 		n = n - (n % 2)
@@ -233,15 +231,15 @@ class GaSimVirtOpt:
 		"""
 		Runs `n_iterations` iterations, ranges the candidates, and returns the best one
 		"""
-		assert config.cfg.OPT_VIRT_GA_N_ITERATIONS > 1
-		assert config.cfg.OPT_VIRT_GA_POPULATION_SIZE > 1
-		self._population_generate_append(config.cfg.OPT_VIRT_GA_POPULATION_SIZE)
+		assert self.config.OPT_VIRT_GA_N_ITERATIONS > 1
+		assert self.config.OPT_VIRT_GA_POPULATION_SIZE > 1
+		self._population_generate_append(self.config.OPT_VIRT_GA_POPULATION_SIZE)
 
-		for _ in range(config.cfg.OPT_VIRT_GA_N_ITERATIONS):
+		for _ in range(self.config.OPT_VIRT_GA_N_ITERATIONS):
 			self._population_cross_fraction_random()
 			self._population_update_sim()
 			self.population_range()
-			n_worst = self._population_fraction_to_int(config.cfg.OPT_VIRT_GA_REMOVE_PERC_POPULATION)
+			n_worst = self._population_fraction_to_int(self.config.OPT_VIRT_GA_REMOVE_PERC_POPULATION)
 			self._population_remove_n_first(n_worst)  # The population has already been sorted according to the quality measure
 			self._population_generate_append(n_worst)  # Replace the removed members of the population
 
