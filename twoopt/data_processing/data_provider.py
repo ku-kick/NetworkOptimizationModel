@@ -1,3 +1,16 @@
+"""
+
+`DataProvider` is a low-level memory access API which encapsulates working with
+files, databases, or RAM under an interface.
+
+`DataProvider` is similar to `DataInterface` (see "data_interface.py") in a
+sense that both are used for data accessing. However, `DataInterface` does
+not know anything about the underlying storage mechanism, while
+`DataProvider` is complete unaware about business logic, as it only deals
+with plain `(K, V)` rows.
+
+"""
+
 import csv
 import dataclasses
 import io
