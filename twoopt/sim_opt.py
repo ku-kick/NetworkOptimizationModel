@@ -174,7 +174,7 @@ class GaSimVirtOpt:
 		Generates species, normalizes their weights, and appends those to the
 		gene pool.
 		"""
-		population_new = list(map(lambda i: GaGeneVirt.new_from_virt_helper(self.virt_helper), range(n)))
+		population_new = list(map(lambda i: GaGeneVirt.new_from_virt_helper(self.virt_helper), range(int(n))))
 
 		for indiv in population_new:
 			for i in range(len(indiv)):
@@ -235,7 +235,7 @@ class GaSimVirtOpt:
 		assert self.config.OPT_VIRT_GA_POPULATION_SIZE > 1
 		self._population_generate_append(self.config.OPT_VIRT_GA_POPULATION_SIZE)
 
-		for _ in range(self.config.OPT_VIRT_GA_N_ITERATIONS):
+		for _ in range(int(self.config.OPT_VIRT_GA_N_ITERATIONS)):
 			self._population_cross_fraction_random()
 			self._population_update_sim()
 			self.population_range()
