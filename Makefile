@@ -1,9 +1,16 @@
+PYTHON = python3
 
 clean:
 	git checkout -- *csv
 	rm -rf out
 
-test:
-	. ./venv/bin/activate && echo test/*py | xargs -n 1 python3
+venv:
+	$(PYTHON) -m venv ./venv
+
+test: venv
+	. ./venv/bin/activate \
+		&& find ./test -type f -name '*.py' \
+		| grep 'test' \
+		| xargs -n 1 $(PYTHON)
 
 .PHONY: test
