@@ -235,14 +235,16 @@ class ConstrainedDataInterface(WrappingDataInterface):
 
     def set_data(self, value, variable_name, **index_map):
         if not self._data_request_is_valid(variable_name, **index_map):
-            raise ValueError(self._format_error_message)
+            log.warning(ConstrainedDataInterface.set_data,
+                self._format_error_message)
 
         return self._data_interface_implementor.set_data(value, variable_name,
                                                          **index_map)
 
     def data(self, variable_name, **index_map):
         if not self._data_request_is_valid(variable_name, **index_map):
-            raise ValueError(self._format_error_message)
+            log.warning(ConstrainedDataInterface.set_data,
+                self._format_error_message)
 
         return self._data_interface_implementor.data(variable_name, **index_map)
 
