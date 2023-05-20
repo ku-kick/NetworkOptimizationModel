@@ -1,6 +1,6 @@
 
 clean:
-	- find ./test -name "*.csv" -type f | xargs rm
+	git checkout -- *csv
 	rm -rf out
 
 test:
