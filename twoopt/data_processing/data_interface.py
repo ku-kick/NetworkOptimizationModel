@@ -48,6 +48,7 @@ class DataInterfaceBase:
 class WrappingDataInterface(DataInterfaceBase):
 
     def __init__(self, data_interface_implementor):
+        DataInterfaceBase.__init__(self)
         self._data_interface_implementor = data_interface_implementor
 
     def data(self, *args, **kwargs):
@@ -57,7 +58,6 @@ class WrappingDataInterface(DataInterfaceBase):
         return self._data_interface_implementor.set_data(*args, **kwargs)
 
 
-@dataclasses.dataclass
 class GetattrDataInterface(WrappingDataInterface):
     """
     Tries to invoke named getter methods.
@@ -66,13 +66,15 @@ class GetattrDataInterface(WrappingDataInterface):
     `set_data(VARIABLE, indices)` into `set_VARIABLE(indices)`.
     """
 
-    _data_interface_implementor: DataInterfaceBase
+    def __init__(self, data_interface_implementor):
+        self.__dict__["_data_interface_implementor"] = data_interface_implementor
 
     def __getattr__(self, item):
         return self.data(item)
 
     def __setattr__(self, key, value):
-        return self.set_data(value=value, variable=key)
+        return self.set_data(value=value,
+            variable=key)
 
 
 @dataclasses.dataclass
