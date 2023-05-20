@@ -36,6 +36,11 @@ SCHEMA_VARIABLEINDICES = {
     "nodes": [],
     "structural_stability_intervals": [],
     "virtualized_environments": [],
+    "OPT_VIRT_GA_POPULATION_SIZE": [],
+    "OPT_VIRT_GA_SWAP_PERC_POPULATION": [],  # Fraction of individuals from the entire population that will be selected for crossing,
+    "OPT_VIRT_GA_REMOVE_PERC_POPULATION": [],  # % of population to be removed,
+    "OPT_VIRT_GA_N_ITERATIONS": [],
+    "OPT_VIRT_ORCHESTRATION_N_ITERATIONS": [],
 }
 
 
@@ -387,11 +392,11 @@ make_data_interface_schema_helper = _make_data_interface_schema_helper
 """
 Makes `_make_data_interface_schema_helper(...)` public.
 
-Helps constructing `DataInterface` and `Schema` instances. Think of it as 
-data model, or legacy `Env` (linsmat.py). It is used by entities that rely on 
-the same underlying model. The reason this function is not extracted into a 
-separate module is that it is probably an ad-hoc, and would cause unnecessary 
-file clutter. 
+Helps constructing `DataInterface` and `Schema` instances. Think of it as
+data model, or legacy `Env` (linsmat.py). It is used by entities that rely on
+the same underlying model. The reason this function is not extracted into a
+separate module is that it is probably an ad-hoc, and would cause unnecessary
+file clutter.
 
 """
 
