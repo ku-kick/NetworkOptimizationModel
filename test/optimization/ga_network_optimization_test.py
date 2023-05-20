@@ -29,6 +29,7 @@ class GaNetworkOptimizationTest(unittest.TestCase):
             .PermissiveCsvBufferedDataProvider(
             csv_file_name=str( _THIS_PATH / "ga_network_optimization_test" \
             / "ushakov.csv"))  # Network from "Ushakov, 2021"
+        data_provider = _data_provider_init_ga_configs(data_provider)
         ga_network_optimization_solver = twoopt.optimization \
             .ga_network_optimization.GaNetworkOptimizationSolver(
             data_provider=data_provider)
