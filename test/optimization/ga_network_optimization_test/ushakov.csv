@@ -1147,3 +1147,11 @@ g 6 1 2 5.0
 nodes 6.0
 structural_stability_intervals 3.0
 virtualized_environments 2.0
+structural_stability_intervals 3.0
+virtualized_environments 2.0
+OPT_VIRT_GA_POPULATION_SIZE 3.0
+OPT_VIRT_GA_SWAP_PERC_POPULATION 1.0
+OPT_VIRT_GA_REMOVE_PERC_POPULATION 0.6
+OPT_VIRT_GA_N_ITERATIONS 2.0
+OPT_VIRT_ORCHESTRATION_N_ITERATIONS 2.0
+twoopt_n_iterations 2.0
