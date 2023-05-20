@@ -228,7 +228,7 @@ class ConstrainedDataInterface(WrappingDataInterface):
 
     def _data_request_is_valid(self, variable_name: str, **index_map):
         if variable_name not in self._schema.variables():
-            self._format_error_message = f"Variable `{variable}` has not been expected"
+            self._format_error_message = f"Variable `{variable_name}` has not been expected"
             return False
 
         return True
