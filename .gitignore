@@ -6,3 +6,4 @@ venv/
 tags
 test/test_linsmat_ga_gene_virt.csv
 .vscode/
+*.tempmsg
