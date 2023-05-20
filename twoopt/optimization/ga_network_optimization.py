@@ -20,6 +20,7 @@ class GaNetworkOptimizationSolver(
         return self.simulation()
 
     def __init__(self, data_provider):
+
         from twoopt.data_processing.legacy_etl import \
             data_amount_planning_make_legacy_virt_helper
         from twoopt.optimization.data_amount_planning import \
@@ -28,8 +29,20 @@ class GaNetworkOptimizationSolver(
         from twoopt.data_processing.data_interface import GetattrDataInterface
 
         # Initialize `SimulationBasedSolver`
-        data_interface, _ = make_data_interface_schema_helper(
+        data_interface, schema = make_data_interface_schema_helper(
             data_provider)
+
+        variable_index_pairs = {
+            "OPT_VIRT_GA_POPULATION_SIZE" : [],
+            "OPT_VIRT_GA_SWAP_PERC_POPULATION" : [],  # Fraction of individuals from the entire population that will be selected for crossing,
+            "OPT_VIRT_GA_REMOVE_PERC_POPULATION" : [],  # % of population to be removed,
+            "OPT_VIRT_GA_N_ITERATIONS" : [],
+            "OPT_VIRT_ORCHESTRATION_N_ITERATIONS" : [],
+        }
+
+        for k, v in variable_index_pairs.items():
+            schema.set_variable_indices(**{k: v})
+
         simulation = NetworkDataFlow(data_provider=data_provider)
         twoopt.data_processing.data_processor.SimulationBasedSolver.__init__(
             self, data_interface=data_interface, simulation=simulation)
