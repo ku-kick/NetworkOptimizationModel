@@ -36,11 +36,6 @@ SCHEMA_VARIABLEINDICES = {
     "nodes": [],
     "structural_stability_intervals": [],
     "virtualized_environments": [],
-    "OPT_VIRT_GA_POPULATION_SIZE": [],
-    "OPT_VIRT_GA_SWAP_PERC_POPULATION": [],  # Fraction of individuals from the entire population that will be selected for crossing,
-    "OPT_VIRT_GA_REMOVE_PERC_POPULATION": [],  # % of population to be removed,
-    "OPT_VIRT_GA_N_ITERATIONS": [],
-    "OPT_VIRT_ORCHESTRATION_N_ITERATIONS": [],
 }
 
 
