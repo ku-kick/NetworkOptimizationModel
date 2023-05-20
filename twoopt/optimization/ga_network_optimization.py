@@ -32,13 +32,14 @@ class GaNetworkOptimizationSolver(
         data_interface, schema = make_data_interface_schema_helper(
             data_provider)
 
-        # Extend the commonly used schema
+        # Extend the schema
         variable_index_pairs = {
             "OPT_VIRT_GA_POPULATION_SIZE" : [],
             "OPT_VIRT_GA_SWAP_PERC_POPULATION" : [],  # Fraction of individuals from the entire population that will be selected for crossing,
             "OPT_VIRT_GA_REMOVE_PERC_POPULATION" : [],  # % of population to be removed,
             "OPT_VIRT_GA_N_ITERATIONS" : [],
             "OPT_VIRT_ORCHESTRATION_N_ITERATIONS" : [],
+            "OPT_VIRT_GA_SWAP_PERC_GENES": [],
         }
 
         for k, v in variable_index_pairs.items():
