@@ -11,7 +11,8 @@ class GaNetworkOptimizationTest(unittest.TestCase):
     def test_run(self):
         data_provider = twoopt.data_processing.data_provider \
             .PermissiveCsvBufferedDataProvider(
-            csv_file_name=str( _THIS_PATH / "ga_network_optimization_test" \
+            csv_file_name=str( _THIS_PATH
+            / "orchestrated_two_stage_optimization_test" \
             / "ushakov.csv"))  # Network from "Ushakov, 2021"
         solver = twoopt.optimization.orchestrated_two_stage_optimization\
             .Orchestrated2StageSolver(data_provider=data_provider)
