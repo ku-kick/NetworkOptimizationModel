@@ -15,7 +15,7 @@
 		"v": ["j", "rho", "l"],
 		"x_eq": ["j", "rho", "l"],
 		"alpha_1": [],
-
+		"alpha_0": [],
 		"mm_psi": ["j", "i", "l"],
 		"m_psi": ["j", "i", "rho", "l"],
 		"mm_v": ["j", "l"],

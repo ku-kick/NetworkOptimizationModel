@@ -8,7 +8,6 @@ import twoopt.data_processing.data_provider
 import twoopt.data_processing.vector_index
 
 
-
 SCHEMA_VARIABLEINDICES = {
     "x": ["j", "i", "rho", "l"],
     "y": ["j", "rho", "l"],
@@ -124,7 +123,19 @@ class LinsolvPlanner(twoopt.data_processing.data_processor.Solver):
     problem statement and solving approaches"
     """
     data_interface: object
+
     schema: object
+    """
+    Defines indices, and bounds thereof. The following variables are used
+    x_eq - the amount of the data in a particular node at the beginning (input data)
+    y - the amount of data stored
+    g - the amount of data processed
+    z - dropped data
+    x - transferred data
+    psi - upper bound of transferred data for a node
+    v - upper bound of stored data for a node
+    phi - upper bound of processed data for a node
+    """
 
     # Mapping b/w a network config. characteristic, and the name of the variable
     # representing its upper bound (lower bounds are always 0)
@@ -204,7 +215,7 @@ class LinsolvPlanner(twoopt.data_processing.data_processor.Solver):
             for indices in twoopt.data_processing.vector_index.radix_cartesian_product(self.schema.get_var_radix(var)):
                 _, indices_dict = self.schema.indices_plain_to_dict(var, *indices)  # ETL
                 pos = self.row_index.get_pos(var, **indices_dict)
-                upper_bound = self.data_interface.get_plain(bnd_var, *indices)
+                upper_bound = self.data_interface.get(bnd_var, **indices_dict)
                 log.debug("var", var, "indices", indices, "upper_bound", upper_bound, "pos", pos)
                 bnd[pos][1] = upper_bound
 
@@ -212,9 +223,9 @@ class LinsolvPlanner(twoopt.data_processing.data_processor.Solver):
         return bnd
 
     def __init_obj(self):
-        alpha_g = -self.data_interface.get_plain(
+        alpha_g = -self.data_interface.get(
             "alpha_0")  # alpha_1 in the paper, inverted, because numpy can only solve minimization problems
-        alpha_z = self.data_interface.get_plain(
+        alpha_z = self.data_interface.get(
             "alpha_1")  # alpha_2 in the paper, inverted, because numpy can only solve minimization problems
         assert not math.isclose(alpha_g, 0.0, abs_tol=1e-6)
         assert not math.isclose(alpha_z, 0.0, abs_tol=1e-6)
