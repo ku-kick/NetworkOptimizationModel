@@ -16,7 +16,7 @@ setup(
     author="Dmitry Murashov",
     setup_requires=["wheel"],
     install_requires=[
-        "numpy==1.23.2",
+        "numpy>=1.23.2",
         "pandas==1.5.2",
         "scipy==1.10.0",
     ],
